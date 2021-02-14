@@ -27,6 +27,8 @@
 
     <string name="sampleAlias">"@UserAlias"</string>
     <string name="sampleUserName">The User</string>
+    <string name="sampleTimePublished">Sep 15 2020 10:49PM</string>
+    <string name="sampleTweet">Hello, World! How are you?</string>
     <string name="title_activity_login">Sign in</string>
     <string name="followeeCount">Following: %d</string>
     <string name="followerCount">Followers: %d</string>

@@ -10,9 +10,10 @@ public class Status implements Comparable<User>, Serializable {
     private User author;
     private LocalDateTime timePublished;
 
-    public Status(String content, User author) {
+    public Status(String content, User author, LocalDateTime timePublished) {
         this.content = content;
         this.author = author;
+        this.timePublished = timePublished;
     }
 
     public String getContent() {
