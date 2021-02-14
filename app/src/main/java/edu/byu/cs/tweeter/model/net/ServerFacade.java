@@ -1,18 +1,23 @@
 package edu.byu.cs.tweeter.model.net;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import edu.byu.cs.tweeter.BuildConfig;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
+import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.service.request.FollowingRequest;
 import edu.byu.cs.tweeter.model.service.request.LoginRequest;
 import edu.byu.cs.tweeter.model.service.request.RegisterRequest;
+import edu.byu.cs.tweeter.model.service.request.StoryRequest;
 import edu.byu.cs.tweeter.model.service.response.FollowingResponse;
 import edu.byu.cs.tweeter.model.service.response.LoginResponse;
 import edu.byu.cs.tweeter.model.service.response.RegisterResponse;
+import edu.byu.cs.tweeter.model.service.response.StoryResponse;
 
 /**
  * Acts as a Facade to the Tweeter server. All network requests to the server should go through
@@ -43,6 +48,20 @@ public class ServerFacade {
     private final User user18 = new User("Isabel", "Isaacson", FEMALE_IMAGE_URL);
     private final User user19 = new User("Justin", "Jones", MALE_IMAGE_URL);
     private final User user20 = new User("Jill", "Johnson", FEMALE_IMAGE_URL);
+
+    private final Status status1 = new Status("Content: Hello World! \uD83D\uDE03, Mentions: @BobBobson, URLs: http://www.google.com", user1);
+    private final Status status2 = new Status("Content: Hello World!, Mentions: @BobBobson, URLs: https://www.google.com", user1);
+    private final Status status3 = new Status("Content: Hello World!, Mentions: @BobBobson, URLs: www.google.com", user1);
+    private final Status status4 = new Status("Content: Hello World!, Mentions: @BobBobson, URLs: http://www.4jflr8hdjjdla.com", user1);
+    private final Status status5 = new Status("Content: Hello World! \uD83D\uDE03, Mentions: @AllenAnderson, URLs: http://www.google.com", user2);
+    private final Status status6 = new Status("Content: Hello World!, Mentions: @AllenAnderson, URLs: https://www.google.com", user2);
+    private final Status status7 = new Status("Content: Hello World!, Mentions: @AllenAnderson, URLs: www.google.com", user2);
+    private final Status status8 = new Status("Content: Hello World!, Mentions: @AllenAnderson, URLs: http://www.4jflr8hdjjdla.com", user2);
+    private final Status status9 = new Status("Content: Hello World! \uD83D\uDE03, Mentions: @AmyAmes, URLs: http://www.google.com", user3);
+    private final Status status10 = new Status("Content: Hello World!, Mentions: @AmyAmes, URLs: https://www.google.com", user3);
+    private final Status status11 = new Status("Content: Hello World!, Mentions: @AmyAmes, URLs: www.google.com", user3);
+    private final Status status12 = new Status("Content: Hello World!, Mentions: @AmyAmes, URLs: http://www.4jflr8hdjjdla.com", user3);
+
 
     /**
      * Performs a login and if successful, returns the logged in user and an auth token. The current
@@ -76,12 +95,12 @@ public class ServerFacade {
     public FollowingResponse getFollowees(FollowingRequest request) {
 
         // Used in place of assert statements because Android does not support them
-        if(BuildConfig.DEBUG) {
-            if(request.getLimit() < 0) {
+        if (BuildConfig.DEBUG) {
+            if (request.getLimit() < 0) {
                 throw new AssertionError();
             }
 
-            if(request.getFollowerAlias() == null) {
+            if (request.getFollowerAlias() == null) {
                 throw new AssertionError();
             }
         }
@@ -91,10 +110,10 @@ public class ServerFacade {
 
         boolean hasMorePages = false;
 
-        if(request.getLimit() > 0) {
+        if (request.getLimit() > 0) {
             int followeesIndex = getFolloweesStartingIndex(request.getLastFolloweeAlias(), allFollowees);
 
-            for(int limitCounter = 0; followeesIndex < allFollowees.size() && limitCounter < request.getLimit(); followeesIndex++, limitCounter++) {
+            for (int limitCounter = 0; followeesIndex < allFollowees.size() && limitCounter < request.getLimit(); followeesIndex++, limitCounter++) {
                 responseFollowees.add(allFollowees.get(followeesIndex));
             }
 
@@ -115,14 +134,13 @@ public class ServerFacade {
      * @return the index of the first followee to be returned.
      */
     private int getFolloweesStartingIndex(String lastFolloweeAlias, List<User> allFollowees) {
-
         int followeesIndex = 0;
 
-        if(lastFolloweeAlias != null) {
+        if (lastFolloweeAlias != null) {
             // This is a paged request for something after the first page. Find the first item
             // we should return
             for (int i = 0; i < allFollowees.size(); i++) {
-                if(lastFolloweeAlias.equals(allFollowees.get(i).getAlias())) {
+                if (lastFolloweeAlias.equals(allFollowees.get(i).getAlias())) {
                     // We found the index of the last item returned last time. Increment to get
                     // to the first one we should return
                     followeesIndex = i + 1;
@@ -144,5 +162,57 @@ public class ServerFacade {
         return Arrays.asList(user1, user2, user3, user4, user5, user6, user7,
                 user8, user9, user10, user11, user12, user13, user14, user15, user16, user17, user18,
                 user19, user20);
+    }
+
+    public StoryResponse getStory(StoryRequest request) {
+        // Used in place of assert statements because Android does not support them
+        if (BuildConfig.DEBUG) {
+            if (request.getLimit() < 0) {
+                throw new AssertionError();
+            }
+
+            if (request.getUserAlias() == null) {
+                throw new AssertionError();
+            }
+        }
+
+        List<Status> allStatuses = getDummyStatuses(request.getUserAlias());
+        List<Status> responseStatuses = new ArrayList<>(request.getLimit());
+
+        boolean hasMorePages = false;
+
+        if (request.getLimit() > 0) {
+            int statusesIndex = getStatusesStartingIndex(request.getLastStatusTimePublished(), allStatuses);
+
+            for (int limitCounter = 0; statusesIndex < allStatuses.size() && limitCounter < request.getLimit(); statusesIndex++, limitCounter++) {
+                responseStatuses.add(allStatuses.get(statusesIndex));
+            }
+
+            hasMorePages = statusesIndex < allStatuses.size();
+        }
+
+        return new StoryResponse(responseStatuses, hasMorePages);
+    }
+
+    private int getStatusesStartingIndex(LocalDateTime lastStatusTimePublished, List<Status> allStatuses) {
+        int statusesIndex = 0;
+
+        if (lastStatusTimePublished != null) {
+            for (int i = 0; i < allStatuses.size(); i++) {
+                if (lastStatusTimePublished.equals(allStatuses.get(i).getTimePublished())) {
+                    statusesIndex = i + 1;
+                    break;
+                }
+            }
+        }
+
+        return statusesIndex;
+    }
+
+    List<Status> getDummyStatuses(String userAlias) {
+        List<Status> statuses = Arrays.asList(status1, status2, status3, status4, status5, status6,
+                status7, status8, status9, status10, status11, status12);
+        statuses.removeIf(status -> !status.getAuthor().getAlias().equals(userAlias));
+        return statuses;
     }
 }
