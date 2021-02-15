@@ -1,11 +1,14 @@
 package edu.byu.cs.tweeter.view.login;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -16,6 +19,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.io.ByteArrayOutputStream;
+import java.util.Arrays;
 
 import edu.byu.cs.tweeter.R;
 import edu.byu.cs.tweeter.model.service.request.LoginRequest;
@@ -28,13 +34,18 @@ import edu.byu.cs.tweeter.view.asyncTasks.LoginTask;
 import edu.byu.cs.tweeter.view.asyncTasks.RegisterTask;
 import edu.byu.cs.tweeter.view.main.MainActivity;
 
+import static android.app.Activity.RESULT_OK;
+
 public class RegisterFragment extends Fragment implements RegisterPresenter.View, RegisterTask.Observer {
 
     private static final String LOG_TAG = "RegisterFragment";
+    private static final int REQUEST_IMAGE_CAPTURE = 1;
 
     private EditText firstNameField, lastNameField, usernameField, passwordField;
     private TextView takeProfilePicture;
     private Button registerButton;
+
+    private byte[] imageBytes;
 
     private RegisterPresenter presenter;
     private Toast registerToast;
@@ -47,6 +58,7 @@ public class RegisterFragment extends Fragment implements RegisterPresenter.View
         super.onCreate(savedInstanceState);
 
         presenter = new RegisterPresenter(this);
+        imageBytes = null;
     }
 
     @Override
@@ -73,8 +85,7 @@ public class RegisterFragment extends Fragment implements RegisterPresenter.View
 
             @Override
             public void onClick(View v) {
-                // TODO: Change this to open up the camera and get a picture
-                Toast.makeText(getActivity(), "Profile Picture Link Clicked!", Toast.LENGTH_LONG).show();
+                dispatchTakePictureIntent();
             }
         });
 
@@ -85,11 +96,17 @@ public class RegisterFragment extends Fragment implements RegisterPresenter.View
 
             @Override
             public void onClick(View view) {
+
+                if (imageBytes == null) {
+                    Toast.makeText(getContext(), "Please take a profile picture first", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
                 registerToast = Toast.makeText(getContext(), "Attempting to register user", Toast.LENGTH_LONG);
                 registerToast.show();
 
                 RegisterRequest registerRequest = new RegisterRequest(firstNameField.getText().toString(),
-                        lastNameField.getText().toString(), usernameField.getText().toString(), passwordField.getText().toString());
+                        lastNameField.getText().toString(), usernameField.getText().toString(), passwordField.getText().toString(), imageBytes);
                 RegisterTask registerTask = new RegisterTask(presenter, RegisterFragment.this);
                 registerTask.execute(registerRequest);
             }
@@ -113,6 +130,26 @@ public class RegisterFragment extends Fragment implements RegisterPresenter.View
                             passwordField.getText().toString().length() != 0);
         }
     };
+
+    private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        try {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        } catch (ActivityNotFoundException e) {
+            // display error state to the user
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+            imageBytes = stream.toByteArray();
+        }
+    }
 
     /**
      * The callback method that gets invoked for a successful registration. Displays the MainActivity.

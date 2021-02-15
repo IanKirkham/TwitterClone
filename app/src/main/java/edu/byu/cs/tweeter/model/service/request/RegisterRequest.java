@@ -9,7 +9,7 @@ public class RegisterRequest {
     private final String lastName;
     private final String username;
     private final String password;
-    // profile picture? as a byte array?
+    private final byte[] imageBytes;
 
     /**
      * Creates an instance.
@@ -18,12 +18,14 @@ public class RegisterRequest {
      * @param lastName the last name of the user to be registered.
      * @param username the username of the user to be registered.
      * @param password the password of the user to be registered.
+     * @param imageBytes the image of the user to be registered represented as a byte array.
      */
-    public RegisterRequest(String firstName, String lastName, String username, String password) {
+    public RegisterRequest(String firstName, String lastName, String username, String password, byte[] imageBytes) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.username = username;
         this.password = password;
+        this.imageBytes = imageBytes;
     }
 
     /**
@@ -60,5 +62,14 @@ public class RegisterRequest {
      */
     public String getPassword() {
         return password;
+    }
+
+    /**
+     * Returns the byte array of the user to be registered by this request.
+     *
+     * @return the byte array.
+     */
+    public byte[] getImageBytes() {
+        return imageBytes;
     }
 }
