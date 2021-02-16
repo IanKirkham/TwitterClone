@@ -4,14 +4,14 @@ import java.io.IOException;
 
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.net.ServerFacade;
-import edu.byu.cs.tweeter.model.service.request.StoryRequest;
-import edu.byu.cs.tweeter.model.service.response.StoryResponse;
+import edu.byu.cs.tweeter.model.service.request.StatusesRequest;
+import edu.byu.cs.tweeter.model.service.response.StatusesResponse;
 import edu.byu.cs.tweeter.util.ByteArrayUtils;
 
 /**
  * Contains the business logic for getting the statuses of a user
  */
-public class StoryService {
+public class StatusesService {
 
     /**
      * Returns the statuses of the specified user. Uses information in
@@ -22,8 +22,8 @@ public class StoryService {
      * @param request contains the data required to fulfill the request.
      * @return the statuses.
      */
-    public StoryResponse getStory(StoryRequest request) throws IOException {
-        StoryResponse response = getServerFacade().getStory(request);
+    public StatusesResponse getStory(StatusesRequest request) throws IOException {
+        StatusesResponse response = getServerFacade().getStory(request);
 
         if (response.isSuccess()) {
             loadImages(response); // the profile pictures associated with a status
@@ -37,7 +37,7 @@ public class StoryService {
      *
      * @param response the response from the followee request.
      */
-    private void loadImages(StoryResponse response) throws IOException {
+    private void loadImages(StatusesResponse response) throws IOException {
         if (response.getStatuses().isEmpty()) { return; }
         User user = response.getStatuses().get(0).getAuthor(); // All Statuses in a Story have the same author
         byte [] bytes = ByteArrayUtils.bytesFromUrl(user.getImageUrl());

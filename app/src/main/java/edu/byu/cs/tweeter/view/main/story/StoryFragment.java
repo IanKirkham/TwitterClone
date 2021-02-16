@@ -23,8 +23,6 @@ import android.widget.Toast;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,16 +34,16 @@ import edu.byu.cs.tweeter.R;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
-import edu.byu.cs.tweeter.model.service.request.StoryRequest;
-import edu.byu.cs.tweeter.model.service.response.StoryResponse;
-import edu.byu.cs.tweeter.presenter.StoryPresenter;
-import edu.byu.cs.tweeter.view.asyncTasks.GetStoryTask;
+import edu.byu.cs.tweeter.model.service.request.StatusesRequest;
+import edu.byu.cs.tweeter.model.service.response.StatusesResponse;
+import edu.byu.cs.tweeter.presenter.StatusesPresenter;
+import edu.byu.cs.tweeter.view.asyncTasks.GetStatusesTask;
 import edu.byu.cs.tweeter.view.util.ImageUtils;
 
 /**
  * The fragment that displays on the 'Story' tab.
  */
-public class StoryFragment extends Fragment implements StoryPresenter.View { // TODO: Eventually abstract away the necessary parts and use Template Pattern on Story and Feed
+public class StoryFragment extends Fragment implements StatusesPresenter.View { // TODO: Eventually abstract away the necessary parts and use Template Pattern on Story and Feed
 
     private static final String LOG_TAG = "StoryFragment";
     private static final String USER_KEY = "UserKey";
@@ -58,7 +56,7 @@ public class StoryFragment extends Fragment implements StoryPresenter.View { // 
 
     private User user;
     private AuthToken authToken;
-    private StoryPresenter presenter;
+    private StatusesPresenter presenter;
 
     private StoryRecyclerViewAdapter storyRecyclerViewAdapter;
 
@@ -90,7 +88,7 @@ public class StoryFragment extends Fragment implements StoryPresenter.View { // 
         user = (User) getArguments().getSerializable(USER_KEY);
         authToken = (AuthToken) getArguments().getSerializable(AUTH_TOKEN_KEY);
 
-        presenter = new StoryPresenter(this);
+        presenter = new StatusesPresenter(this);
 
         RecyclerView storyRecyclerView = view.findViewById(R.id.storyRecyclerView);
 
@@ -217,7 +215,7 @@ public class StoryFragment extends Fragment implements StoryPresenter.View { // 
     /**
      * The adapter for the RecyclerView that displays the Story data.
      */
-    private class StoryRecyclerViewAdapter extends RecyclerView.Adapter<StatusHolder> implements GetStoryTask.Observer {
+    private class StoryRecyclerViewAdapter extends RecyclerView.Adapter<StatusHolder> implements GetStatusesTask.Observer {
 
         private final List<Status> statuses = new ArrayList<>();
         private Status lastStatus;
@@ -335,23 +333,24 @@ public class StoryFragment extends Fragment implements StoryPresenter.View { // 
             isLoading = true;
             addLoadingFooter();
 
-            GetStoryTask getStoryTask = new GetStoryTask(presenter, this);
-            StoryRequest request = new StoryRequest(user.getAlias(), PAGE_SIZE, (lastStatus == null ? null : lastStatus.getTimePublished()));
-            getStoryTask.execute(request);
+            GetStatusesTask getStatusesTask = new GetStatusesTask(presenter, this);
+            ArrayList<String> retrieveStatusesFor = new ArrayList<>(Arrays.asList(user.getAlias()));
+            StatusesRequest request = new StatusesRequest(retrieveStatusesFor, PAGE_SIZE, (lastStatus == null ? null : lastStatus.getTimePublished()));
+            getStatusesTask.execute(request);
         }
 
         /**
          * A callback indicating more story data has been received. Loads the new statuses
          * and removes the loading footer.
          *
-         * @param storyResponse the asynchronous response to the request to load more items.
+         * @param statusesResponse the asynchronous response to the request to load more items.
          */
         @Override
-        public void storyRetrieved(StoryResponse storyResponse) {
-            List<Status> statuses = storyResponse.getStatuses();
+        public void storyRetrieved(StatusesResponse statusesResponse) {
+            List<Status> statuses = statusesResponse.getStatuses();
 
             lastStatus = (statuses.size() > 0) ? statuses.get(statuses.size() -1) : null;
-            hasMorePages = storyResponse.getHasMorePages();
+            hasMorePages = statusesResponse.getHasMorePages();
 
             isLoading = false;
             removeLoadingFooter();

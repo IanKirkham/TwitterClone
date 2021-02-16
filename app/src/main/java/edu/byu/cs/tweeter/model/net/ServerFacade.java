@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import edu.byu.cs.tweeter.BuildConfig;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
@@ -13,11 +12,11 @@ import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.service.request.FollowingRequest;
 import edu.byu.cs.tweeter.model.service.request.LoginRequest;
 import edu.byu.cs.tweeter.model.service.request.RegisterRequest;
-import edu.byu.cs.tweeter.model.service.request.StoryRequest;
+import edu.byu.cs.tweeter.model.service.request.StatusesRequest;
 import edu.byu.cs.tweeter.model.service.response.FollowingResponse;
 import edu.byu.cs.tweeter.model.service.response.LoginResponse;
 import edu.byu.cs.tweeter.model.service.response.RegisterResponse;
-import edu.byu.cs.tweeter.model.service.response.StoryResponse;
+import edu.byu.cs.tweeter.model.service.response.StatusesResponse;
 
 /**
  * Acts as a Facade to the Tweeter server. All network requests to the server should go through
@@ -172,19 +171,19 @@ public class ServerFacade {
                 user19, user20);
     }
 
-    public StoryResponse getStory(StoryRequest request) {
+    public StatusesResponse getStory(StatusesRequest request) {
         // Used in place of assert statements because Android does not support them
         if (BuildConfig.DEBUG) {
             if (request.getLimit() < 0) {
                 throw new AssertionError();
             }
 
-            if (request.getUserAlias() == null) {
+            if (request.getUserAliases() == null) {
                 throw new AssertionError();
             }
         }
 
-        List<Status> allStatuses = getDummyStatuses(request.getUserAlias());
+        List<Status> allStatuses = getDummyStatuses(request.getUserAliases()); // sorted by date published
         List<Status> responseStatuses = new ArrayList<>(request.getLimit());
 
         boolean hasMorePages = false;
@@ -199,7 +198,7 @@ public class ServerFacade {
             hasMorePages = statusesIndex < allStatuses.size();
         }
 
-        return new StoryResponse(responseStatuses, hasMorePages);
+        return new StatusesResponse(responseStatuses, hasMorePages);
     }
 
     private int getStatusesStartingIndex(LocalDateTime lastStatusTimePublished, List<Status> allStatuses) {
@@ -217,10 +216,11 @@ public class ServerFacade {
         return statusesIndex;
     }
 
-    List<Status> getDummyStatuses(String userAlias) {
+    List<Status> getDummyStatuses(List<String> userAliases) {
         List<Status> statuses = new ArrayList<>(Arrays.asList(status1, status2, status3, status4, status5, status6,
                 status7, status8, status9, status10, status11, status12, status13, status14, status15, status16));
-        statuses.removeIf(status -> !status.getAuthor().getAlias().equals(userAlias));
+        statuses.removeIf(status -> !userAliases.contains(status.getAuthor().getAlias())); // inefficient, but this is dummy code. The backend will replace this.
+        statuses.sort((s1, s2) -> s1.getTimePublished().compareTo(s2.getTimePublished()));
         return statuses;
     }
 }

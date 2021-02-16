@@ -1,28 +1,29 @@
 package edu.byu.cs.tweeter.model.service.request;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * Contains all the information needed to make a request to have the server return the next page of
  * statuses for a specified user.
  */
-public class StoryRequest {
+public class StatusesRequest {
 
-    private final String userAlias; // used as a key to retrieve the associated Statuses. Maybe better to have User.
+    private final List<String> userAliases;
     private final int limit;
     private final LocalDateTime lastStatusTimePublished; // used to paginate Responses.
 
     /**
      * Creates an instance.
      *
-     * @param userAlias the alias of the user whose statuses are to be returned.
+     * @param userAliases the aliases of the users whose statuses are to be returned.
      * @param limit the maximum number of statuses to return.
      * @param lastStatusTimePublished the timePublished of the last Status that was returned in the previous request (null if
      *                                there was no previous request or if no Statuses were returned in the
      *                                previous request).
      */
-    public StoryRequest(String userAlias, int limit, LocalDateTime lastStatusTimePublished) {
-        this.userAlias = userAlias;
+    public StatusesRequest(List<String> userAliases, int limit, LocalDateTime lastStatusTimePublished) {
+        this.userAliases = userAliases;
         this.limit = limit;
         this.lastStatusTimePublished = lastStatusTimePublished;
     }
@@ -32,8 +33,8 @@ public class StoryRequest {
      *
      * @return the user.
      */
-    public String getUserAlias() {
-        return userAlias;
+    public List<String> getUserAliases() {
+        return userAliases;
     }
 
     /**

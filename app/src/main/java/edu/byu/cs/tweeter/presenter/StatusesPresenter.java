@@ -2,14 +2,14 @@ package edu.byu.cs.tweeter.presenter;
 
 import java.io.IOException;
 
-import edu.byu.cs.tweeter.model.service.StoryService;
-import edu.byu.cs.tweeter.model.service.request.StoryRequest;
-import edu.byu.cs.tweeter.model.service.response.StoryResponse;
+import edu.byu.cs.tweeter.model.service.StatusesService;
+import edu.byu.cs.tweeter.model.service.request.StatusesRequest;
+import edu.byu.cs.tweeter.model.service.response.StatusesResponse;
 
 /**
- * The presenter for the "story" functionality of the application.
+ * The presenter for Feed/Story functionality of the application.
  */
-public class StoryPresenter {
+public class StatusesPresenter {
 
     private final View view;
 
@@ -25,7 +25,7 @@ public class StoryPresenter {
      *
      * @param view the view for which this class is the presenter.
      */
-    public StoryPresenter(View view) {
+    public StatusesPresenter(View view) {
         this.view = view;
     }
 
@@ -37,19 +37,19 @@ public class StoryPresenter {
      * @param request contains the data required to fulfill the request.
      * @return the statuses that form a story.
      */
-    public StoryResponse getStory(StoryRequest request) throws IOException {
-        StoryService StoryService = getStoryService();
-        return StoryService.getStory(request);
+    public StatusesResponse getStory(StatusesRequest request) throws IOException {
+        StatusesService StatusesService = getStoryService();
+        return StatusesService.getStory(request);
     }
 
     /**
-     * Returns an instance of {@link StoryService}. Allows mocking of the StoryService class
+     * Returns an instance of {@link StatusesService}. Allows mocking of the StoryService class
      * for testing purposes. All usages of StoryService should get their StoryService
      * instance from this method to allow for mocking of the instance.
      *
      * @return the instance.
      */
-    StoryService getStoryService() {
-        return new StoryService();
+    StatusesService getStoryService() {
+        return new StatusesService();
     }
 }

@@ -4,16 +4,16 @@ import android.os.AsyncTask;
 
 import java.io.IOException;
 
-import edu.byu.cs.tweeter.model.service.request.StoryRequest;
-import edu.byu.cs.tweeter.model.service.response.StoryResponse;
-import edu.byu.cs.tweeter.presenter.StoryPresenter;
+import edu.byu.cs.tweeter.model.service.request.StatusesRequest;
+import edu.byu.cs.tweeter.model.service.response.StatusesResponse;
+import edu.byu.cs.tweeter.presenter.StatusesPresenter;
 
 /**
- * An {@link AsyncTask} for retrieving followees for a user.
+ * An {@link AsyncTask} for retrieving statuses for a user.
  */
-public class GetStoryTask extends AsyncTask<StoryRequest, Void, StoryResponse> {
+public class GetStatusesTask extends AsyncTask<StatusesRequest, Void, StatusesResponse> {
 
-    private final StoryPresenter presenter;
+    private final StatusesPresenter presenter;
     private final Observer observer;
     private Exception exception;
 
@@ -22,7 +22,7 @@ public class GetStoryTask extends AsyncTask<StoryRequest, Void, StoryResponse> {
      * completes.
      */
     public interface Observer {
-        void storyRetrieved(StoryResponse storyResponse);
+        void storyRetrieved(StatusesResponse statusesResponse);
         void handleException(Exception exception);
     }
 
@@ -32,7 +32,7 @@ public class GetStoryTask extends AsyncTask<StoryRequest, Void, StoryResponse> {
      * @param presenter the presenter from whom this task should retrieve stories.
      * @param observer the observer who wants to be notified when this task completes.
      */
-    public GetStoryTask(StoryPresenter presenter, Observer observer) {
+    public GetStatusesTask(StatusesPresenter presenter, Observer observer) {
         if(observer == null) {
             throw new NullPointerException();
         }
@@ -43,18 +43,18 @@ public class GetStoryTask extends AsyncTask<StoryRequest, Void, StoryResponse> {
 
     /**
      * The method that is invoked on the background thread to retrieve followees. This method is
-     * invoked indirectly by calling {@link #execute(StoryRequest...)}.
+     * invoked indirectly by calling {@link #execute(StatusesRequest...)}.
      *
-     * @param storyRequests the request object (there will only be one).
+     * @param statusesRequests the request object (there will only be one).
      * @return the response.
      */
     @Override
-    protected StoryResponse doInBackground(StoryRequest... storyRequests) {
+    protected StatusesResponse doInBackground(StatusesRequest... statusesRequests) {
 
-        StoryResponse response = null;
+        StatusesResponse response = null;
 
         try {
-            response = presenter.getStory(storyRequests[0]);
+            response = presenter.getStory(statusesRequests[0]);
         } catch (IOException ex) {
             exception = ex;
         }
@@ -65,14 +65,14 @@ public class GetStoryTask extends AsyncTask<StoryRequest, Void, StoryResponse> {
     /**
      * Notifies the observer (on the UI thread) when the task completes.
      *
-     * @param storyResponse the response that was received by the task.
+     * @param statusesResponse the response that was received by the task.
      */
     @Override
-    protected void onPostExecute(StoryResponse storyResponse) {
-        if(exception != null) {
+    protected void onPostExecute(StatusesResponse statusesResponse) {
+        if (exception != null) {
             observer.handleException(exception);
         } else {
-            observer.storyRetrieved(storyResponse);
+            observer.storyRetrieved(statusesResponse);
         }
     }
 }
