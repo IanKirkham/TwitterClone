@@ -1,4 +1,4 @@
-package edu.byu.cs.tweeter.view.main.story;
+package edu.byu.cs.tweeter.view.main.statuses;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -23,9 +23,9 @@ import android.widget.Toast;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -34,7 +34,6 @@ import edu.byu.cs.tweeter.R;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
-import edu.byu.cs.tweeter.model.service.request.StatusesRequest;
 import edu.byu.cs.tweeter.model.service.response.StatusesResponse;
 import edu.byu.cs.tweeter.presenter.StatusesPresenter;
 import edu.byu.cs.tweeter.view.asyncTasks.GetStatusesTask;
@@ -43,46 +42,26 @@ import edu.byu.cs.tweeter.view.util.ImageUtils;
 /**
  * The fragment that displays on the 'Story' tab.
  */
-public class StoryFragment extends Fragment implements StatusesPresenter.View { // TODO: Eventually abstract away the necessary parts and use Template Pattern on Story and Feed
+public abstract class StatusesFragment extends Fragment implements StatusesPresenter.View {
 
-    private static final String LOG_TAG = "StoryFragment";
-    private static final String USER_KEY = "UserKey";
-    private static final String AUTH_TOKEN_KEY = "AuthTokenKey";
+    private static final String LOG_TAG = "StatusesFragment";
+    protected static final String USER_KEY = "UserKey";
+    protected static final String AUTH_TOKEN_KEY = "AuthTokenKey";
 
-    private static final int LOADING_DATA_VIEW = 0;
-    private static final int ITEM_VIEW = 1;
+    protected static final int LOADING_DATA_VIEW = 0;
+    protected static final int ITEM_VIEW = 1;
+    protected static final int PAGE_SIZE = 10;
 
-    private static final int PAGE_SIZE = 10;
+    protected User user;
+    protected AuthToken authToken;
+    protected StatusesPresenter presenter;
 
-    private User user;
-    private AuthToken authToken;
-    private StatusesPresenter presenter;
-
-    private StoryRecyclerViewAdapter storyRecyclerViewAdapter;
-
-    /**
-     * Creates an instance of the fragment and places the user and auth token in an arguments
-     * bundle assigned to the fragment.
-     *
-     * @param user the logged in user.
-     * @param authToken the auth token for this user's session.
-     * @return the fragment.
-     */
-    public static StoryFragment newInstance(User user, AuthToken authToken) {
-        StoryFragment fragment = new StoryFragment();
-
-        Bundle args = new Bundle(2);
-        args.putSerializable(USER_KEY, user);
-        args.putSerializable(AUTH_TOKEN_KEY, authToken);
-
-        fragment.setArguments(args);
-        return fragment;
-    }
+    private StatusRecyclerViewAdapter statusRecyclerViewAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_story, container, false);
+        View view = inflater.inflate(R.layout.fragment_statuses, container, false);
 
         //noinspection ConstantConditions
         user = (User) getArguments().getSerializable(USER_KEY);
@@ -90,18 +69,19 @@ public class StoryFragment extends Fragment implements StatusesPresenter.View { 
 
         presenter = new StatusesPresenter(this);
 
-        RecyclerView storyRecyclerView = view.findViewById(R.id.storyRecyclerView);
-
+        RecyclerView statusRecyclerView = view.findViewById(R.id.statusRecyclerView);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this.getContext());
-        storyRecyclerView.setLayoutManager(layoutManager);
+        statusRecyclerView.setLayoutManager(layoutManager);
 
-        storyRecyclerViewAdapter = new StoryRecyclerViewAdapter();
-        storyRecyclerView.setAdapter(storyRecyclerViewAdapter);
+        statusRecyclerViewAdapter = getRecyclerViewAdapter();
+        statusRecyclerView.setAdapter(statusRecyclerViewAdapter);
 
-        storyRecyclerView.addOnScrollListener(new StoryRecyclerViewPaginationScrollListener(layoutManager));
+        statusRecyclerView.addOnScrollListener(new StatusRecyclerViewPaginationScrollListener(layoutManager));
 
         return view;
     }
+
+    protected abstract StatusRecyclerViewAdapter getRecyclerViewAdapter();
 
     /**
      * The ViewHolder for the RecyclerView that displays the Story data.
@@ -215,18 +195,18 @@ public class StoryFragment extends Fragment implements StatusesPresenter.View { 
     /**
      * The adapter for the RecyclerView that displays the Story data.
      */
-    private class StoryRecyclerViewAdapter extends RecyclerView.Adapter<StatusHolder> implements GetStatusesTask.Observer {
+    protected abstract class StatusRecyclerViewAdapter extends RecyclerView.Adapter<StatusHolder> implements GetStatusesTask.Observer, Serializable {
 
         private final List<Status> statuses = new ArrayList<>();
-        private Status lastStatus;
+        protected Status lastStatus;
 
         private boolean hasMorePages;
-        private boolean isLoading = false;
+        protected boolean isLoading = false;
 
         /**
          * Creates an instance and loads the first page of story data.
          */
-        StoryRecyclerViewAdapter() {
+        StatusRecyclerViewAdapter() {
             loadMoreItems();
         }
 
@@ -276,7 +256,7 @@ public class StoryFragment extends Fragment implements StatusesPresenter.View { 
         @NonNull
         @Override
         public StatusHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            LayoutInflater layoutInflater = LayoutInflater.from(StoryFragment.this.getContext());
+            LayoutInflater layoutInflater = LayoutInflater.from(StatusesFragment.this.getContext());
             View view;
 
             if (viewType == LOADING_DATA_VIEW) {
@@ -329,15 +309,7 @@ public class StoryFragment extends Fragment implements StatusesPresenter.View { 
          * Causes the Adapter to display a loading footer and make a request to get more story
          * data.
          */
-        void loadMoreItems() {
-            isLoading = true;
-            addLoadingFooter();
-
-            GetStatusesTask getStatusesTask = new GetStatusesTask(presenter, this);
-            ArrayList<String> retrieveStatusesFor = new ArrayList<>(Arrays.asList(user.getAlias()));
-            StatusesRequest request = new StatusesRequest(retrieveStatusesFor, PAGE_SIZE, (lastStatus == null ? null : lastStatus.getTimePublished()));
-            getStatusesTask.execute(request);
-        }
+        abstract void loadMoreItems();
 
         /**
          * A callback indicating more story data has been received. Loads the new statuses
@@ -346,7 +318,7 @@ public class StoryFragment extends Fragment implements StatusesPresenter.View { 
          * @param statusesResponse the asynchronous response to the request to load more items.
          */
         @Override
-        public void storyRetrieved(StatusesResponse statusesResponse) {
+        public void statusesRetrieved(StatusesResponse statusesResponse) {
             List<Status> statuses = statusesResponse.getStatuses();
 
             lastStatus = (statuses.size() > 0) ? statuses.get(statuses.size() -1) : null;
@@ -354,7 +326,7 @@ public class StoryFragment extends Fragment implements StatusesPresenter.View { 
 
             isLoading = false;
             removeLoadingFooter();
-            storyRecyclerViewAdapter.addItems(statuses);
+            statusRecyclerViewAdapter.addItems(statuses);
         }
 
         /**
@@ -373,7 +345,7 @@ public class StoryFragment extends Fragment implements StatusesPresenter.View { 
          * Adds a dummy status to the list of statuses so the RecyclerView will display a view (the
          * loading footer view) at the bottom of the list.
          */
-        private void addLoadingFooter() {
+        protected void addLoadingFooter() {
             addItem(new Status("Dummy message", new User("Dummy", "User", ""), LocalDateTime.now()));
         }
 
@@ -390,7 +362,7 @@ public class StoryFragment extends Fragment implements StatusesPresenter.View { 
      * A scroll listener that detects when the user has scrolled to the bottom of the currently
      * available data.
      */
-    private class StoryRecyclerViewPaginationScrollListener extends RecyclerView.OnScrollListener {
+    private class StatusRecyclerViewPaginationScrollListener extends RecyclerView.OnScrollListener {
 
         private final LinearLayoutManager layoutManager;
 
@@ -399,7 +371,7 @@ public class StoryFragment extends Fragment implements StatusesPresenter.View { 
          *
          * @param layoutManager the layout manager being used by the RecyclerView.
          */
-        StoryRecyclerViewPaginationScrollListener(LinearLayoutManager layoutManager) {
+        StatusRecyclerViewPaginationScrollListener(LinearLayoutManager layoutManager) {
             this.layoutManager = layoutManager;
         }
 
@@ -420,10 +392,10 @@ public class StoryFragment extends Fragment implements StatusesPresenter.View { 
             int totalItemCount = layoutManager.getItemCount();
             int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
 
-            if (!storyRecyclerViewAdapter.isLoading && storyRecyclerViewAdapter.hasMorePages) {
+            if (!statusRecyclerViewAdapter.isLoading && statusRecyclerViewAdapter.hasMorePages) {
                 if ((visibleItemCount + firstVisibleItemPosition) >=
                         totalItemCount && firstVisibleItemPosition >= 0) {
-                    storyRecyclerViewAdapter.loadMoreItems();
+                    statusRecyclerViewAdapter.loadMoreItems();
                 }
             }
         }

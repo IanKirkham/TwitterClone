@@ -12,7 +12,8 @@ import edu.byu.cs.tweeter.R;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.view.main.following.FollowingFragment;
-import edu.byu.cs.tweeter.view.main.story.StoryFragment;
+import edu.byu.cs.tweeter.view.main.statuses.FeedFragment;
+import edu.byu.cs.tweeter.view.main.statuses.StoryFragment;
 
 /**
  * A [FragmentPagerAdapter] that returns a fragment corresponding to one of the sections/tabs/pages
@@ -45,6 +46,8 @@ class SectionsPagerAdapter extends FragmentPagerAdapter {
                 return FollowingFragment.newInstance(user, authToken);
             case  STORY_FRAGMENT_POSITION:
                 return StoryFragment.newInstance(user, authToken);
+            case FEED_FRAGMENT_POSITION:
+                return FeedFragment.newInstance(user, authToken);
             default:
                 return PlaceholderFragment.newInstance(position + 1);
         }

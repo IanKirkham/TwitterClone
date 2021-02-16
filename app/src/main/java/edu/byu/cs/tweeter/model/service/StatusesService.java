@@ -1,7 +1,12 @@
 package edu.byu.cs.tweeter.model.service;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
+import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.net.ServerFacade;
 import edu.byu.cs.tweeter.model.service.request.StatusesRequest;
@@ -22,11 +27,11 @@ public class StatusesService {
      * @param request contains the data required to fulfill the request.
      * @return the statuses.
      */
-    public StatusesResponse getStory(StatusesRequest request) throws IOException {
+    public StatusesResponse getStatuses(StatusesRequest request) throws IOException {
         StatusesResponse response = getServerFacade().getStory(request);
 
         if (response.isSuccess()) {
-            loadImages(response); // the profile pictures associated with a status
+            loadImages(response); // the profile pictures associated with the statuses
         }
 
         return response;
@@ -39,9 +44,13 @@ public class StatusesService {
      */
     private void loadImages(StatusesResponse response) throws IOException {
         if (response.getStatuses().isEmpty()) { return; }
-        User user = response.getStatuses().get(0).getAuthor(); // All Statuses in a Story have the same author
-        byte [] bytes = ByteArrayUtils.bytesFromUrl(user.getImageUrl());
-        user.setImageBytes(bytes);
+        Set<User> users = new HashSet<>();
+        response.getStatuses().forEach(status -> users.add(status.getAuthor()));
+
+        for (User user : users) {
+            byte [] bytes = ByteArrayUtils.bytesFromUrl(user.getImageUrl());
+            user.setImageBytes(bytes);
+        }
     }
 
     /**

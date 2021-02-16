@@ -39,7 +39,7 @@ public class StatusesPresenter {
      */
     public StatusesResponse getStory(StatusesRequest request) throws IOException {
         StatusesService StatusesService = getStoryService();
-        return StatusesService.getStory(request);
+        return StatusesService.getStatuses(request);
     }
 
     /**

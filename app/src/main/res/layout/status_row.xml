@@ -5,7 +5,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:paddingVertical="10sp"
-    tools:context=".view.main.story.StoryFragment">
+    tools:context=".view.main.statuses.StoryFragment">
 
     <ImageView
         android:id="@+id/userImage"

@@ -5,10 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".view.main.following.FollowingFragment">
+    tools:context=".view.main.statuses.StatusesFragment">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/storyRecyclerView"
+        android:id="@+id/statusRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 

@@ -22,7 +22,7 @@ public class GetStatusesTask extends AsyncTask<StatusesRequest, Void, StatusesRe
      * completes.
      */
     public interface Observer {
-        void storyRetrieved(StatusesResponse statusesResponse);
+        void statusesRetrieved(StatusesResponse statusesResponse);
         void handleException(Exception exception);
     }
 
@@ -72,7 +72,7 @@ public class GetStatusesTask extends AsyncTask<StatusesRequest, Void, StatusesRe
         if (exception != null) {
             observer.handleException(exception);
         } else {
-            observer.storyRetrieved(statusesResponse);
+            observer.statusesRetrieved(statusesResponse);
         }
     }
 }
