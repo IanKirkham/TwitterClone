@@ -3,6 +3,8 @@ package edu.byu.cs.tweeter.model.service.request;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import edu.byu.cs.tweeter.model.domain.Status;
+
 /**
  * Contains all the information needed to make a request to have the server return the next page of
  * statuses for a specified user.
@@ -11,21 +13,21 @@ public class StatusesRequest {
 
     private final List<String> userAliases;
     private final int limit;
-    private final LocalDateTime lastStatusTimePublished; // used to paginate Responses.
+    private final Status lastStatus; // used to paginate Responses.
 
     /**
      * Creates an instance.
      *
      * @param userAliases the aliases of the users whose statuses are to be returned.
      * @param limit the maximum number of statuses to return.
-     * @param lastStatusTimePublished the timePublished of the last Status that was returned in the previous request (null if
+     * @param lastStatus the last Status that was returned in the previous request (null if
      *                                there was no previous request or if no Statuses were returned in the
      *                                previous request).
      */
-    public StatusesRequest(List<String> userAliases, int limit, LocalDateTime lastStatusTimePublished) {
+    public StatusesRequest(List<String> userAliases, int limit, Status lastStatus) {
         this.userAliases = userAliases;
         this.limit = limit;
-        this.lastStatusTimePublished = lastStatusTimePublished;
+        this.lastStatus = lastStatus;
     }
 
     /**
@@ -50,9 +52,9 @@ public class StatusesRequest {
      * Returns the last timePublished that was returned in the previous request or null if there was no
      * previous request or if no statuses were returned in the previous request.
      *
-     * @return the last timePublished.
+     * @return the last status.
      */
-    public LocalDateTime getLastStatusTimePublished() {
-        return lastStatusTimePublished;
+    public Status getLastStatus() {
+        return lastStatus;
     }
 }

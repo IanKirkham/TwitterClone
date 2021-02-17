@@ -321,7 +321,7 @@ public abstract class StatusesFragment extends Fragment implements StatusesPrese
         public void statusesRetrieved(StatusesResponse statusesResponse) {
             List<Status> statuses = statusesResponse.getStatuses();
 
-            lastStatus = (statuses.size() > 0) ? statuses.get(statuses.size() -1) : null;
+            lastStatus = (statuses.size() > 0) ? statuses.get(statuses.size() - 1) : null;
             hasMorePages = statusesResponse.getHasMorePages();
 
             isLoading = false;

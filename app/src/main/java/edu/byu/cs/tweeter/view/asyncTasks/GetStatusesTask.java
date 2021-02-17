@@ -54,7 +54,7 @@ public class GetStatusesTask extends AsyncTask<StatusesRequest, Void, StatusesRe
         StatusesResponse response = null;
 
         try {
-            response = presenter.getStory(statusesRequests[0]);
+            response = presenter.getStatuses(statusesRequests[0]);
         } catch (IOException ex) {
             exception = ex;
         }

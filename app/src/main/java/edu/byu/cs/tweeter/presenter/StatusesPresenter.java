@@ -37,8 +37,8 @@ public class StatusesPresenter {
      * @param request contains the data required to fulfill the request.
      * @return the statuses that form a story.
      */
-    public StatusesResponse getStory(StatusesRequest request) throws IOException {
-        StatusesService StatusesService = getStoryService();
+    public StatusesResponse getStatuses(StatusesRequest request) throws IOException {
+        StatusesService StatusesService = getStatusesService();
         return StatusesService.getStatuses(request);
     }
 
@@ -49,7 +49,7 @@ public class StatusesPresenter {
      *
      * @return the instance.
      */
-    StatusesService getStoryService() {
+    StatusesService getStatusesService() {
         return new StatusesService();
     }
 }

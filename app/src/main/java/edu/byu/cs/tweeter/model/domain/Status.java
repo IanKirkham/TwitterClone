@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-public class Status implements Comparable<User>, Serializable {
+public class Status implements Comparable<Status>, Serializable {
 
     private String content;
     private User author;
@@ -46,7 +46,8 @@ public class Status implements Comparable<User>, Serializable {
         if (o == null || getClass() != o.getClass()) return false;
         Status status = (Status) o;
         return content.equals(status.content) &&
-                author.equals(status.author);
+                author.equals(status.author) &&
+                timePublished.equals(status.timePublished);
     }
 
     @Override
@@ -55,7 +56,7 @@ public class Status implements Comparable<User>, Serializable {
     }
 
     @Override
-    public int compareTo(User o) {
-        return 0;
+    public int compareTo(Status o) {
+        return timePublished.compareTo(o.getTimePublished());
     }
 }

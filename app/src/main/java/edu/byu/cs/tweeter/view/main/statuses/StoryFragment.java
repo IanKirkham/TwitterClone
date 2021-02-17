@@ -50,7 +50,7 @@ public class StoryFragment extends StatusesFragment {
 
             GetStatusesTask getStatusesTask = new GetStatusesTask(presenter, this);
             ArrayList<String> retrieveStatusesFor = new ArrayList<>(Arrays.asList(user.getAlias()));
-            StatusesRequest request = new StatusesRequest(retrieveStatusesFor, PAGE_SIZE, (lastStatus == null ? null : lastStatus.getTimePublished()));
+            StatusesRequest request = new StatusesRequest(retrieveStatusesFor, PAGE_SIZE, (lastStatus == null ? null : lastStatus));
             getStatusesTask.execute(request);
         }
     }

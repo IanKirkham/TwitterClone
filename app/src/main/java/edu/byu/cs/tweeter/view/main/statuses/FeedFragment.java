@@ -49,7 +49,7 @@ public class FeedFragment extends StatusesFragment {
 
             GetStatusesTask getStatusesTask = new GetStatusesTask(presenter, this);
             List<String> retrieveStatusesFor = user.getFollowees();
-            StatusesRequest request = new StatusesRequest(retrieveStatusesFor, PAGE_SIZE, (lastStatus == null ? null : lastStatus.getTimePublished()));
+            StatusesRequest request = new StatusesRequest(retrieveStatusesFor, PAGE_SIZE, (lastStatus == null ? null : lastStatus));
             getStatusesTask.execute(request);
         }
     }

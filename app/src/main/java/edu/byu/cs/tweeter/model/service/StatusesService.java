@@ -1,12 +1,9 @@
 package edu.byu.cs.tweeter.model.service;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
-import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.net.ServerFacade;
 import edu.byu.cs.tweeter.model.service.request.StatusesRequest;
@@ -28,7 +25,7 @@ public class StatusesService {
      * @return the statuses.
      */
     public StatusesResponse getStatuses(StatusesRequest request) throws IOException {
-        StatusesResponse response = getServerFacade().getStory(request);
+        StatusesResponse response = getServerFacade().getStatuses(request);
 
         if (response.isSuccess()) {
             loadImages(response); // the profile pictures associated with the statuses

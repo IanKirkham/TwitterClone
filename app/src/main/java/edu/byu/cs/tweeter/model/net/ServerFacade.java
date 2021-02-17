@@ -23,52 +23,49 @@ import edu.byu.cs.tweeter.model.service.response.StatusesResponse;
  * this class.
  */
 public class ServerFacade {
-    // This is the hard coded followee data returned by the 'getFollowees()' method
     private static final String MALE_IMAGE_URL = "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/donald_duck.png";
     private static final String FEMALE_IMAGE_URL = "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/daisy_duck.png";
 
-    private static final LocalDateTime DATE = LocalDateTime.now();
-
-    private final User testUser = new User("Test", "User",
+    private static final User testUser = new User("Test", "User",
             "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/donald_duck.png");
 
-    private final User user1 = new User("Allen", "Anderson", MALE_IMAGE_URL);
-    private final User user2 = new User("Amy", "Ames", FEMALE_IMAGE_URL);
-    private final User user3 = new User("Bob", "Bobson", MALE_IMAGE_URL);
-    private final User user4 = new User("Bonnie", "Beatty", FEMALE_IMAGE_URL);
-    private final User user5 = new User("Chris", "Colston", MALE_IMAGE_URL);
-    private final User user6 = new User("Cindy", "Coats", FEMALE_IMAGE_URL);
-    private final User user7 = new User("Dan", "Donaldson", MALE_IMAGE_URL);
-    private final User user8 = new User("Dee", "Dempsey", FEMALE_IMAGE_URL);
-    private final User user9 = new User("Elliott", "Enderson", MALE_IMAGE_URL);
-    private final User user10 = new User("Elizabeth", "Engle", FEMALE_IMAGE_URL);
-    private final User user11 = new User("Frank", "Frandson", MALE_IMAGE_URL);
-    private final User user12 = new User("Fran", "Franklin", FEMALE_IMAGE_URL);
-    private final User user13 = new User("Gary", "Gilbert", MALE_IMAGE_URL);
-    private final User user14 = new User("Giovanna", "Giles", FEMALE_IMAGE_URL);
-    private final User user15 = new User("Henry", "Henderson", MALE_IMAGE_URL);
-    private final User user16 = new User("Helen", "Hopwell", FEMALE_IMAGE_URL);
-    private final User user17 = new User("Igor", "Isaacson", MALE_IMAGE_URL);
-    private final User user18 = new User("Isabel", "Isaacson", FEMALE_IMAGE_URL);
-    private final User user19 = new User("Justin", "Jones", MALE_IMAGE_URL);
-    private final User user20 = new User("Jill", "Johnson", FEMALE_IMAGE_URL);
+    private static final User user1 = new User("Allen", "Anderson", MALE_IMAGE_URL);
+    private static final User user2 = new User("Amy", "Ames", FEMALE_IMAGE_URL);
+    private static final User user3 = new User("Bob", "Bobson", MALE_IMAGE_URL);
+    private static final User user4 = new User("Bonnie", "Beatty", FEMALE_IMAGE_URL);
+    private static final User user5 = new User("Chris", "Colston", MALE_IMAGE_URL);
+    private static final User user6 = new User("Cindy", "Coats", FEMALE_IMAGE_URL);
+    private static final User user7 = new User("Dan", "Donaldson", MALE_IMAGE_URL);
+    private static final User user8 = new User("Dee", "Dempsey", FEMALE_IMAGE_URL);
+    private static final User user9 = new User("Elliott", "Enderson", MALE_IMAGE_URL);
+    private static final User user10 = new User("Elizabeth", "Engle", FEMALE_IMAGE_URL);
+    private static final User user11 = new User("Frank", "Frandson", MALE_IMAGE_URL);
+    private static final User user12 = new User("Fran", "Franklin", FEMALE_IMAGE_URL);
+    private static final User user13 = new User("Gary", "Gilbert", MALE_IMAGE_URL);
+    private static final User user14 = new User("Giovanna", "Giles", FEMALE_IMAGE_URL);
+    private static final User user15 = new User("Henry", "Henderson", MALE_IMAGE_URL);
+    private static final User user16 = new User("Helen", "Hopwell", FEMALE_IMAGE_URL);
+    private static final User user17 = new User("Igor", "Isaacson", MALE_IMAGE_URL);
+    private static final User user18 = new User("Isabel", "Isaacson", FEMALE_IMAGE_URL);
+    private static final User user19 = new User("Justin", "Jones", MALE_IMAGE_URL);
+    private static final User user20 = new User("Jill", "Johnson", FEMALE_IMAGE_URL);
 
-    private final Status status1 = new Status("Content: Hello World! \uD83D\uDE03, Mentions: @BobBobson, URLs: http://www.google.com", user1, DATE);
-    private final Status status2 = new Status("Content: Hello World!, Mentions: @BobBobson, URLs: https://www.google.com", user1, DATE);
-    private final Status status3 = new Status("Content: Hello World!, Mentions: @BobBobson, URLs: www.google.com", user1, DATE);
-    private final Status status4 = new Status("Content: Hello World!, Mentions: @BobBobson, URLs: http://www.4jflr8hdjjdla.com", user1, DATE);
-    private final Status status5 = new Status("Content: Hello World! \uD83D\uDE03, Mentions: @AllenAnderson, URLs: http://www.google.com", user2, DATE);
-    private final Status status6 = new Status("Content: Hello World!, Mentions: @AllenAnderson, URLs: https://www.google.com", user2, DATE);
-    private final Status status7 = new Status("Content: Hello World!, Mentions: @AllenAnderson, URLs: www.google.com", user2, DATE);
-    private final Status status8 = new Status("Content: Hello World!, Mentions: @AllenAnderson, URLs: http://www.4jflr8hdjjdla.com", user2, DATE);
-    private final Status status9 = new Status("Content: Hello World! \uD83D\uDE03, Mentions: @AmyAmes, URLs: http://www.google.com", user3, DATE);
-    private final Status status10 = new Status("Content: Hello World!, Mentions: @AmyAmes, URLs: https://www.google.com", user3, DATE);
-    private final Status status11 = new Status("Content: Hello World!, Mentions: @AmyAmes, URLs: www.google.com", user3, DATE);
-    private final Status status12 = new Status("Content: Hello World!, Mentions: @AmyAmes, URLs: http://www.4jflr8hdjjdla.com", user3, DATE);
-    private final Status status13 = new Status("Content: Hello World! \uD83D\uDE03, Mentions: @BobBobson, URLs: http://www.google.com", testUser, DATE);
-    private final Status status14 = new Status("Content: Hello World!, Mentions: @BobBobson, URLs: https://www.google.com", testUser, DATE);
-    private final Status status15 = new Status("Content: Hello World!, Mentions: @BobBobson, URLs: www.google.com", testUser, DATE);
-    private final Status status16 = new Status("Content: Hello World!, Mentions: @BobBobson, URLs: http://www.4jflr8hdjjdla.com", testUser, DATE);
+    private static final Status status1 = new Status("Content: Hello World! \uD83D\uDE03, Mentions: @BobBobson, URLs: http://www.google.com", user1, LocalDateTime.now());
+    private static final Status status2 = new Status("Content: Hello World!, Mentions: @BobBobson, URLs: https://www.google.com", user1, LocalDateTime.now());
+    private static final Status status3 = new Status("Content: Hello World!, Mentions: @BobBobson, URLs: www.google.com", user1, LocalDateTime.now());
+    private static final Status status4 = new Status("Content: Hello World!, Mentions: @BobBobson, URLs: http://www.4jflr8hdjjdla.com", user1, LocalDateTime.now());
+    private static final Status status5 = new Status("Content: Hello World! \uD83D\uDE03, Mentions: @AllenAnderson, URLs: http://www.google.com", user2, LocalDateTime.now());
+    private static final Status status6 = new Status("Content: Hello World!, Mentions: @AllenAnderson, URLs: https://www.google.com", user2, LocalDateTime.now());
+    private static final Status status7 = new Status("Content: Hello World!, Mentions: @AllenAnderson, URLs: www.google.com", user2, LocalDateTime.now());
+    private static final Status status8 = new Status("Content: Hello World!, Mentions: @AllenAnderson, URLs: http://www.4jflr8hdjjdla.com", user2, LocalDateTime.now());
+    private static final Status status9 = new Status("Content: Hello World! \uD83D\uDE03, Mentions: @AmyAmes, URLs: http://www.google.com", user3, LocalDateTime.now());
+    private static final Status status10 = new Status("Content: Hello World!, Mentions: @AmyAmes, URLs: https://www.google.com", user3, LocalDateTime.now());
+    private static final Status status11 = new Status("Content: Hello World!, Mentions: @AmyAmes, URLs: www.google.com", user3, LocalDateTime.now());
+    private static final Status status12 = new Status("Content: Hello World!, Mentions: @AmyAmes, URLs: http://www.4jflr8hdjjdla.com", user3, LocalDateTime.now());
+    private static final Status status13 = new Status("Content: Hello World! \uD83D\uDE03, Mentions: @BobBobson, URLs: http://www.google.com", testUser, LocalDateTime.now());
+    private static final Status status14 = new Status("Content: Hello World!, Mentions: @BobBobson, URLs: https://www.google.com", testUser, LocalDateTime.now());
+    private static final Status status15 = new Status("Content: Hello World!, Mentions: @BobBobson, URLs: www.google.com", testUser, LocalDateTime.now());
+    private static final Status status16 = new Status("Content: Hello World!, Mentions: @BobBobson, URLs: http://www.4jflr8hdjjdla.com", testUser, LocalDateTime.now());
 
 
     /**
@@ -179,7 +176,7 @@ public class ServerFacade {
         return aliases;
     }
 
-    public StatusesResponse getStory(StatusesRequest request) {
+    public StatusesResponse getStatuses(StatusesRequest request) {
         // Used in place of assert statements because Android does not support them
         if (BuildConfig.DEBUG) {
             if (request.getLimit() < 0) {
@@ -197,7 +194,7 @@ public class ServerFacade {
         boolean hasMorePages = false;
 
         if (request.getLimit() > 0) {
-            int statusesIndex = getStatusesStartingIndex(request.getLastStatusTimePublished(), allStatuses);
+            int statusesIndex = getStatusesStartingIndex(request.getLastStatus(), allStatuses);
 
             for (int limitCounter = 0; statusesIndex < allStatuses.size() && limitCounter < request.getLimit(); statusesIndex++, limitCounter++) {
                 responseStatuses.add(allStatuses.get(statusesIndex));
@@ -209,12 +206,12 @@ public class ServerFacade {
         return new StatusesResponse(responseStatuses, hasMorePages);
     }
 
-    private int getStatusesStartingIndex(LocalDateTime lastStatusTimePublished, List<Status> allStatuses) {
+    private int getStatusesStartingIndex(Status lastStatus, List<Status> allStatuses) {
         int statusesIndex = 0;
 
-        if (lastStatusTimePublished != null) {
+        if (lastStatus != null) {
             for (int i = 0; i < allStatuses.size(); i++) {
-                if (lastStatusTimePublished.equals(allStatuses.get(i).getTimePublished())) {
+                if (lastStatus.equals(allStatuses.get(i))) {
                     statusesIndex = i + 1;
                     break;
                 }
