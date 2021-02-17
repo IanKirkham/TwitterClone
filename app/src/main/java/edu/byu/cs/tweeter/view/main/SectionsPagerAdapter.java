@@ -1,6 +1,7 @@
 package edu.byu.cs.tweeter.view.main;
 
 import android.content.Context;
+import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -31,6 +32,8 @@ class SectionsPagerAdapter extends FragmentPagerAdapter {
     private final Context mContext;
     private final User user;
     private final AuthToken authToken;
+
+    private final Fragment[] fragments = new Fragment[4];
 
     public SectionsPagerAdapter(Context context, FragmentManager fm, User user, AuthToken authToken) {
         super(fm);
@@ -63,5 +66,21 @@ class SectionsPagerAdapter extends FragmentPagerAdapter {
     public int getCount() {
         // Show 4 total pages.
         return 4;
+    }
+
+    @Override
+    public Object instantiateItem(ViewGroup container, int position) {
+        Fragment createdFragment = (Fragment) super.instantiateItem(container, position);
+
+        fragments[position] = createdFragment;
+
+        return createdFragment;
+    }
+
+    public StoryFragment getStoryFragment() {
+        if (fragments[STORY_FRAGMENT_POSITION] == null) { return null; }
+        if (!(fragments[STORY_FRAGMENT_POSITION] instanceof StoryFragment)) { return null; }
+
+        return (StoryFragment) fragments[STORY_FRAGMENT_POSITION];
     }
 }

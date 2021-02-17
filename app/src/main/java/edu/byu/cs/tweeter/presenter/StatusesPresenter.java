@@ -38,8 +38,8 @@ public class StatusesPresenter {
      * @return the statuses that form a story.
      */
     public StatusesResponse getStatuses(StatusesRequest request) throws IOException {
-        StatusesService StatusesService = getStatusesService();
-        return StatusesService.getStatuses(request);
+        StatusesService statusesService = getStatusesService();
+        return statusesService.getStatuses(request);
     }
 
     /**

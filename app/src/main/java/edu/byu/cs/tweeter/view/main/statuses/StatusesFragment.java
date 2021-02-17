@@ -18,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,7 +57,9 @@ public abstract class StatusesFragment extends Fragment implements StatusesPrese
     protected AuthToken authToken;
     protected StatusesPresenter presenter;
 
-    private StatusRecyclerViewAdapter statusRecyclerViewAdapter;
+    protected StatusRecyclerViewAdapter statusRecyclerViewAdapter;
+    protected LinearLayoutManager recyclerLayoutManager;
+    protected RecyclerView statusRecyclerView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -69,9 +72,10 @@ public abstract class StatusesFragment extends Fragment implements StatusesPrese
 
         presenter = new StatusesPresenter(this);
 
-        RecyclerView statusRecyclerView = view.findViewById(R.id.statusRecyclerView);
+        statusRecyclerView = view.findViewById(R.id.statusRecyclerView);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this.getContext());
         statusRecyclerView.setLayoutManager(layoutManager);
+        this.recyclerLayoutManager = layoutManager;
 
         statusRecyclerViewAdapter = getRecyclerViewAdapter();
         statusRecyclerView.setAdapter(statusRecyclerViewAdapter);
@@ -197,7 +201,7 @@ public abstract class StatusesFragment extends Fragment implements StatusesPrese
      */
     protected abstract class StatusRecyclerViewAdapter extends RecyclerView.Adapter<StatusHolder> implements GetStatusesTask.Observer, Serializable {
 
-        private final List<Status> statuses = new ArrayList<>();
+        protected final List<Status> statuses = new ArrayList<>();
         protected Status lastStatus;
 
         private boolean hasMorePages;

@@ -27,6 +27,7 @@
 
     <string name="sampleAlias">"@UserAlias"</string>
     <string name="postPrompt">What is on your mind?</string>
+    <string name="post">Post</string>
     <string name="sampleUserName">The User</string>
     <string name="sampleTimePublished">Sep 15 2020 10:49PM</string>
     <string name="sampleTweet">Hello, World! How are you?</string>

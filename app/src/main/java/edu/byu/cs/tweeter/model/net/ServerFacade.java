@@ -11,10 +11,12 @@ import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.service.request.FollowingRequest;
 import edu.byu.cs.tweeter.model.service.request.LoginRequest;
+import edu.byu.cs.tweeter.model.service.request.PostRequest;
 import edu.byu.cs.tweeter.model.service.request.RegisterRequest;
 import edu.byu.cs.tweeter.model.service.request.StatusesRequest;
 import edu.byu.cs.tweeter.model.service.response.FollowingResponse;
 import edu.byu.cs.tweeter.model.service.response.LoginResponse;
+import edu.byu.cs.tweeter.model.service.response.PostResponse;
 import edu.byu.cs.tweeter.model.service.response.RegisterResponse;
 import edu.byu.cs.tweeter.model.service.response.StatusesResponse;
 
@@ -67,6 +69,7 @@ public class ServerFacade {
     private static final Status status15 = new Status("Content: Hello World!, Mentions: @BobBobson, URLs: www.google.com", testUser, LocalDateTime.now());
     private static final Status status16 = new Status("Content: Hello World!, Mentions: @BobBobson, URLs: http://www.4jflr8hdjjdla.com", testUser, LocalDateTime.now());
 
+    private static final List<Status> sessionStatuses = new ArrayList<>();
 
     /**
      * Performs a login and if successful, returns the logged in user and an auth token. The current
@@ -224,8 +227,15 @@ public class ServerFacade {
     List<Status> getDummyStatuses(List<String> userAliases) {
         List<Status> statuses = new ArrayList<>(Arrays.asList(status1, status2, status3, status4, status5, status6,
                 status7, status8, status9, status10, status11, status12, status13, status14, status15, status16));
+        statuses.addAll(sessionStatuses);
         statuses.removeIf(status -> !userAliases.contains(status.getAuthor().getAlias())); // inefficient, but this is dummy code. The backend will replace this.
         statuses.sort((s1, s2) -> s1.getTimePublished().compareTo(s2.getTimePublished()));
         return statuses;
+    }
+
+    public PostResponse savePost(PostRequest postRequest) {
+        Status status = new Status(postRequest.getContent(), postRequest.getAuthor(), postRequest.getTimePublished());
+        sessionStatuses.add(status);
+        return new PostResponse(true, status);
     }
 }

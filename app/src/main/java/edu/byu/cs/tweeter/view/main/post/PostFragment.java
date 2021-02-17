@@ -2,6 +2,7 @@ package edu.byu.cs.tweeter.view.main.post;
 
 import android.os.Bundle;
 
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
 import android.view.Gravity;
@@ -9,17 +10,29 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.PopupWindow;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.time.LocalDateTime;
 
 import edu.byu.cs.tweeter.R;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
+import edu.byu.cs.tweeter.model.service.request.PostRequest;
+import edu.byu.cs.tweeter.model.service.response.PostResponse;
 import edu.byu.cs.tweeter.presenter.FollowingPresenter;
+import edu.byu.cs.tweeter.presenter.PostPresenter;
+import edu.byu.cs.tweeter.view.asyncTasks.PostTask;
+import edu.byu.cs.tweeter.view.util.ImageUtils;
 
 /**
  * The fragment that displays on the 'Following' tab.
  */
-public class PostFragment extends Fragment implements FollowingPresenter.View {
+public class PostFragment extends DialogFragment implements PostPresenter.View, PostTask.Observer {
 
     private static final String LOG_TAG = "PostFragment";
     private static final String USER_KEY = "UserKey";
@@ -28,8 +41,14 @@ public class PostFragment extends Fragment implements FollowingPresenter.View {
     private User user;
     private AuthToken authToken;
     private PostPresenter presenter;
+    private PostTask.Observer observer;
 
-    private PopupWindow popupWindow;
+    private TextView userName;
+    private TextView userAlias;
+    private EditText postContent;
+    private Button postButton;
+    private ImageButton closeButton;
+    private ImageView userImage;
 
 
     /**
@@ -62,21 +81,61 @@ public class PostFragment extends Fragment implements FollowingPresenter.View {
 
         presenter = new PostPresenter(this);
 
-        popupWindow = new PopupWindow(view, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
-        popupWindow.setOutsideTouchable(true);
-        popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0); // TODO: may need to pass proper parent view
+        bindViews(view);
 
-        // TODO: Grab the button and attach the listener.
+        return view;
+    }
 
-        Button button = view.findViewById(R.id.closeButton);
-
-        button.setOnClickListener(new View.OnClickListener() {
+    private void bindViews(View view) {
+        closeButton = view.findViewById(R.id.closeButton);
+        closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                popupWindow.dismiss();
+                PostFragment.this.dismiss();
             }
         });
 
-        return view;
+        postContent = view.findViewById(R.id.statusText);
+        postContent.setHint(getString(R.string.postPrompt));
+
+        postButton = view.findViewById(R.id.postButton);
+        postButton.setText(getString(R.string.post));
+        postButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String postText = postContent.getText().toString();
+
+                PostRequest request = new PostRequest(user, postText, LocalDateTime.now());
+                PostTask task = new PostTask(presenter, (PostFragment.this.observer != null ? PostFragment.this.observer : PostFragment.this));
+                task.execute(request);
+
+                Toast.makeText(getContext(), "Saving Post!", Toast.LENGTH_SHORT).show();
+
+                PostFragment.this.dismiss();
+            }
+        });
+
+        userName = view.findViewById(R.id.userName);
+        userName.setText(user.getName());
+
+        userAlias = view.findViewById(R.id.userAlias);
+        userAlias.setText(user.getAlias());
+
+        userImage = view.findViewById(R.id.userImage);
+        userImage.setImageDrawable(ImageUtils.drawableFromByteArray(user.getImageBytes()));
+    }
+
+    public void setTaskObserver(PostTask.Observer observer) {
+        this.observer = observer;
+    }
+
+    @Override
+    public void postSaved(PostResponse postResponse) {
+        Toast.makeText(getContext(), "Post saved!", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void handleException(Exception exception) {
+        Toast.makeText(getContext(), "Post Failed to Save", Toast.LENGTH_SHORT).show();
     }
 }

@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
+    android:background="@color/white"
     tools:context=".view.main.post.PostFragment">
 
 
@@ -40,15 +41,25 @@
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:layout_alignParentEnd="true"
-        android:content_description="close_icon"
+        android:contentDescription="close_icon"
         android:src="@drawable/close_icon" />
 
-    <TextView
+    <EditText
+        android:id="@+id/statusText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:text="@string/postPrompt"
-        android:layout_marginLeft="15dp"
-        android:layout_below="@id/userImage"/>
+        android:layout_marginHorizontal="15dp"
+        android:layout_below="@id/userImage"
+        android:inputType="text"/>
+
+    <Button
+        android:id="@+id/postButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/statusText"
+        android:layout_margin="10dp"
+        tools:text="@string/post"/>
 
 
 </RelativeLayout>

@@ -3,7 +3,6 @@ package edu.byu.cs.tweeter.view.main;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 
 import androidx.viewpager.widget.ViewPager;
@@ -18,6 +17,8 @@ import android.widget.TextView;
 import edu.byu.cs.tweeter.R;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
+import edu.byu.cs.tweeter.view.main.post.PostFragment;
+import edu.byu.cs.tweeter.view.main.statuses.StoryFragment;
 import edu.byu.cs.tweeter.view.util.ImageUtils;
 
 /**
@@ -48,13 +49,13 @@ public class MainActivity extends AppCompatActivity {
 
         FloatingActionButton fab = findViewById(R.id.fab);
 
-        // We should use a Java 8 lambda function for the listener (and all other listeners), but
-        // they would be unfamiliar to many students who use this code.
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                PostFragment fragment = PostFragment.newInstance(user, authToken);
+                StoryFragment observer = sectionsPagerAdapter.getStoryFragment();
+                fragment.setTaskObserver(observer);
+                fragment.show(getSupportFragmentManager(), "Post");
             }
         });
 
