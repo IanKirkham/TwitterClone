@@ -6,17 +6,26 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 
+import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.view.View;
+import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import edu.byu.cs.tweeter.R;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
+import edu.byu.cs.tweeter.model.service.request.LoginRequest;
 import edu.byu.cs.tweeter.util.ByteArrayUtils;
+import edu.byu.cs.tweeter.view.asyncTasks.LoginTask;
+import edu.byu.cs.tweeter.view.login.LoginFragment;
 import edu.byu.cs.tweeter.view.util.ImageUtils;
 
 public class UserActivity extends AppCompatActivity {
@@ -56,5 +65,17 @@ public class UserActivity extends AppCompatActivity {
 
         TextView followerCount = findViewById(R.id.followerCount);
         followerCount.setText(getString(R.string.followerCount, 27));
+
+        ToggleButton followButton = findViewById(R.id.followButton);
+        followButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    followButton.setTextColor(ResourcesCompat.getColor(getResources(), R.color.colorPrimaryDark, null));
+                } else {
+                    followButton.setTextColor(ResourcesCompat.getColor(getResources(), R.color.colorPrimary, null));
+                }
+            }
+        });
     }
 }

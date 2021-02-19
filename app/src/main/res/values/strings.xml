@@ -46,6 +46,6 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_user">UserActivity</string>
-    <string name="followButton">Follow</string>
-    <string name="unfollowButton">Unfollow</string>
+    <string name="followButtonLabel">Follow</string>
+    <string name="unfollowButtonLabel">Unfollow</string>
 </resources>

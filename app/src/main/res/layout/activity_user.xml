@@ -83,10 +83,12 @@
 
         </RelativeLayout>
 
-        <Button android:layout_height="match_parent"
+        <ToggleButton android:layout_height="match_parent"
+            android:id="@+id/followButton"
             android:layout_width="250dp"
             android:layout_gravity="center"
-            android:text="@string/followButton"
+            android:textOff="@string/followButtonLabel"
+            android:textOn="@string/unfollowButtonLabel"
             android:textColor="@color/colorPrimary"
             android:background="@color/white"/>
 

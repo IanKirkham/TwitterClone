@@ -195,6 +195,9 @@ public abstract class StatusesFragment extends Fragment implements StatusesPrese
                     @Override
                     public void onClick(@NonNull View widget) {
                         Toast.makeText(getContext(), "Clicked a Mention!", Toast.LENGTH_LONG).show();
+
+                        // TODO: Add logic to look up user by alias (variable "string"), if no user exists, display toast when clicked?
+
                         Intent intent = new Intent(getActivity(), UserActivity.class);
                         intent.putExtra(MainActivity.CURRENT_USER_KEY, new User("Joe", "Mama", "@JoeMama", "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/donald_duck.png")); // TODO: change this dummy user to the user that was clicked on
                         intent.putExtra(MainActivity.AUTH_TOKEN_KEY, new AuthToken()); // TODO: change this dummy authToken as well
