@@ -9,13 +9,17 @@ import edu.byu.cs.tweeter.BuildConfig;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
+import edu.byu.cs.tweeter.model.service.request.FollowerRequest;
 import edu.byu.cs.tweeter.model.service.request.FollowingRequest;
 import edu.byu.cs.tweeter.model.service.request.LoginRequest;
+import edu.byu.cs.tweeter.model.service.request.LogoutRequest;
 import edu.byu.cs.tweeter.model.service.request.PostRequest;
 import edu.byu.cs.tweeter.model.service.request.RegisterRequest;
 import edu.byu.cs.tweeter.model.service.request.StatusesRequest;
+import edu.byu.cs.tweeter.model.service.response.FollowerResponse;
 import edu.byu.cs.tweeter.model.service.response.FollowingResponse;
 import edu.byu.cs.tweeter.model.service.response.LoginResponse;
+import edu.byu.cs.tweeter.model.service.response.LogoutResponse;
 import edu.byu.cs.tweeter.model.service.response.PostResponse;
 import edu.byu.cs.tweeter.model.service.response.RegisterResponse;
 import edu.byu.cs.tweeter.model.service.response.StatusesResponse;
@@ -87,8 +91,13 @@ public class ServerFacade {
     }
 
     public RegisterResponse register(RegisterRequest request) {
-        User user = testUser;
+        User user = new User(request.getFirstName(), request.getLastName(), request.getUsername(), "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/donald_duck.png");
         return new RegisterResponse(user, new AuthToken());
+    }
+
+    public LogoutResponse logout(LogoutRequest request) {
+        // Invalidate Auth Token
+        return new LogoutResponse("Successfully Logged Out");
     }
 
     /**
@@ -171,6 +180,87 @@ public class ServerFacade {
         return Arrays.asList(user1, user2, user3, user4, user5, user6, user7,
                 user8, user9, user10, user11, user12, user13, user14, user15, user16, user17, user18,
                 user19, user20);
+    }
+
+    /**
+     * Returns the users that are following the user specified in the request. Uses information in
+     * the request object to limit the number of followers returned and to return the next set of
+     * followers after any that were returned in a previous request. The current implementation
+     * returns generated data and doesn't actually make a network request.
+     *
+     * @param request contains information about the user whose followers are to be returned and any
+     *                other information required to satisfy the request.
+     * @return the follower response.
+     */
+    public FollowerResponse getFollowers(FollowerRequest request) {
+
+        // Used in place of assert statements because Android does not support them
+        if (BuildConfig.DEBUG) {
+            if (request.getLimit() < 0) {
+                throw new AssertionError();
+            }
+
+            if (request.getUserAlias() == null) {
+                throw new AssertionError();
+            }
+        }
+
+        List<User> allFollowers = getDummyFollowers();
+        List<User> responseFollowers = new ArrayList<>(request.getLimit());
+
+        boolean hasMorePages = false;
+
+        if (request.getLimit() > 0) {
+            int followersIndex = getFollowersStartingIndex(request.getLastFollowerAlias(), allFollowers);
+
+            for (int limitCounter = 0; followersIndex < allFollowers.size() && limitCounter < request.getLimit(); followersIndex++, limitCounter++) {
+                responseFollowers.add(allFollowers.get(followersIndex));
+            }
+
+            hasMorePages = followersIndex < allFollowers.size();
+        }
+
+        return new FollowerResponse(responseFollowers, hasMorePages);
+    }
+
+    /**
+     * Determines the index for the first follower in the specified 'allFollowers' list that should
+     * be returned in the current request. This will be the index of the next follower after the
+     * specified 'lastFollower'.
+     *
+     * @param lastFollowerAlias the alias of the last follower that was returned in the previous
+     *                          request or null if there was no previous request.
+     * @param allFollowers the generated list of followers from which we are returning paged results.
+     * @return the index of the first follower to be returned.
+     */
+    private int getFollowersStartingIndex(String lastFollowerAlias, List<User> allFollowers) {
+        int followersIndex = 0;
+
+        if (lastFollowerAlias != null) {
+            // This is a paged request for something after the first page. Find the first item
+            // we should return
+            for (int i = 0; i < allFollowers.size(); i++) {
+                if (lastFollowerAlias.equals(allFollowers.get(i).getAlias())) {
+                    // We found the index of the last item returned last time. Increment to get
+                    // to the first one we should return
+                    followersIndex = i + 1;
+                    break;
+                }
+            }
+        }
+
+        return followersIndex;
+    }
+
+    /**
+     * Returns the list of dummy follower data. This is written as a separate method to allow
+     * mocking of the followers.
+     *
+     * @return the followers.
+     */
+    List<User> getDummyFollowers() {
+        return Arrays.asList(user1, user3, user5, user7, user9, user11, user13, user15,
+                user17, user19, user2, user4, user6, user8, user10, user12, user14, user16, user18);
     }
 
     List<String> getDummyFolloweesAliases() {

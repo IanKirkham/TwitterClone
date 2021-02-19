@@ -28,6 +28,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -38,6 +39,9 @@ import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.service.response.StatusesResponse;
 import edu.byu.cs.tweeter.presenter.StatusesPresenter;
 import edu.byu.cs.tweeter.view.asyncTasks.GetStatusesTask;
+import edu.byu.cs.tweeter.view.login.LoginActivity;
+import edu.byu.cs.tweeter.view.main.MainActivity;
+import edu.byu.cs.tweeter.view.main.user.UserActivity;
 import edu.byu.cs.tweeter.view.util.ImageUtils;
 
 /**
@@ -134,6 +138,10 @@ public abstract class StatusesFragment extends Fragment implements StatusesPrese
                 @Override
                 public void onClick(@NonNull View widget) {
                     Toast.makeText(getContext(), "Clicked the user alias!", Toast.LENGTH_LONG).show();
+                    Intent intent = new Intent(getActivity(), UserActivity.class);
+                    intent.putExtra(MainActivity.CURRENT_USER_KEY, status.getAuthor());
+                    intent.putExtra(MainActivity.AUTH_TOKEN_KEY, new AuthToken()); // TODO: change this dummy authToken as well
+                    Objects.requireNonNull(getActivity()).startActivity(intent);
                     // TODO: present new MainActivity with the new User
                 }
             }, 0, spannableAlias.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
@@ -187,6 +195,10 @@ public abstract class StatusesFragment extends Fragment implements StatusesPrese
                     @Override
                     public void onClick(@NonNull View widget) {
                         Toast.makeText(getContext(), "Clicked a Mention!", Toast.LENGTH_LONG).show();
+                        Intent intent = new Intent(getActivity(), UserActivity.class);
+                        intent.putExtra(MainActivity.CURRENT_USER_KEY, new User("Joe", "Mama", "@JoeMama", "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/donald_duck.png")); // TODO: change this dummy user to the user that was clicked on
+                        intent.putExtra(MainActivity.AUTH_TOKEN_KEY, new AuthToken()); // TODO: change this dummy authToken as well
+                        Objects.requireNonNull(getActivity()).startActivity(intent);
                     }
                 }, start, end, Spanned.SPAN_COMPOSING);
             }

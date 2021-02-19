@@ -16,6 +16,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.util.Objects;
+
 import edu.byu.cs.tweeter.R;
 import edu.byu.cs.tweeter.model.service.request.LoginRequest;
 import edu.byu.cs.tweeter.model.service.response.LoginResponse;
@@ -103,6 +105,7 @@ public class LoginFragment extends Fragment implements LoginPresenter.View, Logi
 
         loginInToast.cancel();
         startActivity(intent);
+        Objects.requireNonNull(getActivity()).finish();
     }
 
     /**
