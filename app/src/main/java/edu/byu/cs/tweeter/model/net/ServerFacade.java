@@ -9,6 +9,7 @@ import edu.byu.cs.tweeter.BuildConfig;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
+import edu.byu.cs.tweeter.model.service.request.FollowUserRequest;
 import edu.byu.cs.tweeter.model.service.request.FollowerRequest;
 import edu.byu.cs.tweeter.model.service.request.FollowingRequest;
 import edu.byu.cs.tweeter.model.service.request.LoginRequest;
@@ -16,6 +17,8 @@ import edu.byu.cs.tweeter.model.service.request.LogoutRequest;
 import edu.byu.cs.tweeter.model.service.request.PostRequest;
 import edu.byu.cs.tweeter.model.service.request.RegisterRequest;
 import edu.byu.cs.tweeter.model.service.request.StatusesRequest;
+import edu.byu.cs.tweeter.model.service.request.UnfollowUserRequest;
+import edu.byu.cs.tweeter.model.service.response.FollowUserResponse;
 import edu.byu.cs.tweeter.model.service.response.FollowerResponse;
 import edu.byu.cs.tweeter.model.service.response.FollowingResponse;
 import edu.byu.cs.tweeter.model.service.response.LoginResponse;
@@ -23,6 +26,7 @@ import edu.byu.cs.tweeter.model.service.response.LogoutResponse;
 import edu.byu.cs.tweeter.model.service.response.PostResponse;
 import edu.byu.cs.tweeter.model.service.response.RegisterResponse;
 import edu.byu.cs.tweeter.model.service.response.StatusesResponse;
+import edu.byu.cs.tweeter.model.service.response.UnfollowUserResponse;
 
 /**
  * Acts as a Facade to the Tweeter server. All network requests to the server should go through
@@ -327,5 +331,15 @@ public class ServerFacade {
         Status status = new Status(postRequest.getContent(), postRequest.getAuthor(), postRequest.getTimePublished());
         sessionStatuses.add(status);
         return new PostResponse(true, status);
+    }
+
+    public FollowUserResponse followUser(FollowUserRequest followUserRequest) {
+        // make call to backend
+        return new FollowUserResponse("Successfully followed user");
+    }
+
+    public UnfollowUserResponse unfollowUser(UnfollowUserRequest unfollowUserRequest) {
+        // make call to backend
+        return new UnfollowUserResponse("Successfully unfollowed user");
     }
 }
