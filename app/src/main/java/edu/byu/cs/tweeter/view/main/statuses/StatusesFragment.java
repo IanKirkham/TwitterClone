@@ -140,9 +140,8 @@ public abstract class StatusesFragment extends Fragment implements StatusesPrese
                     Toast.makeText(getContext(), "Clicked the user alias!", Toast.LENGTH_LONG).show();
                     Intent intent = new Intent(getActivity(), UserActivity.class);
                     intent.putExtra(MainActivity.CURRENT_USER_KEY, status.getAuthor());
-                    intent.putExtra(MainActivity.AUTH_TOKEN_KEY, new AuthToken()); // TODO: change this dummy authToken as well
+                    intent.putExtra(MainActivity.AUTH_TOKEN_KEY, authToken);
                     Objects.requireNonNull(getActivity()).startActivity(intent);
-                    // TODO: present new MainActivity with the new User
                 }
             }, 0, spannableAlias.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
             userAlias.setMovementMethod(LinkMovementMethod.getInstance());
@@ -155,7 +154,7 @@ public abstract class StatusesFragment extends Fragment implements StatusesPrese
             statusContent.setText(spanMentions(spanURLs(status.getContent())));
         }
 
-        private SpannableString spanURLs(String message) { // TODO: Find a home for orphaned functions
+        private SpannableString spanURLs(String message) {
             SpannableString string = new SpannableString(message);
             String regex = "((https?|ftp)://)?www\\.[a-zA-Z0-9]+\\.[a-zA-Z]+";
             Pattern p = Pattern.compile(regex);
@@ -181,7 +180,7 @@ public abstract class StatusesFragment extends Fragment implements StatusesPrese
             return string;
         }
 
-        private SpannableString spanMentions(SpannableString message) { // TODO: Find a home for orphaned functions
+        private SpannableString spanMentions(SpannableString message) {
             SpannableString string = message;
             String regex = "@[a-zA-Z0-9|_|-]+";
             Pattern p = Pattern.compile(regex);
@@ -196,11 +195,12 @@ public abstract class StatusesFragment extends Fragment implements StatusesPrese
                     public void onClick(@NonNull View widget) {
                         Toast.makeText(getContext(), "Clicked a Mention!", Toast.LENGTH_LONG).show();
 
-                        // TODO: Add logic to look up user by alias (variable "string"), if no user exists, display toast when clicked?
+                        // TODO: Add GetUserTask, etc ...
 
+                        // TODO: Put in StatusesPresenter.View function
                         Intent intent = new Intent(getActivity(), UserActivity.class);
-                        intent.putExtra(MainActivity.CURRENT_USER_KEY, new User("Joe", "Mama", "@JoeMama", "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/donald_duck.png")); // TODO: change this dummy user to the user that was clicked on
-                        intent.putExtra(MainActivity.AUTH_TOKEN_KEY, new AuthToken()); // TODO: change this dummy authToken as well
+                        intent.putExtra(MainActivity.CURRENT_USER_KEY, new User("Joe", "Mama", "@JoeMama", "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/donald_duck.png"));
+                        intent.putExtra(MainActivity.AUTH_TOKEN_KEY, authToken);
                         Objects.requireNonNull(getActivity()).startActivity(intent);
                     }
                 }, start, end, Spanned.SPAN_COMPOSING);

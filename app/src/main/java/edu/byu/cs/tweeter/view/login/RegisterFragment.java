@@ -115,7 +115,6 @@ public class RegisterFragment extends Fragment implements RegisterPresenter.View
         return v;
     }
 
-    // TODO: incorporate checking that a profile picture was also taken (check a variable?)
     private final TextWatcher registerWatcher = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {}

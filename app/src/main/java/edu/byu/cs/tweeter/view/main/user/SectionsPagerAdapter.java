@@ -11,10 +11,8 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import edu.byu.cs.tweeter.R;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
-import edu.byu.cs.tweeter.view.main.PlaceholderFragment;
 import edu.byu.cs.tweeter.view.main.followers.FollowerFragment;
 import edu.byu.cs.tweeter.view.main.following.FollowingFragment;
-import edu.byu.cs.tweeter.view.main.statuses.FeedFragment;
 import edu.byu.cs.tweeter.view.main.statuses.StoryFragment;
 
 /**
@@ -50,7 +48,7 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
             case FOLLOWER_FRAGMENT_POSITION:
                 return FollowerFragment.newInstance(user, authToken);
             default:
-                return PlaceholderFragment.newInstance(position + 1);
+                return null; // If this ever happens, we have bigger problems.
         }
     }
 

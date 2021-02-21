@@ -55,7 +55,7 @@ class SectionsPagerAdapter extends FragmentPagerAdapter {
             case FOLLOWER_FRAGMENT_POSITION:
                 return FollowerFragment.newInstance(user, authToken);
             default:
-                return PlaceholderFragment.newInstance(position + 1);
+                return null;
         }
     }
 
