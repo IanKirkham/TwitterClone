@@ -12,8 +12,8 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import edu.byu.cs.tweeter.R;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
-import edu.byu.cs.tweeter.view.main.followers.FollowerFragment;
-import edu.byu.cs.tweeter.view.main.following.FollowingFragment;
+import edu.byu.cs.tweeter.view.main.follow.FollowerFragment;
+import edu.byu.cs.tweeter.view.main.follow.FollowingFragment;
 import edu.byu.cs.tweeter.view.main.statuses.FeedFragment;
 import edu.byu.cs.tweeter.view.main.statuses.StoryFragment;
 
@@ -44,7 +44,7 @@ class SectionsPagerAdapter extends FragmentPagerAdapter {
     }
 
     @Override
-    public Fragment getItem(int position) { // TODO: add newly implemented fragments here
+    public Fragment getItem(int position) {
         switch (position) {
             case FOLLOWING_FRAGMENT_POSITION:
                 return FollowingFragment.newInstance(user, authToken);

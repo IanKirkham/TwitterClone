@@ -57,7 +57,6 @@ public class StoryFragment extends StatusesFragment implements PostTask.Observer
         Toast.makeText(getContext(), "Post Failed to Save", Toast.LENGTH_SHORT).show();
     }
 
-
     private class StoryRecyclerViewAdapter extends StatusRecyclerViewAdapter {
         @Override
         void loadMoreItems() {

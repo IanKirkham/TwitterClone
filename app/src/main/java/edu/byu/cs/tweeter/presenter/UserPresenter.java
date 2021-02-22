@@ -2,22 +2,34 @@ package edu.byu.cs.tweeter.presenter;
 
 import java.io.IOException;
 
+import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.service.UserService;
 import edu.byu.cs.tweeter.model.service.request.UserRequest;
 import edu.byu.cs.tweeter.model.service.response.UserResponse;
+import edu.byu.cs.tweeter.view.asyncTasks.GetUsersTask;
 
 /**
  * The presenter for the "Followers/Following" functionality of the application.
  */
-public class UserPresenter {
+public class UserPresenter implements GetUsersTask.Observer {
 
     private final View view;
+
+    @Override
+    public void usersRetrieved(UserResponse userResponse) {
+        if (view != null && userResponse.getUsers().size() == 1) {
+            view.presentNewUserView(userResponse.getUsers().get(0));
+        }
+    }
+
+    @Override
+    public void handleException(Exception exception) {}
 
     /**
      * The interface by which this presenter communicates with it's view.
      */
     public interface View {
-        // If needed, specify methods here that will be called on the view in response to model updates
+        void presentNewUserView(User user);
     }
 
     /**

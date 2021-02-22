@@ -27,6 +27,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -36,9 +37,12 @@ import edu.byu.cs.tweeter.R;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
+import edu.byu.cs.tweeter.model.service.request.UserRequest;
 import edu.byu.cs.tweeter.model.service.response.StatusesResponse;
 import edu.byu.cs.tweeter.presenter.StatusesPresenter;
+import edu.byu.cs.tweeter.presenter.UserPresenter;
 import edu.byu.cs.tweeter.view.asyncTasks.GetStatusesTask;
+import edu.byu.cs.tweeter.view.asyncTasks.GetUsersTask;
 import edu.byu.cs.tweeter.view.login.LoginActivity;
 import edu.byu.cs.tweeter.view.main.MainActivity;
 import edu.byu.cs.tweeter.view.main.user.UserActivity;
@@ -47,7 +51,7 @@ import edu.byu.cs.tweeter.view.util.ImageUtils;
 /**
  * The fragment that displays on the 'Story' tab.
  */
-public abstract class StatusesFragment extends Fragment implements StatusesPresenter.View {
+public abstract class StatusesFragment extends Fragment implements StatusesPresenter.View, UserPresenter.View {
 
     private static final String LOG_TAG = "StatusesFragment";
     protected static final String USER_KEY = "UserKey";
@@ -60,6 +64,7 @@ public abstract class StatusesFragment extends Fragment implements StatusesPrese
     protected User user;
     protected AuthToken authToken;
     protected StatusesPresenter presenter;
+    private UserPresenter userPresenter;
 
     protected StatusRecyclerViewAdapter statusRecyclerViewAdapter;
     protected LinearLayoutManager recyclerLayoutManager;
@@ -75,6 +80,7 @@ public abstract class StatusesFragment extends Fragment implements StatusesPrese
         authToken = (AuthToken) getArguments().getSerializable(AUTH_TOKEN_KEY);
 
         presenter = new StatusesPresenter(this);
+        userPresenter = new UserPresenter(this);
 
         statusRecyclerView = view.findViewById(R.id.statusRecyclerView);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this.getContext());
@@ -171,7 +177,8 @@ public abstract class StatusesFragment extends Fragment implements StatusesPrese
                         Spanned s = (Spanned) tv.getText();
                         int start = s.getSpanStart(this);
                         int end = s.getSpanEnd(this);
-                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(s.subSequence(start, end).toString())); // TODO: Default protocol to http
+                        String protocol = s.subSequence(start, start + 3).equals("www") ? "http://" : "";
+                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(protocol + s.subSequence(start, end).toString()));
                         startActivity(browserIntent);
                     }
                 }, start, end, Spanned.SPAN_COMPOSING);
@@ -195,13 +202,9 @@ public abstract class StatusesFragment extends Fragment implements StatusesPrese
                     public void onClick(@NonNull View widget) {
                         Toast.makeText(getContext(), "Clicked a Mention!", Toast.LENGTH_LONG).show();
 
-                        // TODO: Add GetUserTask, etc ...
-
-                        // TODO: Put in StatusesPresenter.View function
-                        Intent intent = new Intent(getActivity(), UserActivity.class);
-                        intent.putExtra(MainActivity.CURRENT_USER_KEY, new User("Joe", "Mama", "@JoeMama", "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/donald_duck.png"));
-                        intent.putExtra(MainActivity.AUTH_TOKEN_KEY, authToken);
-                        Objects.requireNonNull(getActivity()).startActivity(intent);
+                        GetUsersTask getUsersTask = new GetUsersTask(StatusesFragment.this.userPresenter, StatusesFragment.this.userPresenter);
+                        UserRequest request = new UserRequest(Arrays.asList(string.subSequence(start, end).toString()), PAGE_SIZE, null);
+                        getUsersTask.execute(request);
                     }
                 }, start, end, Spanned.SPAN_COMPOSING);
             }
@@ -210,6 +213,15 @@ public abstract class StatusesFragment extends Fragment implements StatusesPrese
         }
 
     }
+
+    @Override
+    public void presentNewUserView(User user) {
+        Intent intent = new Intent(getActivity(), UserActivity.class);
+        intent.putExtra(MainActivity.CURRENT_USER_KEY, user);
+        intent.putExtra(MainActivity.AUTH_TOKEN_KEY, authToken);
+        Objects.requireNonNull(getActivity()).startActivity(intent);
+    }
+
 
     /**
      * The adapter for the RecyclerView that displays the Story data.
