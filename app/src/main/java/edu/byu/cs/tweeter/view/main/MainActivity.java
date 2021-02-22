@@ -39,7 +39,7 @@ import edu.byu.cs.tweeter.view.util.ImageUtils;
 /**
  * The main activity for the application. Contains tabs for feed, story, following, and followers.
  */
-public class MainActivity extends AppCompatActivity implements LogoutPresenter.View, LogoutTask.Observer { //TODO: Use LogoutPresenter for pattern
+public class MainActivity extends AppCompatActivity implements LogoutPresenter.View {
 
     private static final String LOG_TAG = "MainActivity";
 
@@ -112,7 +112,7 @@ public class MainActivity extends AppCompatActivity implements LogoutPresenter.V
             Toast.makeText(this, "Logging out", Toast.LENGTH_LONG).show();
 
             LogoutRequest logoutRequest = new LogoutRequest(user, authToken);
-            LogoutTask logoutTask = new LogoutTask(presenter, this);
+            LogoutTask logoutTask = new LogoutTask(presenter, presenter);
             logoutTask.execute(logoutRequest);
             return true;
         }

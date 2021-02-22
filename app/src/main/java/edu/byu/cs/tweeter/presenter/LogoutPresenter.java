@@ -5,11 +5,12 @@ import java.io.IOException;
 import edu.byu.cs.tweeter.model.service.LogoutService;
 import edu.byu.cs.tweeter.model.service.request.LogoutRequest;
 import edu.byu.cs.tweeter.model.service.response.LogoutResponse;
+import edu.byu.cs.tweeter.view.asyncTasks.LogoutTask;
 
 /**
  * The presenter for the logout functionality of the application.
  */
-public class LogoutPresenter {
+public class LogoutPresenter implements LogoutTask.Observer {
 
     private final View view;
 
@@ -17,7 +18,9 @@ public class LogoutPresenter {
      * The interface by which this presenter communicates with it's view.
      */
     public interface View {
-        // If needed, specify methods here that will be called on the view in response to model updates
+        void logoutSuccessful(LogoutResponse logoutResponse);
+        void logoutUnsuccessful(LogoutResponse logoutResponse);
+        void handleException(Exception ex);
     }
 
     /**
@@ -37,5 +40,26 @@ public class LogoutPresenter {
     public LogoutResponse login(LogoutRequest logoutRequest) throws IOException {
         LogoutService logoutService = new LogoutService();
         return logoutService.logout(logoutRequest);
+    }
+
+    @Override
+    public void logoutSuccessful(LogoutResponse logoutResponse) {
+        if (view != null) {
+            view.logoutSuccessful(logoutResponse);
+        }
+    }
+
+    @Override
+    public void logoutUnsuccessful(LogoutResponse logoutResponse) {
+        if (view != null) {
+            view.logoutUnsuccessful(logoutResponse);
+        }
+    }
+
+    @Override
+    public void handleException(Exception ex) {
+        if (view != null) {
+            view.handleException(ex);
+        }
     }
 }
