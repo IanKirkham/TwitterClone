@@ -1,5 +1,6 @@
 package edu.byu.cs.tweeter.model.net;
 
+import java.lang.reflect.Array;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,6 +19,7 @@ import edu.byu.cs.tweeter.model.service.request.PostRequest;
 import edu.byu.cs.tweeter.model.service.request.RegisterRequest;
 import edu.byu.cs.tweeter.model.service.request.StatusesRequest;
 import edu.byu.cs.tweeter.model.service.request.UnfollowUserRequest;
+import edu.byu.cs.tweeter.model.service.request.UserRequest;
 import edu.byu.cs.tweeter.model.service.response.FollowUserResponse;
 import edu.byu.cs.tweeter.model.service.response.FollowerResponse;
 import edu.byu.cs.tweeter.model.service.response.FollowingResponse;
@@ -27,6 +29,7 @@ import edu.byu.cs.tweeter.model.service.response.PostResponse;
 import edu.byu.cs.tweeter.model.service.response.RegisterResponse;
 import edu.byu.cs.tweeter.model.service.response.StatusesResponse;
 import edu.byu.cs.tweeter.model.service.response.UnfollowUserResponse;
+import edu.byu.cs.tweeter.model.service.response.UserResponse;
 
 /**
  * Acts as a Facade to the Tweeter server. All network requests to the server should go through
@@ -89,8 +92,8 @@ public class ServerFacade {
      */
     public LoginResponse login(LoginRequest request) {
         User user = testUser;
-        user.setFollowees(getDummyFolloweesAliases());
-        user.setFollowers(getDummyFolloweesAliases());
+        user.setFollowees(getDummyUserAliases());
+        user.setFollowers(getDummyUserAliases());
         return new LoginResponse(user, new AuthToken());
     }
 
@@ -104,173 +107,82 @@ public class ServerFacade {
         return new LogoutResponse("Successfully Logged Out");
     }
 
-    /**
-     * Returns the users that the user specified in the request is following. Uses information in
-     * the request object to limit the number of followees returned and to return the next set of
-     * followees after any that were returned in a previous request. The current implementation
-     * returns generated data and doesn't actually make a network request.
-     *
-     * @param request contains information about the user whose followees are to be returned and any
-     *                other information required to satisfy the request.
-     * @return the following response.
-     */
-    public FollowingResponse getFollowees(FollowingRequest request) {
-
+    public UserResponse getUsers(UserRequest request) {
         // Used in place of assert statements because Android does not support them
         if (BuildConfig.DEBUG) {
             if (request.getLimit() < 0) {
                 throw new AssertionError();
             }
 
-            if (request.getFollowerAlias() == null) {
+            if (request.getUserAliases() == null) {
                 throw new AssertionError();
             }
         }
 
-        List<User> allFollowees = getDummyFollowees();
-        List<User> responseFollowees = new ArrayList<>(request.getLimit());
+        List<User> allUsers = getRequestedUsers(request.getUserAliases());
+        List<User> responseUsers = new ArrayList<>(request.getLimit());
 
         boolean hasMorePages = false;
 
         if (request.getLimit() > 0) {
-            int followeesIndex = getFolloweesStartingIndex(request.getLastFolloweeAlias(), allFollowees);
+            int userIndex = getUsersStartingIndex(request.getLastUserAlias(), allUsers);
 
-            for (int limitCounter = 0; followeesIndex < allFollowees.size() && limitCounter < request.getLimit(); followeesIndex++, limitCounter++) {
-                responseFollowees.add(allFollowees.get(followeesIndex));
+            for (int limitCounter = 0; userIndex < allUsers.size() && limitCounter < request.getLimit(); userIndex++, limitCounter++) {
+                responseUsers.add(allUsers.get(userIndex));
             }
-
-            hasMorePages = followeesIndex < allFollowees.size();
+            hasMorePages = userIndex < allUsers.size();
         }
 
-        return new FollowingResponse(responseFollowees, hasMorePages);
+        return new UserResponse(responseUsers, hasMorePages);
     }
 
     /**
-     * Determines the index for the first followee in the specified 'allFollowees' list that should
-     * be returned in the current request. This will be the index of the next followee after the
-     * specified 'lastFollowee'.
+     * Determines the index for the first user in the specified 'allUsers' list that should
+     * be returned in the current request. This will be the index of the next user after the
+     * specified 'lastUser'.
      *
-     * @param lastFolloweeAlias the alias of the last followee that was returned in the previous
+     * @param lastUserAlias the alias of the last user that was returned in the previous
      *                          request or null if there was no previous request.
-     * @param allFollowees the generated list of followees from which we are returning paged results.
-     * @return the index of the first followee to be returned.
+     * @param allUsers the generated list of users from which we are returning paged results.
+     * @return the index of the first user to be returned.
      */
-    private int getFolloweesStartingIndex(String lastFolloweeAlias, List<User> allFollowees) {
-        int followeesIndex = 0;
+    private int getUsersStartingIndex(String lastUserAlias, List<User> allUsers) {
+        int usersIndex = 0;
 
-        if (lastFolloweeAlias != null) {
-            // This is a paged request for something after the first page. Find the first item
-            // we should return
-            for (int i = 0; i < allFollowees.size(); i++) {
-                if (lastFolloweeAlias.equals(allFollowees.get(i).getAlias())) {
-                    // We found the index of the last item returned last time. Increment to get
-                    // to the first one we should return
-                    followeesIndex = i + 1;
+        if (lastUserAlias != null) {
+            for (int i = 0; i < allUsers.size(); i++) {
+                if (lastUserAlias.equals(allUsers.get(i).getAlias())) {
+                    usersIndex = i + 1;
                     break;
                 }
             }
         }
 
-        return followeesIndex;
+        return usersIndex;
     }
 
     /**
-     * Returns the list of dummy followee data. This is written as a separate method to allow
-     * mocking of the followees.
+     * Returns the list of dummy user data. This is written as a separate method to allow
+     * mocking of the users.
      *
-     * @return the followees.
+     * @return the users.
      */
-    List<User> getDummyFollowees() {
+    List<User> getDummyUsers() {
         return Arrays.asList(user1, user2, user3, user4, user5, user6, user7,
                 user8, user9, user10, user11, user12, user13, user14, user15, user16, user17, user18,
                 user19, user20);
     }
 
-    /**
-     * Returns the users that are following the user specified in the request. Uses information in
-     * the request object to limit the number of followers returned and to return the next set of
-     * followers after any that were returned in a previous request. The current implementation
-     * returns generated data and doesn't actually make a network request.
-     *
-     * @param request contains information about the user whose followers are to be returned and any
-     *                other information required to satisfy the request.
-     * @return the follower response.
-     */
-    public FollowerResponse getFollowers(FollowerRequest request) {
-
-        // Used in place of assert statements because Android does not support them
-        if (BuildConfig.DEBUG) {
-            if (request.getLimit() < 0) {
-                throw new AssertionError();
-            }
-
-            if (request.getUserAlias() == null) {
-                throw new AssertionError();
-            }
-        }
-
-        List<User> allFollowers = getDummyFollowers();
-        List<User> responseFollowers = new ArrayList<>(request.getLimit());
-
-        boolean hasMorePages = false;
-
-        if (request.getLimit() > 0) {
-            int followersIndex = getFollowersStartingIndex(request.getLastFollowerAlias(), allFollowers);
-
-            for (int limitCounter = 0; followersIndex < allFollowers.size() && limitCounter < request.getLimit(); followersIndex++, limitCounter++) {
-                responseFollowers.add(allFollowers.get(followersIndex));
-            }
-
-            hasMorePages = followersIndex < allFollowers.size();
-        }
-
-        return new FollowerResponse(responseFollowers, hasMorePages);
+    List<User> getRequestedUsers(List<String> userAliases) {
+        ArrayList<User> users = new ArrayList<>(getDummyUsers());
+        users.removeIf(user -> !userAliases.contains(user.getAlias()));
+        return users;
     }
 
-    /**
-     * Determines the index for the first follower in the specified 'allFollowers' list that should
-     * be returned in the current request. This will be the index of the next follower after the
-     * specified 'lastFollower'.
-     *
-     * @param lastFollowerAlias the alias of the last follower that was returned in the previous
-     *                          request or null if there was no previous request.
-     * @param allFollowers the generated list of followers from which we are returning paged results.
-     * @return the index of the first follower to be returned.
-     */
-    private int getFollowersStartingIndex(String lastFollowerAlias, List<User> allFollowers) {
-        int followersIndex = 0;
-
-        if (lastFollowerAlias != null) {
-            // This is a paged request for something after the first page. Find the first item
-            // we should return
-            for (int i = 0; i < allFollowers.size(); i++) {
-                if (lastFollowerAlias.equals(allFollowers.get(i).getAlias())) {
-                    // We found the index of the last item returned last time. Increment to get
-                    // to the first one we should return
-                    followersIndex = i + 1;
-                    break;
-                }
-            }
-        }
-
-        return followersIndex;
-    }
-
-    /**
-     * Returns the list of dummy follower data. This is written as a separate method to allow
-     * mocking of the followers.
-     *
-     * @return the followers.
-     */
-    List<User> getDummyFollowers() {
-        return Arrays.asList(user1, user3, user5, user7, user9, user11, user13, user15,
-                user17, user19, user2, user4, user6, user8, user10, user12, user14, user16, user18);
-    }
-
-    List<String> getDummyFolloweesAliases() {
-        List<String> aliases = new ArrayList<>();
-        getDummyFollowees().forEach(followee -> aliases.add(followee.getAlias()));
-        return aliases;
+    List<String> getDummyUserAliases() {
+        ArrayList<String> userAliases = new ArrayList<>();
+        getDummyUsers().forEach(user -> { userAliases.add(user.getAlias()); });
+        return userAliases;
     }
 
     public StatusesResponse getStatuses(StatusesRequest request) {
