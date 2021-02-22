@@ -6,22 +6,23 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.net.ServerFacade;
-import edu.byu.cs.tweeter.model.service.request.FollowingRequest;
-import edu.byu.cs.tweeter.model.service.response.FollowingResponse;
+import edu.byu.cs.tweeter.model.service.request.UserRequest;
+import edu.byu.cs.tweeter.model.service.response.UserResponse;
 
 public class FollowingServiceTest {
 
-    private FollowingRequest validRequest;
-    private FollowingRequest invalidRequest;
+    private UserRequest validRequest;
+    private UserRequest invalidRequest;
 
-    private FollowingResponse successResponse;
-    private FollowingResponse failureResponse;
+    private UserResponse successResponse;
+    private UserResponse failureResponse;
 
-    private FollowingService followingServiceSpy;
+    private UserService followingServiceSpy;
 
     /**
      * Create a FollowingService spy that uses a mock ServerFacade to return known responses to
@@ -38,25 +39,28 @@ public class FollowingServiceTest {
         User resultUser3 = new User("FirstName3", "LastName3",
                 "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/daisy_duck.png");
 
+        currentUser.setFollowees(new ArrayList<>(Arrays.asList(resultUser1.getAlias(), resultUser2.getAlias(), resultUser3.getAlias())));
+
         // Setup request objects to use in the tests
-        validRequest = new FollowingRequest(currentUser.getAlias(), 3, null);
-        invalidRequest = new FollowingRequest(null, 0, null);
+        validRequest = new UserRequest(currentUser.getFollowees(), 3, null);
+
+        invalidRequest = new UserRequest(null, 0, null);
 
         // Setup a mock ServerFacade that will return known responses
-        successResponse = new FollowingResponse(Arrays.asList(resultUser1, resultUser2, resultUser3), false);
+        successResponse = new UserResponse(Arrays.asList(resultUser1, resultUser2, resultUser3), false);
         ServerFacade mockServerFacade = Mockito.mock(ServerFacade.class);
-        Mockito.when(mockServerFacade.getFollowees(validRequest)).thenReturn(successResponse);
+        Mockito.when(mockServerFacade.getUsers(validRequest)).thenReturn(successResponse);
 
-        failureResponse = new FollowingResponse("An exception occurred");
-        Mockito.when(mockServerFacade.getFollowees(invalidRequest)).thenReturn(failureResponse);
+        failureResponse = new UserResponse("An exception occurred");
+        Mockito.when(mockServerFacade.getUsers(invalidRequest)).thenReturn(failureResponse);
 
         // Create a FollowingService instance and wrap it with a spy that will use the mock service
-        followingServiceSpy = Mockito.spy(new FollowingService());
+        followingServiceSpy = Mockito.spy(new UserService());
         Mockito.when(followingServiceSpy.getServerFacade()).thenReturn(mockServerFacade);
     }
 
     /**
-     * Verify that for successful requests the {@link FollowingService#getFollowees(FollowingRequest)}
+     * Verify that for successful requests the {@link UserService#getUsers(UserRequest)}
      * method returns the same result as the {@link ServerFacade}.
      * .
      *
@@ -64,34 +68,34 @@ public class FollowingServiceTest {
      */
     @Test
     public void testGetFollowees_validRequest_correctResponse() throws IOException {
-        FollowingResponse response = followingServiceSpy.getFollowees(validRequest);
+        UserResponse response = followingServiceSpy.getUsers(validRequest);
         Assertions.assertEquals(successResponse, response);
     }
 
     /**
-     * Verify that the {@link FollowingService#getFollowees(FollowingRequest)} method loads the
+     * Verify that the {@link UserService#getUsers(UserRequest)} method loads the
      * profile image of each user included in the result.
      *
      * @throws IOException if an IO error occurs.
      */
     @Test
     public void testGetFollowees_validRequest_loadsProfileImages() throws IOException {
-        FollowingResponse response = followingServiceSpy.getFollowees(validRequest);
+        UserResponse response = followingServiceSpy.getUsers(validRequest);
 
-        for(User user : response.getFollowees()) {
+        for(User user : response.getUsers()) {
             Assertions.assertNotNull(user.getImageBytes());
         }
     }
 
     /**
-     * Verify that for failed requests the {@link FollowingService#getFollowees(FollowingRequest)}
+     * Verify that for failed requests the {@link UserService#getUsers(UserRequest)}
      * method returns the same result as the {@link ServerFacade}.
      *
      * @throws IOException if an IO error occurs.
      */
     @Test
     public void testGetFollowees_invalidRequest_returnsNoFollowees() throws IOException {
-        FollowingResponse response = followingServiceSpy.getFollowees(invalidRequest);
+        UserResponse response = followingServiceSpy.getUsers(invalidRequest);
         Assertions.assertEquals(failureResponse, response);
     }
 }
