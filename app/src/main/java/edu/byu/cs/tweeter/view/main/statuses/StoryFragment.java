@@ -12,13 +12,15 @@ import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.service.request.StatusesRequest;
 import edu.byu.cs.tweeter.model.service.response.PostResponse;
+import edu.byu.cs.tweeter.presenter.PostPresenter;
 import edu.byu.cs.tweeter.view.asyncTasks.GetStatusesTask;
 import edu.byu.cs.tweeter.view.asyncTasks.PostTask;
 
 /**
  * The fragment that displays on the 'Story' tab.
  */
-public class StoryFragment extends StatusesFragment implements PostTask.Observer {
+public class StoryFragment extends StatusesFragment implements PostPresenter.View {
+    private PostPresenter postPresenter;
 
     /**
      * Creates an instance of the fragment and places the user and auth token in an arguments
@@ -31,6 +33,8 @@ public class StoryFragment extends StatusesFragment implements PostTask.Observer
     public static StoryFragment newInstance(User user, AuthToken authToken) {
         StoryFragment fragment = new StoryFragment();
 
+        fragment.postPresenter = new PostPresenter(fragment);
+
         Bundle args = new Bundle(2);
         args.putSerializable(USER_KEY, user);
         args.putSerializable(AUTH_TOKEN_KEY, authToken);
@@ -42,6 +46,10 @@ public class StoryFragment extends StatusesFragment implements PostTask.Observer
     @Override
     protected StatusRecyclerViewAdapter getRecyclerViewAdapter() {
         return new StoryRecyclerViewAdapter();
+    }
+
+    public PostPresenter getPostPresenter() {
+        return this.postPresenter;
     }
 
     @Override
@@ -63,7 +71,7 @@ public class StoryFragment extends StatusesFragment implements PostTask.Observer
             isLoading = true;
             addLoadingFooter();
 
-            GetStatusesTask getStatusesTask = new GetStatusesTask(presenter, this);
+            GetStatusesTask getStatusesTask = new GetStatusesTask(presenter, presenter);
             ArrayList<String> retrieveStatusesFor = new ArrayList<>(Arrays.asList(user.getAlias()));
             StatusesRequest request = new StatusesRequest(retrieveStatusesFor, PAGE_SIZE, lastStatus);
             getStatusesTask.execute(request);

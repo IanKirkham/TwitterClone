@@ -51,7 +51,7 @@ import edu.byu.cs.tweeter.view.util.ImageUtils;
 /**
  * The fragment that displays on the 'Story' tab.
  */
-public abstract class StatusesFragment extends Fragment implements StatusesPresenter.View, UserPresenter.View {
+public abstract class StatusesFragment extends Fragment implements UserPresenter.View {
 
     private static final String LOG_TAG = "StatusesFragment";
     protected static final String USER_KEY = "UserKey";
@@ -63,7 +63,6 @@ public abstract class StatusesFragment extends Fragment implements StatusesPrese
 
     protected User user;
     protected AuthToken authToken;
-    protected StatusesPresenter presenter;
     private UserPresenter userPresenter;
 
     protected StatusRecyclerViewAdapter statusRecyclerViewAdapter;
@@ -79,7 +78,6 @@ public abstract class StatusesFragment extends Fragment implements StatusesPrese
         user = (User) getArguments().getSerializable(USER_KEY);
         authToken = (AuthToken) getArguments().getSerializable(AUTH_TOKEN_KEY);
 
-        presenter = new StatusesPresenter(this);
         userPresenter = new UserPresenter(this);
 
         statusRecyclerView = view.findViewById(R.id.statusRecyclerView);
@@ -177,7 +175,7 @@ public abstract class StatusesFragment extends Fragment implements StatusesPrese
                         Spanned s = (Spanned) tv.getText();
                         int start = s.getSpanStart(this);
                         int end = s.getSpanEnd(this);
-                        String protocol = s.subSequence(start, start + 3).equals("www") ? "http://" : "";
+                        String protocol = s.subSequence(start, start + 3).toString().equals("www") ? "http://" : "";
                         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(protocol + s.subSequence(start, end).toString()));
                         startActivity(browserIntent);
                     }
@@ -226,10 +224,11 @@ public abstract class StatusesFragment extends Fragment implements StatusesPrese
     /**
      * The adapter for the RecyclerView that displays the Story data.
      */
-    protected abstract class StatusRecyclerViewAdapter extends RecyclerView.Adapter<StatusHolder> implements GetStatusesTask.Observer, Serializable {
+    protected abstract class StatusRecyclerViewAdapter extends RecyclerView.Adapter<StatusHolder> implements StatusesPresenter.View, Serializable {
 
         protected final List<Status> statuses = new ArrayList<>();
         protected Status lastStatus;
+        protected StatusesPresenter presenter;
 
         private boolean hasMorePages;
         protected boolean isLoading = false;
@@ -238,6 +237,7 @@ public abstract class StatusesFragment extends Fragment implements StatusesPrese
          * Creates an instance and loads the first page of story data.
          */
         StatusRecyclerViewAdapter() {
+            presenter = new StatusesPresenter(this);
             loadMoreItems();
         }
 
@@ -350,6 +350,9 @@ public abstract class StatusesFragment extends Fragment implements StatusesPrese
          */
         @Override
         public void statusesRetrieved(StatusesResponse statusesResponse) {
+            // this should be called by the presenter
+
+
             List<Status> statuses = statusesResponse.getStatuses();
 
             lastStatus = (statuses.size() > 0) ? statuses.get(statuses.size() - 1) : null;

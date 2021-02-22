@@ -1,15 +1,14 @@
 package edu.byu.cs.tweeter.presenter;
 
-import java.io.IOException;
-
 import edu.byu.cs.tweeter.model.service.PostService;
 import edu.byu.cs.tweeter.model.service.request.PostRequest;
 import edu.byu.cs.tweeter.model.service.response.PostResponse;
+import edu.byu.cs.tweeter.view.asyncTasks.PostTask;
 
 /**
  * The presenter for the post functionality of the application.
  */
-public class PostPresenter {
+public class PostPresenter implements PostTask.Observer {
 
     private final View view;
 
@@ -17,7 +16,8 @@ public class PostPresenter {
      * The interface by which this presenter communicates with it's view.
      */
     public interface View {
-        // If needed, specify methods here that will be called on the view in response to model updates
+        void postSaved(PostResponse postResponse);
+        void handleException(Exception exception);
     }
 
     /**
@@ -38,6 +38,20 @@ public class PostPresenter {
     public PostResponse savePost(PostRequest request) throws Exception {
         PostService postService = getPostService();
         return postService.savePost(request);
+    }
+
+    @Override
+    public void postSaved(PostResponse postResponse) {
+        if (this.view != null) {
+            view.postSaved(postResponse);
+        }
+    }
+
+    @Override
+    public void handleException(Exception exception) {
+        if (this.view != null) {
+            view.handleException(exception);
+        }
     }
 
     /**

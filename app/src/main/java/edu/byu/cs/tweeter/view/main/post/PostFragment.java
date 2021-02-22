@@ -28,7 +28,7 @@ import edu.byu.cs.tweeter.view.util.ImageUtils;
 /**
  * The fragment that displays on the 'Following' tab.
  */
-public class PostFragment extends DialogFragment implements PostPresenter.View, PostTask.Observer {
+public class PostFragment extends DialogFragment implements PostPresenter.View {
 
     private static final String LOG_TAG = "PostFragment";
     private static final String USER_KEY = "UserKey";
@@ -102,7 +102,7 @@ public class PostFragment extends DialogFragment implements PostPresenter.View, 
                 String postText = postContent.getText().toString();
 
                 PostRequest request = new PostRequest(user, postText, LocalDateTime.now());
-                PostTask task = new PostTask(presenter, (PostFragment.this.observer != null ? PostFragment.this.observer : PostFragment.this));
+                PostTask task = new PostTask(presenter, PostFragment.this.observer);
                 task.execute(request);
 
                 Toast.makeText(getContext(), "Saving Post!", Toast.LENGTH_SHORT).show();

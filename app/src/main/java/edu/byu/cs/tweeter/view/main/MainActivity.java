@@ -27,6 +27,7 @@ import edu.byu.cs.tweeter.model.service.request.LogoutRequest;
 import edu.byu.cs.tweeter.model.service.response.LogoutResponse;
 import edu.byu.cs.tweeter.presenter.LoginPresenter;
 import edu.byu.cs.tweeter.presenter.LogoutPresenter;
+import edu.byu.cs.tweeter.presenter.PostPresenter;
 import edu.byu.cs.tweeter.view.asyncTasks.LoginTask;
 import edu.byu.cs.tweeter.view.asyncTasks.LogoutTask;
 import edu.byu.cs.tweeter.view.login.LoginActivity;
@@ -38,7 +39,7 @@ import edu.byu.cs.tweeter.view.util.ImageUtils;
 /**
  * The main activity for the application. Contains tabs for feed, story, following, and followers.
  */
-public class MainActivity extends AppCompatActivity implements LogoutPresenter.View, LogoutTask.Observer {
+public class MainActivity extends AppCompatActivity implements LogoutPresenter.View, LogoutTask.Observer { //TODO: Use LogoutPresenter for pattern
 
     private static final String LOG_TAG = "MainActivity";
 
@@ -76,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements LogoutPresenter.V
             @Override
             public void onClick(View view) {
                 PostFragment fragment = PostFragment.newInstance(user, authToken);
-                StoryFragment observer = sectionsPagerAdapter.getStoryFragment();
+                PostPresenter observer = sectionsPagerAdapter.getStoryFragment().getPostPresenter();
                 fragment.setTaskObserver(observer);
                 fragment.show(getSupportFragmentManager(), "Post");
             }

@@ -5,11 +5,12 @@ import java.io.IOException;
 import edu.byu.cs.tweeter.model.service.StatusesService;
 import edu.byu.cs.tweeter.model.service.request.StatusesRequest;
 import edu.byu.cs.tweeter.model.service.response.StatusesResponse;
+import edu.byu.cs.tweeter.view.asyncTasks.GetStatusesTask;
 
 /**
  * The presenter for Feed/Story functionality of the application.
  */
-public class StatusesPresenter {
+public class StatusesPresenter implements GetStatusesTask.Observer {
 
     private final View view;
 
@@ -17,7 +18,8 @@ public class StatusesPresenter {
      * The interface by which this presenter communicates with it's view.
      */
     public interface View {
-        // If needed, specify methods here that will be called on the view in response to model updates
+        void statusesRetrieved(StatusesResponse statusesResponse);
+        void handleException(Exception exception);
     }
 
     /**
@@ -40,6 +42,20 @@ public class StatusesPresenter {
     public StatusesResponse getStatuses(StatusesRequest request) throws IOException {
         StatusesService statusesService = getStatusesService();
         return statusesService.getStatuses(request);
+    }
+
+    @Override
+    public void statusesRetrieved(StatusesResponse statusesResponse) {
+        if (view != null) {
+            view.statusesRetrieved(statusesResponse);
+        }
+    }
+
+    @Override
+    public void handleException(Exception exception) {
+        if (view != null) {
+            view.handleException(exception);
+        }
     }
 
     /**
