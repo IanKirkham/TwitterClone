@@ -1,5 +1,6 @@
 package edu.byu.cs.tweeter.view.main.following;
 
+import android.graphics.pdf.PdfDocument;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -23,16 +24,16 @@ import java.util.List;
 import edu.byu.cs.tweeter.R;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
-import edu.byu.cs.tweeter.model.service.request.FollowingRequest;
-import edu.byu.cs.tweeter.model.service.response.FollowingResponse;
-import edu.byu.cs.tweeter.presenter.FollowingPresenter;
-import edu.byu.cs.tweeter.view.asyncTasks.GetFollowingTask;
+import edu.byu.cs.tweeter.model.service.request.UserRequest;
+import edu.byu.cs.tweeter.model.service.response.UserResponse;
+import edu.byu.cs.tweeter.presenter.UserPresenter;
+import edu.byu.cs.tweeter.view.asyncTasks.GetUsersTask;
 import edu.byu.cs.tweeter.view.util.ImageUtils;
 
 /**
  * The fragment that displays on the 'Following' tab.
  */
-public class FollowingFragment extends Fragment implements FollowingPresenter.View {
+public class FollowingFragment extends Fragment implements UserPresenter.View {
 
     private static final String LOG_TAG = "FollowingFragment";
     private static final String USER_KEY = "UserKey";
@@ -45,7 +46,7 @@ public class FollowingFragment extends Fragment implements FollowingPresenter.Vi
 
     private User user;
     private AuthToken authToken;
-    private FollowingPresenter presenter;
+    private UserPresenter presenter;
 
     private FollowingRecyclerViewAdapter followingRecyclerViewAdapter;
 
@@ -77,7 +78,7 @@ public class FollowingFragment extends Fragment implements FollowingPresenter.Vi
         user = (User) getArguments().getSerializable(USER_KEY);
         authToken = (AuthToken) getArguments().getSerializable(AUTH_TOKEN_KEY);
 
-        presenter = new FollowingPresenter(this);
+        presenter = new UserPresenter(this);
 
         RecyclerView followingRecyclerView = view.findViewById(R.id.followingRecyclerView);
 
@@ -143,7 +144,7 @@ public class FollowingFragment extends Fragment implements FollowingPresenter.Vi
     /**
      * The adapter for the RecyclerView that displays the Following data.
      */
-    private class FollowingRecyclerViewAdapter extends RecyclerView.Adapter<FollowingHolder> implements GetFollowingTask.Observer {
+    private class FollowingRecyclerViewAdapter extends RecyclerView.Adapter<FollowingHolder> implements GetUsersTask.Observer {
 
         private final List<User> users = new ArrayList<>();
 
@@ -262,23 +263,24 @@ public class FollowingFragment extends Fragment implements FollowingPresenter.Vi
             isLoading = true;
             addLoadingFooter();
 
-            GetFollowingTask getFollowingTask = new GetFollowingTask(presenter, this);
-            FollowingRequest request = new FollowingRequest(user.getAlias(), PAGE_SIZE, (lastFollowee == null ? null : lastFollowee.getAlias()));
-            getFollowingTask.execute(request);
+            GetUsersTask getUsersTask = new GetUsersTask(presenter, this);
+            UserRequest request = new UserRequest(user.getFollowees(), PAGE_SIZE, (lastFollowee == null ? null : lastFollowee.getAlias()));
+
+            getUsersTask.execute(request);
         }
 
         /**
          * A callback indicating more following data has been received. Loads the new followees
          * and removes the loading footer.
          *
-         * @param followingResponse the asynchronous response to the request to load more items.
+         * @param userResponse the asynchronous response to the request to load more items.
          */
         @Override
-        public void followeesRetrieved(FollowingResponse followingResponse) {
-            List<User> followees = followingResponse.getFollowees();
+        public void usersRetrieved(UserResponse userResponse) {
+            List<User> followees = userResponse.getUsers();
 
             lastFollowee = (followees.size() > 0) ? followees.get(followees.size() -1) : null;
-            hasMorePages = followingResponse.getHasMorePages();
+            hasMorePages = userResponse.getHasMorePages();
 
             isLoading = false;
             removeLoadingFooter();

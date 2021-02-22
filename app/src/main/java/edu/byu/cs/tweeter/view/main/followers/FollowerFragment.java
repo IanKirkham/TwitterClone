@@ -23,16 +23,16 @@ import java.util.List;
 import edu.byu.cs.tweeter.R;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
-import edu.byu.cs.tweeter.model.service.request.FollowerRequest;
-import edu.byu.cs.tweeter.model.service.response.FollowerResponse;
-import edu.byu.cs.tweeter.presenter.FollowerPresenter;
-import edu.byu.cs.tweeter.view.asyncTasks.GetFollowersTask;
+import edu.byu.cs.tweeter.model.service.request.UserRequest;
+import edu.byu.cs.tweeter.model.service.response.UserResponse;
+import edu.byu.cs.tweeter.presenter.UserPresenter;
+import edu.byu.cs.tweeter.view.asyncTasks.GetUsersTask;
 import edu.byu.cs.tweeter.view.util.ImageUtils;
 
 /**
  * The fragment that displays on the 'Followers' tab.
  */
-public class FollowerFragment extends Fragment implements FollowerPresenter.View {
+public class FollowerFragment extends Fragment implements UserPresenter.View {
 
     private static final String LOG_TAG = "FollowerFragment";
     private static final String USER_KEY = "UserKey";
@@ -45,7 +45,7 @@ public class FollowerFragment extends Fragment implements FollowerPresenter.View
 
     private User user;
     private AuthToken authToken;
-    private FollowerPresenter presenter;
+    private UserPresenter presenter;
 
     private FollowerRecyclerViewAdapter followerRecyclerViewAdapter;
 
@@ -77,7 +77,7 @@ public class FollowerFragment extends Fragment implements FollowerPresenter.View
         user = (User) getArguments().getSerializable(USER_KEY);
         authToken = (AuthToken) getArguments().getSerializable(AUTH_TOKEN_KEY);
 
-        presenter = new FollowerPresenter(this);
+        presenter = new UserPresenter(this);
 
         RecyclerView followerRecyclerView = view.findViewById(R.id.followerRecyclerView);
 
@@ -143,7 +143,7 @@ public class FollowerFragment extends Fragment implements FollowerPresenter.View
     /**
      * The adapter for the RecyclerView that displays the Follower data.
      */
-    private class FollowerRecyclerViewAdapter extends RecyclerView.Adapter<FollowerHolder> implements GetFollowersTask.Observer {
+    private class FollowerRecyclerViewAdapter extends RecyclerView.Adapter<FollowerHolder> implements GetUsersTask.Observer {
 
         private final List<User> users = new ArrayList<>();
 
@@ -262,23 +262,24 @@ public class FollowerFragment extends Fragment implements FollowerPresenter.View
             isLoading = true;
             addLoadingFooter();
 
-            GetFollowersTask getFollowersTask = new GetFollowersTask(presenter, this);
-            FollowerRequest request = new FollowerRequest(user.getAlias(), PAGE_SIZE, (lastFollower == null ? null : lastFollower.getAlias()));
-            getFollowersTask.execute(request);
+            GetUsersTask getUsersTask = new GetUsersTask(presenter, this);
+            UserRequest request = new UserRequest(user.getFollowers(), PAGE_SIZE, (lastFollower == null ? null : lastFollower.getAlias()));
+
+            getUsersTask.execute(request);
         }
 
         /**
          * A callback indicating more follower data has been received. Loads the new followers
          * and removes the loading footer.
          *
-         * @param followerResponse the asynchronous response to the request to load more items.
+         * @param userResponse the asynchronous response to the request to load more items.
          */
         @Override
-        public void followersRetrieved(FollowerResponse followerResponse) {
-            List<User> followers = followerResponse.getFollowers();
+        public void usersRetrieved(UserResponse userResponse) {
+            List<User> followers = userResponse.getUsers();
 
             lastFollower = (followers.size() > 0) ? followers.get(followers.size() -1) : null;
-            hasMorePages = followerResponse.getHasMorePages();
+            hasMorePages = userResponse.getHasMorePages();
 
             isLoading = false;
             removeLoadingFooter();
