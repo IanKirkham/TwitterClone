@@ -14,10 +14,6 @@ public class PostService {
         ServerFacade serverFacade = getServerFacade();
         PostResponse postResponse = serverFacade.savePost(request);
 
-        if (!postResponse.wasSuccessful()) {
-            throw new Exception("Failed to save post");
-        }
-
         return postResponse;
     }
 
