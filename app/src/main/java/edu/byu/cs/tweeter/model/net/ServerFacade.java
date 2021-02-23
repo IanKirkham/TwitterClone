@@ -243,6 +243,11 @@ public class ServerFacade {
     }
 
     public FollowUserResponse followUser(FollowUserRequest followUserRequest) {
+
+        if (followUserRequest.getRootUser().getAlias().equals(followUserRequest.getCurrentUser().getAlias())) {
+            return new FollowUserResponse(false, "You cannot follow yourself!");
+        }
+
         // make call to backend
         return new FollowUserResponse(true,"Successfully followed user");
     }

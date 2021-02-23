@@ -3,6 +3,7 @@ package edu.byu.cs.tweeter.presenter;
 import java.io.IOException;
 
 import edu.byu.cs.tweeter.model.service.FollowEventService;
+import edu.byu.cs.tweeter.model.service.LoginService;
 import edu.byu.cs.tweeter.model.service.request.FollowUserRequest;
 import edu.byu.cs.tweeter.model.service.request.UnfollowUserRequest;
 import edu.byu.cs.tweeter.model.service.response.FollowEventResponse;
@@ -50,7 +51,7 @@ public class FollowEventPresenter implements FollowEventTask.Observer {
      * @param followUserRequest the request.
      */
     public FollowUserResponse followUser(FollowUserRequest followUserRequest) throws IOException {
-        FollowEventService followEventService = new FollowEventService();
+        FollowEventService followEventService = getFollowEventService();
         return followEventService.followUser(followUserRequest);
     }
 
@@ -60,7 +61,7 @@ public class FollowEventPresenter implements FollowEventTask.Observer {
      * @param unfollowUserRequest the request.
      */
     public UnfollowUserResponse unfollowUser(UnfollowUserRequest unfollowUserRequest) throws IOException {
-        FollowEventService followEventService = new FollowEventService();
+        FollowEventService followEventService = getFollowEventService();
         return followEventService.unfollowUser(unfollowUserRequest);
     }
 
@@ -71,5 +72,16 @@ public class FollowEventPresenter implements FollowEventTask.Observer {
      */
     public FollowEventPresenter(FollowEventPresenter.View view) {
         this.view = view;
+    }
+
+    /**
+     * Returns an instance of {@link FollowEventService}. Allows mocking of the FollowEventService class
+     * for testing purposes. All usages of FollowEventService should get their FollowEventService
+     * instance from this method to allow for mocking of the instance.
+     *
+     * @return the instance.
+     */
+    FollowEventService getFollowEventService() {
+        return new FollowEventService();
     }
 }

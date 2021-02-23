@@ -35,6 +35,8 @@ public class UserActivity extends AppCompatActivity implements FollowEventPresen
 
     private FollowEventPresenter presenter;
 
+    private ToggleButton followButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,7 +77,7 @@ public class UserActivity extends AppCompatActivity implements FollowEventPresen
         TextView followerCount = findViewById(R.id.followerCount);
         followerCount.setText(getString(R.string.followerCount, 27));
 
-        ToggleButton followButton = findViewById(R.id.followButton);
+        followButton = findViewById(R.id.followButton);
         if (rootUser.getFollowees().contains(currentUser.getAlias())) {
             followButton.setChecked(true);
         }
@@ -102,11 +104,13 @@ public class UserActivity extends AppCompatActivity implements FollowEventPresen
 
     @Override
     public void requestUnsuccessful(FollowEventResponse response) {
+        followButton.setChecked(!followButton.isChecked());
         Toast.makeText(this, response.getMessage(), Toast.LENGTH_LONG).show();
     }
 
     @Override
     public void handleException(Exception exception) {
+        followButton.setChecked(!followButton.isChecked());
         Log.e(LOG_TAG, exception.getMessage(), exception);
         Toast.makeText(this, "Failed to unfollow user because of exception: " + exception.getMessage(), Toast.LENGTH_LONG).show();
     }

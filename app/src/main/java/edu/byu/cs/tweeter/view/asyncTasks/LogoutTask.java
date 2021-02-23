@@ -57,7 +57,7 @@ public class LogoutTask extends AsyncTask<LogoutRequest, Void, LogoutResponse> {
         LogoutResponse logoutResponse = null;
 
         try {
-            logoutResponse = presenter.login(logoutRequests[0]);
+            logoutResponse = presenter.logout(logoutRequests[0]);
         } catch (IOException ex) {
             exception = ex;
         }
