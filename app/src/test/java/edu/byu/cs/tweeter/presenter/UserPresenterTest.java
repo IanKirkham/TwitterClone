@@ -20,8 +20,11 @@ public class UserPresenterTest {
     private UserRequest followersRequest;
     private UserResponse followingResponse;
     private UserResponse followersResponse;
+    private UserResponse singleUserResponse;
     private UserService mockUserService;
     private UserPresenter presenter;
+
+    private boolean viewWasCalled = false;
 
     @BeforeEach
     public void setup() throws IOException {
@@ -43,6 +46,8 @@ public class UserPresenterTest {
         followersRequest = new UserRequest(currentUser.getFollowers(), 2, null);
         followersResponse = new UserResponse(Arrays.asList(resultUser2, resultUser3), false);
 
+        singleUserResponse = new UserResponse(Arrays.asList(resultUser1), false);
+
         // Create a mock UserService
         mockUserService = Mockito.mock(UserService.class);
         Mockito.when(mockUserService.getUsers(followingRequest)).thenReturn(followingResponse);
@@ -51,9 +56,13 @@ public class UserPresenterTest {
         // Wrap a UserPresenter in a spy that will use the mock service.
         presenter = Mockito.spy(new UserPresenter(new UserPresenter.View() {
             @Override
-            public void presentNewUserView(User user) {}
+            public void presentNewUserView(User user) {
+                viewWasCalled = true;
+            }
         }));
         Mockito.when(presenter.getUserService()).thenReturn(mockUserService);
+
+        viewWasCalled = false;
     }
 
     @Test
@@ -63,6 +72,12 @@ public class UserPresenterTest {
         // Assert that the presenter returns the same response as the service (it doesn't do
         // anything else, so there's nothing else to test).
         Assertions.assertEquals(followingResponse, presenter.getUsers(followingRequest));
+    }
+
+    @Test
+    public void testViewMethod_wasCalled() throws IOException {
+        presenter.usersRetrieved(singleUserResponse);
+        Assertions.assertTrue(viewWasCalled);
     }
 
     @Test

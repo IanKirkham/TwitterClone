@@ -21,6 +21,8 @@ public class PostPresenterTest {
     private PostService mockPostService;
     private PostPresenter presenter;
 
+    private boolean viewWasCalled = false;
+
     private static final LocalDateTime time1 = LocalDateTime.now();
 
     @BeforeEach
@@ -41,10 +43,14 @@ public class PostPresenterTest {
 
         // Wrap a PostPresenter in a spy that will use the mock service.
         presenter = Mockito.spy(new PostPresenter(new PostPresenter.View() {
-            public void postSaved(PostResponse postResponse) {}
+            public void postSaved(PostResponse postResponse) {
+                viewWasCalled = true;
+            }
             public void handleException(Exception exception) {}
         }));
         Mockito.when(presenter.getPostService()).thenReturn(mockPostService);
+
+        viewWasCalled = false;
     }
 
     @Test
@@ -52,6 +58,12 @@ public class PostPresenterTest {
         Mockito.when(mockPostService.savePost(postRequest)).thenReturn(postResponse);
 
         Assertions.assertEquals(postResponse, presenter.savePost(postRequest));
+    }
+
+    @Test
+    public void testViewMethod_wasCalled() throws Exception {
+        presenter.postSaved(postResponse);
+        Assertions.assertTrue(viewWasCalled);
     }
 
     @Test
