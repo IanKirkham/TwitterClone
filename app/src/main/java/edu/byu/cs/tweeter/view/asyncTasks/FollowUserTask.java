@@ -6,23 +6,13 @@ import java.io.IOException;
 
 import edu.byu.cs.tweeter.model.service.request.FollowUserRequest;
 import edu.byu.cs.tweeter.model.service.response.FollowUserResponse;
-import edu.byu.cs.tweeter.presenter.FollowUserPresenter;
+import edu.byu.cs.tweeter.presenter.FollowEventPresenter;
 
-public class FollowUserTask extends AsyncTask<FollowUserRequest, Void, FollowUserResponse> {
+public class FollowUserTask extends AsyncTask<FollowUserRequest, Void, FollowUserResponse> implements FollowEventTask {
 
-    private final FollowUserPresenter presenter;
-    private final FollowUserTask.Observer observer;
+    private final FollowEventPresenter presenter;
+    private final FollowEventTask.Observer observer;
     private Exception exception;
-
-    /**
-     * An observer interface to be implemented by observers who want to be notified when this task
-     * completes.
-     */
-    public interface Observer {
-        void followSuccessful(FollowUserResponse followUserResponse);
-        void followUnsuccessful(FollowUserResponse followUserResponse);
-        void handleFollowException(Exception ex);
-    }
 
     /**
      * Creates an instance.
@@ -30,7 +20,7 @@ public class FollowUserTask extends AsyncTask<FollowUserRequest, Void, FollowUse
      * @param presenter the presenter this task should use when making a follow request.
      * @param observer the observer who wants to be notified when this task completes.
      */
-    public FollowUserTask(FollowUserPresenter presenter, FollowUserTask.Observer observer) {
+    public FollowUserTask(FollowEventPresenter presenter, FollowUserTask.Observer observer) {
         if(observer == null) {
             throw new NullPointerException();
         }
@@ -68,11 +58,11 @@ public class FollowUserTask extends AsyncTask<FollowUserRequest, Void, FollowUse
     @Override
     protected void onPostExecute(FollowUserResponse followUserResponse) {
         if(exception != null) {
-            observer.handleFollowException(exception);
+            observer.handleException(exception);
         } else if(followUserResponse.isSuccess()) {
-            observer.followSuccessful(followUserResponse);
+            observer.requestSuccessful(followUserResponse);
         } else {
-            observer.followUnsuccessful(followUserResponse);
+            observer.requestUnsuccessful(followUserResponse);
         }
     }
 }

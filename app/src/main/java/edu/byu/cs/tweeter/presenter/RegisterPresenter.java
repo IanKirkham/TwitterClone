@@ -8,19 +8,43 @@ import edu.byu.cs.tweeter.model.service.request.LoginRequest;
 import edu.byu.cs.tweeter.model.service.request.RegisterRequest;
 import edu.byu.cs.tweeter.model.service.response.LoginResponse;
 import edu.byu.cs.tweeter.model.service.response.RegisterResponse;
+import edu.byu.cs.tweeter.view.asyncTasks.RegisterTask;
 
 /**
  * The presenter for the registration functionality of the application.
  */
-public class RegisterPresenter {
+public class RegisterPresenter implements RegisterTask.Observer {
 
     private final RegisterPresenter.View view;
+
+    @Override
+    public void registerSuccessful(RegisterResponse registerResponse) {
+        if (view != null) {
+            view.registerSuccessful(registerResponse);
+        }
+    }
+
+    @Override
+    public void registerUnsuccessful(RegisterResponse registerResponse) {
+        if (view != null) {
+            view.registerUnsuccessful(registerResponse);
+        }
+    }
+
+    @Override
+    public void handleException(Exception exception) {
+        if (view != null) {
+            view.handleException(exception);
+        }
+    }
 
     /**
      * The interface by which this presenter communicates with it's view.
      */
     public interface View {
-        // If needed, specify methods here that will be called on the view in response to model updates
+        void registerSuccessful(RegisterResponse registerResponse);
+        void registerUnsuccessful(RegisterResponse registerResponse);
+        void handleException(Exception ex);
     }
 
     /**

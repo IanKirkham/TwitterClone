@@ -25,7 +25,7 @@ import edu.byu.cs.tweeter.presenter.LoginPresenter;
 import edu.byu.cs.tweeter.view.asyncTasks.LoginTask;
 import edu.byu.cs.tweeter.view.main.MainActivity;
 
-public class LoginFragment extends Fragment implements LoginPresenter.View, LoginTask.Observer {
+public class LoginFragment extends Fragment implements LoginPresenter.View {
 
     private static final String LOG_TAG = "LoginFragment";
 
@@ -72,7 +72,7 @@ public class LoginFragment extends Fragment implements LoginPresenter.View, Logi
                 loginInToast.show();
 
                 LoginRequest loginRequest = new LoginRequest(usernameField.getText().toString(), passwordField.getText().toString());
-                LoginTask loginTask = new LoginTask(presenter, LoginFragment.this);
+                LoginTask loginTask = new LoginTask(presenter, presenter);
                 loginTask.execute(loginRequest);
             }
         });
