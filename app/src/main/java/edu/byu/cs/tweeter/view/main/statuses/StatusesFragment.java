@@ -143,8 +143,9 @@ public abstract class StatusesFragment extends Fragment implements UserPresenter
                 public void onClick(@NonNull View widget) {
                     Toast.makeText(getContext(), "Clicked the user alias!", Toast.LENGTH_LONG).show();
                     Intent intent = new Intent(getActivity(), UserActivity.class);
-                    intent.putExtra(MainActivity.CURRENT_USER_KEY, status.getAuthor());
-                    intent.putExtra(MainActivity.AUTH_TOKEN_KEY, authToken);
+                    intent.putExtra(UserActivity.ROOT_USER_KEY, user);
+                    intent.putExtra(UserActivity.CURRENT_USER_KEY, status.getAuthor());
+                    intent.putExtra(UserActivity.AUTH_TOKEN_KEY, authToken);
                     Objects.requireNonNull(getActivity()).startActivity(intent);
                 }
             }, 0, spannableAlias.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
@@ -213,10 +214,11 @@ public abstract class StatusesFragment extends Fragment implements UserPresenter
     }
 
     @Override
-    public void presentNewUserView(User user) {
+    public void presentNewUserView(User currentUser) {
         Intent intent = new Intent(getActivity(), UserActivity.class);
-        intent.putExtra(MainActivity.CURRENT_USER_KEY, user);
-        intent.putExtra(MainActivity.AUTH_TOKEN_KEY, authToken);
+        intent.putExtra(UserActivity.ROOT_USER_KEY, user);
+        intent.putExtra(UserActivity.CURRENT_USER_KEY, currentUser);
+        intent.putExtra(UserActivity.AUTH_TOKEN_KEY, authToken);
         Objects.requireNonNull(getActivity()).startActivity(intent);
     }
 

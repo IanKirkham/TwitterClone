@@ -28,13 +28,15 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
     @StringRes
     private static final int[] TAB_TITLES = new int[]{R.string.storyTabTitle, R.string.followingTabTitle, R.string.followersTabTitle};
     private final Context mContext;
-    private final User user;
+    private final User rootUser;
+    private final User currentUser;
     private final AuthToken authToken;
 
-    public SectionsPagerAdapter(Context context, FragmentManager fm, User user, AuthToken authToken) {
+    public SectionsPagerAdapter(Context context, FragmentManager fm, User rootUser, User currentUser, AuthToken authToken) {
         super(fm);
         mContext = context;
-        this.user = user;
+        this.rootUser = rootUser;
+        this.currentUser = currentUser;
         this.authToken = authToken;
     }
 
@@ -42,11 +44,11 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case  STORY_FRAGMENT_POSITION:
-                return StoryFragment.newInstance(user, authToken);
+                return StoryFragment.newInstance(currentUser, authToken);
             case FOLLOWING_FRAGMENT_POSITION:
-                return FollowingFragment.newInstance(user, authToken);
+                return FollowingFragment.newInstance(currentUser, authToken);
             case FOLLOWER_FRAGMENT_POSITION:
-                return FollowerFragment.newInstance(user, authToken);
+                return FollowerFragment.newInstance(currentUser, authToken);
             default:
                 return null; // If this ever happens, we have bigger problems.
         }

@@ -19,55 +19,55 @@ import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.service.request.FollowUserRequest;
 import edu.byu.cs.tweeter.model.service.request.UnfollowUserRequest;
-import edu.byu.cs.tweeter.model.service.response.FollowUserResponse;
-import edu.byu.cs.tweeter.model.service.response.UnfollowUserResponse;
-import edu.byu.cs.tweeter.presenter.FollowUserPresenter;
-import edu.byu.cs.tweeter.presenter.UnfollowUserPresenter;
+import edu.byu.cs.tweeter.model.service.response.FollowEventResponse;
+import edu.byu.cs.tweeter.presenter.FollowEventPresenter;
 import edu.byu.cs.tweeter.view.asyncTasks.FollowUserTask;
 import edu.byu.cs.tweeter.view.asyncTasks.UnfollowUserTask;
 import edu.byu.cs.tweeter.view.util.ImageUtils;
 
-public class UserActivity extends AppCompatActivity implements FollowUserPresenter.View, FollowUserTask.Observer, UnfollowUserPresenter.View, UnfollowUserTask.Observer {
+public class UserActivity extends AppCompatActivity implements FollowEventPresenter.View {
 
     private static final String LOG_TAG = "UserActivity";
 
+    public static final String ROOT_USER_KEY = "RootUser";
     public static final String CURRENT_USER_KEY = "CurrentUser";
     public static final String AUTH_TOKEN_KEY = "AuthTokenKey";
 
-    private FollowUserPresenter followUserPresenter;
-    private UnfollowUserPresenter unfollowUserPresenter;
+    private FollowEventPresenter presenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user);
 
-        User user = (User) getIntent().getSerializableExtra(CURRENT_USER_KEY);
-        if(user == null) {
+        User rootUser = (User) getIntent().getSerializableExtra(ROOT_USER_KEY);
+        if (rootUser == null) {
+            throw new RuntimeException("Root user not passed to activity");
+        }
+
+        User currentUser = (User) getIntent().getSerializableExtra(CURRENT_USER_KEY);
+        if(currentUser == null) {
             throw new RuntimeException("User not passed to activity");
         }
 
         AuthToken authToken = (AuthToken) getIntent().getSerializableExtra(AUTH_TOKEN_KEY);
 
-        followUserPresenter = new FollowUserPresenter(this);        // TODO: we probably only need one presenter for this page, so combine the two?
-        unfollowUserPresenter = new UnfollowUserPresenter(this);
+        presenter = new FollowEventPresenter(this);
 
-        SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager(), user, authToken);
+        SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager(), rootUser, currentUser, authToken);
         ViewPager viewPager = findViewById(R.id.view_pager);
         viewPager.setAdapter(sectionsPagerAdapter);
         TabLayout tabs = findViewById(R.id.tabs);
         tabs.setupWithViewPager(viewPager);
 
         TextView userName = findViewById(R.id.userName);
-        userName.setText(user.getName());
+        userName.setText(currentUser.getName());
 
         TextView userAlias = findViewById(R.id.userAlias);
-        userAlias.setText(user.getAlias());
+        userAlias.setText(currentUser.getAlias());
 
         ImageView userImageView = findViewById(R.id.userImage);
-        if (user.getImageBytes() != null) { // right now it breaks without this check (because we have some fake users in the "mentions" of a status without an imageByte array
-            userImageView.setImageDrawable(ImageUtils.drawableFromByteArray(user.getImageBytes()));
-        }
+        userImageView.setImageDrawable(ImageUtils.drawableFromByteArray(currentUser.getImageBytes()));
 
         TextView followeeCount = findViewById(R.id.followeeCount);
         followeeCount.setText(getString(R.string.followeeCount, 42));
@@ -76,18 +76,19 @@ public class UserActivity extends AppCompatActivity implements FollowUserPresent
         followerCount.setText(getString(R.string.followerCount, 27));
 
         ToggleButton followButton = findViewById(R.id.followButton);
+        if (rootUser.getFollowees().contains(currentUser.getAlias())) {
+            followButton.setChecked(true);
+        }
         followButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    User dummyUser = new User("first", "last", "url");
-                    FollowUserRequest followUserRequest = new FollowUserRequest(dummyUser, new AuthToken(), dummyUser);
-                    FollowUserTask followUserTask = new FollowUserTask(followUserPresenter, UserActivity.this);
+                    FollowUserRequest followUserRequest = new FollowUserRequest(rootUser, new AuthToken(), currentUser);
+                    FollowUserTask followUserTask = new FollowUserTask(presenter, presenter);
                     followUserTask.execute(followUserRequest);
                 } else {
-                    User dummyUser = new User("first", "last", "url");
-                    UnfollowUserRequest unfollowUserRequest = new UnfollowUserRequest(dummyUser, new AuthToken(), dummyUser);
-                    UnfollowUserTask unfollowUserTask = new UnfollowUserTask(unfollowUserPresenter, UserActivity.this);
+                    UnfollowUserRequest unfollowUserRequest = new UnfollowUserRequest(rootUser, new AuthToken(), currentUser);
+                    UnfollowUserTask unfollowUserTask = new UnfollowUserTask(presenter, presenter);
                     unfollowUserTask.execute(unfollowUserRequest);
                 }
             }
@@ -95,33 +96,17 @@ public class UserActivity extends AppCompatActivity implements FollowUserPresent
     }
 
     @Override
-    public void followSuccessful(FollowUserResponse followUserResponse) {
-        Toast.makeText(this, followUserResponse.getMessage(), Toast.LENGTH_LONG).show();
+    public void requestSuccessful(FollowEventResponse response) {
+        Toast.makeText(this, response.getMessage(), Toast.LENGTH_LONG).show();
     }
 
     @Override
-    public void followUnsuccessful(FollowUserResponse followUserResponse) {
-        Toast.makeText(this, followUserResponse.getMessage(), Toast.LENGTH_LONG).show();
+    public void requestUnsuccessful(FollowEventResponse response) {
+        Toast.makeText(this, response.getMessage(), Toast.LENGTH_LONG).show();
     }
 
     @Override
-    public void handleFollowException(Exception exception) {
-        Log.e(LOG_TAG, exception.getMessage(), exception);
-        Toast.makeText(this, "Failed to follow user because of exception: " + exception.getMessage(), Toast.LENGTH_LONG).show();
-    }
-
-    @Override
-    public void unfollowSuccessful(UnfollowUserResponse unfollowUserResponse) {
-        Toast.makeText(this, unfollowUserResponse.getMessage(), Toast.LENGTH_LONG).show();
-    }
-
-    @Override
-    public void unfollowUnsuccessful(UnfollowUserResponse unfollowUserResponse) {
-        Toast.makeText(this, unfollowUserResponse.getMessage(), Toast.LENGTH_LONG).show();
-    }
-
-    @Override
-    public void handleUnfollowException(Exception exception) {
+    public void handleException(Exception exception) {
         Log.e(LOG_TAG, exception.getMessage(), exception);
         Toast.makeText(this, "Failed to unfollow user because of exception: " + exception.getMessage(), Toast.LENGTH_LONG).show();
     }

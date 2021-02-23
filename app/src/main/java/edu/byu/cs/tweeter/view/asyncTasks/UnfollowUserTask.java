@@ -5,24 +5,15 @@ import android.os.AsyncTask;
 import java.io.IOException;
 
 import edu.byu.cs.tweeter.model.service.request.UnfollowUserRequest;
+import edu.byu.cs.tweeter.model.service.response.FollowEventResponse;
 import edu.byu.cs.tweeter.model.service.response.UnfollowUserResponse;
-import edu.byu.cs.tweeter.presenter.UnfollowUserPresenter;
+import edu.byu.cs.tweeter.presenter.FollowEventPresenter;
 
-public class UnfollowUserTask extends AsyncTask<UnfollowUserRequest, Void, UnfollowUserResponse> {
+public class UnfollowUserTask extends AsyncTask<UnfollowUserRequest, Void, UnfollowUserResponse> implements FollowEventTask {
 
-    private final UnfollowUserPresenter presenter;
-    private final UnfollowUserTask.Observer observer;
+    private final FollowEventPresenter presenter;
+    private final FollowEventTask.Observer observer;
     private Exception exception;
-
-    /**
-     * An observer interface to be implemented by observers who want to be notified when this task
-     * completes.
-     */
-    public interface Observer {
-        void unfollowSuccessful(UnfollowUserResponse unfollowUserResponse);
-        void unfollowUnsuccessful(UnfollowUserResponse unfollowUserResponse);
-        void handleUnfollowException(Exception ex);
-    }
 
     /**
      * Creates an instance.
@@ -30,7 +21,7 @@ public class UnfollowUserTask extends AsyncTask<UnfollowUserRequest, Void, Unfol
      * @param presenter the presenter this task should use when making an unfollow request.
      * @param observer the observer who wants to be notified when this task completes.
      */
-    public UnfollowUserTask(UnfollowUserPresenter presenter, UnfollowUserTask.Observer observer) {
+    public UnfollowUserTask(FollowEventPresenter presenter, UnfollowUserTask.Observer observer) {
         if(observer == null) {
             throw new NullPointerException();
         }
@@ -68,11 +59,11 @@ public class UnfollowUserTask extends AsyncTask<UnfollowUserRequest, Void, Unfol
     @Override
     protected void onPostExecute(UnfollowUserResponse unfollowUserResponse) {
         if(exception != null) {
-            observer.handleUnfollowException(exception);
+            observer.handleException(exception);
         } else if(unfollowUserResponse.isSuccess()) {
-            observer.unfollowSuccessful(unfollowUserResponse);
+            observer.requestSuccessful(unfollowUserResponse);
         } else {
-            observer.unfollowUnsuccessful(unfollowUserResponse);
+            observer.requestUnsuccessful(unfollowUserResponse);
         }
     }
 

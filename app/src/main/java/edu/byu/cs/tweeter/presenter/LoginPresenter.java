@@ -5,19 +5,43 @@ import java.io.IOException;
 import edu.byu.cs.tweeter.model.service.LoginService;
 import edu.byu.cs.tweeter.model.service.request.LoginRequest;
 import edu.byu.cs.tweeter.model.service.response.LoginResponse;
+import edu.byu.cs.tweeter.view.asyncTasks.LoginTask;
 
 /**
  * The presenter for the login functionality of the application.
  */
-public class LoginPresenter {
+public class LoginPresenter implements LoginTask.Observer {
 
     private final View view;
+
+    @Override
+    public void loginSuccessful(LoginResponse loginResponse) {
+        if (view != null) {
+            view.loginSuccessful(loginResponse);
+        }
+    }
+
+    @Override
+    public void loginUnsuccessful(LoginResponse loginResponse) {
+        if (view != null) {
+            view.loginUnsuccessful(loginResponse);
+        }
+    }
+
+    @Override
+    public void handleException(Exception exception) {
+        if (view != null) {
+            view.handleException(exception);
+        }
+    }
 
     /**
      * The interface by which this presenter communicates with it's view.
      */
     public interface View {
-        // If needed, specify methods here that will be called on the view in response to model updates
+        void loginSuccessful(LoginResponse loginResponse);
+        void loginUnsuccessful(LoginResponse loginResponse);
+        void handleException(Exception exception);
     }
 
     /**

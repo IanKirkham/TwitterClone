@@ -18,6 +18,7 @@ import edu.byu.cs.tweeter.model.service.request.RegisterRequest;
 import edu.byu.cs.tweeter.model.service.request.StatusesRequest;
 import edu.byu.cs.tweeter.model.service.request.UnfollowUserRequest;
 import edu.byu.cs.tweeter.model.service.request.UserRequest;
+import edu.byu.cs.tweeter.model.service.response.FollowEventResponse;
 import edu.byu.cs.tweeter.model.service.response.FollowUserResponse;
 import edu.byu.cs.tweeter.model.service.response.LoginResponse;
 import edu.byu.cs.tweeter.model.service.response.LogoutResponse;
@@ -243,11 +244,11 @@ public class ServerFacade {
 
     public FollowUserResponse followUser(FollowUserRequest followUserRequest) {
         // make call to backend
-        return new FollowUserResponse("Successfully followed user");
+        return new FollowUserResponse(true,"Successfully followed user");
     }
 
     public UnfollowUserResponse unfollowUser(UnfollowUserRequest unfollowUserRequest) {
         // make call to backend
-        return new UnfollowUserResponse("Successfully unfollowed user");
+        return new UnfollowUserResponse(true, "Successfully unfollowed user");
     }
 }

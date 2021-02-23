@@ -3,10 +3,17 @@ package edu.byu.cs.tweeter.model.service;
 import java.io.IOException;
 
 import edu.byu.cs.tweeter.model.net.ServerFacade;
+import edu.byu.cs.tweeter.model.service.request.FollowUserRequest;
 import edu.byu.cs.tweeter.model.service.request.UnfollowUserRequest;
+import edu.byu.cs.tweeter.model.service.response.FollowUserResponse;
 import edu.byu.cs.tweeter.model.service.response.UnfollowUserResponse;
 
-public class UnfollowUserService {
+public class FollowEventService {
+
+    public FollowUserResponse followUser(FollowUserRequest request) throws IOException {
+        ServerFacade serverFacade = getServerFacade();
+        return serverFacade.followUser(request);
+    }
 
     public UnfollowUserResponse unfollowUser(UnfollowUserRequest request) throws IOException {
         ServerFacade serverFacade = getServerFacade();

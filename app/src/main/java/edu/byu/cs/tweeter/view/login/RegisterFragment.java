@@ -36,7 +36,7 @@ import edu.byu.cs.tweeter.view.main.MainActivity;
 
 import static android.app.Activity.RESULT_OK;
 
-public class RegisterFragment extends Fragment implements RegisterPresenter.View, RegisterTask.Observer {
+public class RegisterFragment extends Fragment implements RegisterPresenter.View {
 
     private static final String LOG_TAG = "RegisterFragment";
     private static final int REQUEST_IMAGE_CAPTURE = 1;
@@ -107,7 +107,7 @@ public class RegisterFragment extends Fragment implements RegisterPresenter.View
 
                 RegisterRequest registerRequest = new RegisterRequest(firstNameField.getText().toString(),
                         lastNameField.getText().toString(), usernameField.getText().toString(), passwordField.getText().toString(), imageBytes);
-                RegisterTask registerTask = new RegisterTask(presenter, RegisterFragment.this);
+                RegisterTask registerTask = new RegisterTask(presenter, presenter);
                 registerTask.execute(registerRequest);
             }
         });
