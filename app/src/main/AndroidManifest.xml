@@ -16,11 +16,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".view.main.user.UserActivity"
+            android:name="edu.byu.cs.tweeter.client.view.main.user.UserActivity"
             android:label="@string/title_activity_user"
             android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
-            android:name=".view.login.LoginActivity"
+            android:name="edu.byu.cs.tweeter.client.view.login.LoginActivity"
             android:label="@string/title_activity_login"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -30,7 +30,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".view.main.MainActivity"
+            android:name="edu.byu.cs.tweeter.client.view.main.MainActivity"
             android:label="@string/title_activity_main"></activity>
     </application>
 

@@ -14,7 +14,6 @@ import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.net.ServerFacade;
 import edu.byu.cs.tweeter.model.service.request.PostRequest;
 import edu.byu.cs.tweeter.model.service.response.PostResponse;
-import edu.byu.cs.tweeter.model.service.PostService;
 
 public class PostServiceTest {
 

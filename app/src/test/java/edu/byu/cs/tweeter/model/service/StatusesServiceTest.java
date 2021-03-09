@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -18,7 +17,6 @@ import edu.byu.cs.tweeter.model.net.ServerFacade;
 import edu.byu.cs.tweeter.model.service.request.StatusesRequest;
 import edu.byu.cs.tweeter.model.service.request.UserRequest;
 import edu.byu.cs.tweeter.model.service.response.StatusesResponse;
-import edu.byu.cs.tweeter.model.service.response.UserResponse;
 
 public class StatusesServiceTest {
 
