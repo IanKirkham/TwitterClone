@@ -1,4 +1,4 @@
-package edu.byu.cs.tweeter.view.login;
+package edu.byu.cs.tweeter.client.view.login;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -21,9 +21,9 @@ import java.util.Objects;
 import edu.byu.cs.tweeter.R;
 import edu.byu.cs.tweeter.model.service.request.LoginRequest;
 import edu.byu.cs.tweeter.model.service.response.LoginResponse;
-import edu.byu.cs.tweeter.presenter.LoginPresenter;
-import edu.byu.cs.tweeter.view.asyncTasks.LoginTask;
-import edu.byu.cs.tweeter.view.main.MainActivity;
+import edu.byu.cs.tweeter.client.presenter.LoginPresenter;
+import edu.byu.cs.tweeter.client.view.asyncTasks.LoginTask;
+import edu.byu.cs.tweeter.client.view.main.MainActivity;
 
 public class LoginFragment extends Fragment implements LoginPresenter.View {
 
@@ -72,7 +72,7 @@ public class LoginFragment extends Fragment implements LoginPresenter.View {
                 loginInToast.show();
 
                 LoginRequest loginRequest = new LoginRequest(usernameField.getText().toString(), passwordField.getText().toString());
-                LoginTask loginTask = new LoginTask(presenter, presenter);
+                LoginTask loginTask = new LoginTask(presenter, (LoginTask.Observer) presenter);
                 loginTask.execute(loginRequest);
             }
         });

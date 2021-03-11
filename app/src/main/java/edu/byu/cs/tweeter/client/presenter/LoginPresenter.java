@@ -7,7 +7,7 @@ import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
 import edu.byu.cs.tweeter.model.service.LoginService;
 import edu.byu.cs.tweeter.model.service.request.LoginRequest;
 import edu.byu.cs.tweeter.model.service.response.LoginResponse;
-import edu.byu.cs.tweeter.view.asyncTasks.LoginTask;
+import edu.byu.cs.tweeter.client.view.asyncTasks.LoginTask;
 
 /**
  * The presenter for the login functionality of the application.

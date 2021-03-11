@@ -7,7 +7,7 @@ import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
 import edu.byu.cs.tweeter.model.service.PostService;
 import edu.byu.cs.tweeter.model.service.request.PostRequest;
 import edu.byu.cs.tweeter.model.service.response.PostResponse;
-import edu.byu.cs.tweeter.view.asyncTasks.PostTask;
+import edu.byu.cs.tweeter.client.view.asyncTasks.PostTask;
 
 /**
  * The presenter for the post functionality of the application.

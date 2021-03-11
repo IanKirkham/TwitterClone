@@ -1,4 +1,4 @@
-package edu.byu.cs.tweeter.view.main.statuses;
+package edu.byu.cs.tweeter.client.view.main.statuses;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -38,11 +38,11 @@ import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.service.request.UserRequest;
 import edu.byu.cs.tweeter.model.service.response.StatusesResponse;
-import edu.byu.cs.tweeter.presenter.StatusesPresenter;
-import edu.byu.cs.tweeter.presenter.UserPresenter;
-import edu.byu.cs.tweeter.view.asyncTasks.GetUsersTask;
-import edu.byu.cs.tweeter.view.main.user.UserActivity;
-import edu.byu.cs.tweeter.view.util.ImageUtils;
+import edu.byu.cs.tweeter.client.presenter.StatusesPresenter;
+import edu.byu.cs.tweeter.client.presenter.UserPresenter;
+import edu.byu.cs.tweeter.client.view.asyncTasks.GetUsersTask;
+import edu.byu.cs.tweeter.client.view.main.user.UserActivity;
+import edu.byu.cs.tweeter.client.view.util.ImageUtils;
 
 /**
  * The fragment that displays on the 'Story' tab.

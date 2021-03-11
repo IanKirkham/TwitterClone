@@ -1,12 +1,13 @@
-package edu.byu.cs.tweeter.presenter;
+package edu.byu.cs.tweeter.client.presenter;
 
 import java.io.IOException;
 
 import edu.byu.cs.tweeter.client.model.service.LogoutServiceProxy;
+import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
 import edu.byu.cs.tweeter.model.service.LogoutService;
 import edu.byu.cs.tweeter.model.service.request.LogoutRequest;
 import edu.byu.cs.tweeter.model.service.response.LogoutResponse;
-import edu.byu.cs.tweeter.view.asyncTasks.LogoutTask;
+import edu.byu.cs.tweeter.client.view.asyncTasks.LogoutTask;
 
 /**
  * The presenter for the logout functionality of the application.
@@ -38,7 +39,7 @@ public class LogoutPresenter implements LogoutTask.Observer {
      *
      * @param logoutRequest the request.
      */
-    public LogoutResponse logout(LogoutRequest logoutRequest) throws IOException {
+    public LogoutResponse logout(LogoutRequest logoutRequest) throws IOException, TweeterRemoteException {
         LogoutService logoutService = getLogoutService();
         return logoutService.logout(logoutRequest);
     }

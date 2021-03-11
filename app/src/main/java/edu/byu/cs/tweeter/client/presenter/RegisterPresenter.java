@@ -1,4 +1,4 @@
-package edu.byu.cs.tweeter.presenter;
+package edu.byu.cs.tweeter.client.presenter;
 
 import java.io.IOException;
 
@@ -7,7 +7,7 @@ import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
 import edu.byu.cs.tweeter.model.service.RegisterService;
 import edu.byu.cs.tweeter.model.service.request.RegisterRequest;
 import edu.byu.cs.tweeter.model.service.response.RegisterResponse;
-import edu.byu.cs.tweeter.view.asyncTasks.RegisterTask;
+import edu.byu.cs.tweeter.client.view.asyncTasks.RegisterTask;
 
 /**
  * The presenter for the registration functionality of the application.

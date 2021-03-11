@@ -1,12 +1,13 @@
-package edu.byu.cs.tweeter.view.asyncTasks;
+package edu.byu.cs.tweeter.client.view.asyncTasks;
 
 import android.os.AsyncTask;
 
 import java.io.IOException;
 
+import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
 import edu.byu.cs.tweeter.model.service.request.UnfollowUserRequest;
 import edu.byu.cs.tweeter.model.service.response.UnfollowUserResponse;
-import edu.byu.cs.tweeter.presenter.FollowEventPresenter;
+import edu.byu.cs.tweeter.client.presenter.FollowEventPresenter;
 
 public class UnfollowUserTask extends AsyncTask<UnfollowUserRequest, Void, UnfollowUserResponse> implements FollowEventTask {
 
@@ -42,7 +43,7 @@ public class UnfollowUserTask extends AsyncTask<UnfollowUserRequest, Void, Unfol
 
         try {
             unfollowUserResponse = presenter.unfollowUser(unfollowRequests[0]);
-        } catch (IOException ex) {
+        } catch (IOException | TweeterRemoteException ex) {
             exception = ex;
         }
 

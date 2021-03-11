@@ -1,4 +1,4 @@
-package edu.byu.cs.tweeter.presenter;
+package edu.byu.cs.tweeter.client.presenter;
 
 import java.io.IOException;
 
@@ -7,7 +7,7 @@ import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
 import edu.byu.cs.tweeter.model.service.StatusesService;
 import edu.byu.cs.tweeter.model.service.request.StatusesRequest;
 import edu.byu.cs.tweeter.model.service.response.StatusesResponse;
-import edu.byu.cs.tweeter.view.asyncTasks.GetStatusesTask;
+import edu.byu.cs.tweeter.client.view.asyncTasks.GetStatusesTask;
 
 /**
  * The presenter for Feed/Story functionality of the application.

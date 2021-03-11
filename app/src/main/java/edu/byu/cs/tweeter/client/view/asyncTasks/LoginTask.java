@@ -1,4 +1,4 @@
-package edu.byu.cs.tweeter.view.asyncTasks;
+package edu.byu.cs.tweeter.client.view.asyncTasks;
 
 import android.os.AsyncTask;
 import android.util.Log;
@@ -6,10 +6,11 @@ import android.util.Log;
 import java.io.IOException;
 
 import edu.byu.cs.tweeter.model.domain.User;
+import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
 import edu.byu.cs.tweeter.model.service.request.LoginRequest;
 import edu.byu.cs.tweeter.model.service.response.LoginResponse;
-import edu.byu.cs.tweeter.presenter.LoginPresenter;
-import edu.byu.cs.tweeter.util.ByteArrayUtils;
+import edu.byu.cs.tweeter.client.presenter.LoginPresenter;
+import edu.byu.cs.tweeter.client.util.ByteArrayUtils;
 
 public class LoginTask extends AsyncTask<LoginRequest, Void, LoginResponse> {
 
@@ -59,7 +60,7 @@ public class LoginTask extends AsyncTask<LoginRequest, Void, LoginResponse> {
             if(loginResponse.isSuccess()) {
                 loadImage(loginResponse.getUser());
             }
-        } catch (IOException ex) {
+        } catch (IOException | TweeterRemoteException ex) {
             exception = ex;
         }
 

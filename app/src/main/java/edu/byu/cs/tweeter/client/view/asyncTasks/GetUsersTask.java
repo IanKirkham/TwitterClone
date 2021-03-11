@@ -1,13 +1,13 @@
-package edu.byu.cs.tweeter.view.asyncTasks;
+package edu.byu.cs.tweeter.client.view.asyncTasks;
 
 import android.os.AsyncTask;
 
 import java.io.IOException;
 
+import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
 import edu.byu.cs.tweeter.model.service.request.UserRequest;
 import edu.byu.cs.tweeter.model.service.response.UserResponse;
-import edu.byu.cs.tweeter.presenter.UserPresenter;
-
+import edu.byu.cs.tweeter.client.presenter.UserPresenter;
 
 /**
  * An {@link AsyncTask} for retrieving users.
@@ -56,7 +56,7 @@ public class GetUsersTask extends AsyncTask<UserRequest, Void, UserResponse> {
 
         try {
             response = presenter.getUsers(userRequests[0]);
-        } catch (IOException ex) {
+        } catch (IOException | TweeterRemoteException ex) {
             exception = ex;
         }
 

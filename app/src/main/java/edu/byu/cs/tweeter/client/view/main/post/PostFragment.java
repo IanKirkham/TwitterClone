@@ -1,4 +1,4 @@
-package edu.byu.cs.tweeter.view.main.post;
+package edu.byu.cs.tweeter.client.view.main.post;
 
 import android.os.Bundle;
 
@@ -21,9 +21,9 @@ import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.service.request.PostRequest;
 import edu.byu.cs.tweeter.model.service.response.PostResponse;
-import edu.byu.cs.tweeter.presenter.PostPresenter;
-import edu.byu.cs.tweeter.view.asyncTasks.PostTask;
-import edu.byu.cs.tweeter.view.util.ImageUtils;
+import edu.byu.cs.tweeter.client.presenter.PostPresenter;
+import edu.byu.cs.tweeter.client.view.asyncTasks.PostTask;
+import edu.byu.cs.tweeter.client.view.util.ImageUtils;
 
 /**
  * The fragment that displays on the 'Following' tab.

@@ -1,4 +1,4 @@
-package edu.byu.cs.tweeter.view.main.user;
+package edu.byu.cs.tweeter.client.view.main.user;
 
 import android.os.Bundle;
 
@@ -20,10 +20,10 @@ import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.service.request.FollowUserRequest;
 import edu.byu.cs.tweeter.model.service.request.UnfollowUserRequest;
 import edu.byu.cs.tweeter.model.service.response.FollowEventResponse;
-import edu.byu.cs.tweeter.presenter.FollowEventPresenter;
-import edu.byu.cs.tweeter.view.asyncTasks.FollowUserTask;
-import edu.byu.cs.tweeter.view.asyncTasks.UnfollowUserTask;
-import edu.byu.cs.tweeter.view.util.ImageUtils;
+import edu.byu.cs.tweeter.client.presenter.FollowEventPresenter;
+import edu.byu.cs.tweeter.client.view.asyncTasks.FollowUserTask;
+import edu.byu.cs.tweeter.client.view.asyncTasks.UnfollowUserTask;
+import edu.byu.cs.tweeter.client.view.util.ImageUtils;
 
 public class UserActivity extends AppCompatActivity implements FollowEventPresenter.View {
 

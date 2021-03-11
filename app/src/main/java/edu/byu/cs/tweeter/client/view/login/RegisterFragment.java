@@ -1,4 +1,4 @@
-package edu.byu.cs.tweeter.view.login;
+package edu.byu.cs.tweeter.client.view.login;
 
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
@@ -25,9 +25,9 @@ import java.io.ByteArrayOutputStream;
 import edu.byu.cs.tweeter.R;
 import edu.byu.cs.tweeter.model.service.request.RegisterRequest;
 import edu.byu.cs.tweeter.model.service.response.RegisterResponse;
-import edu.byu.cs.tweeter.presenter.RegisterPresenter;
-import edu.byu.cs.tweeter.view.asyncTasks.RegisterTask;
-import edu.byu.cs.tweeter.view.main.MainActivity;
+import edu.byu.cs.tweeter.client.presenter.RegisterPresenter;
+import edu.byu.cs.tweeter.client.view.asyncTasks.RegisterTask;
+import edu.byu.cs.tweeter.client.view.main.MainActivity;
 
 import static android.app.Activity.RESULT_OK;
 

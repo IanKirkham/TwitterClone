@@ -1,11 +1,11 @@
-package edu.byu.cs.tweeter.view.main.follow;
+package edu.byu.cs.tweeter.client.view.main.follow;
 
 import android.os.Bundle;
 
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.service.request.UserRequest;
-import edu.byu.cs.tweeter.view.asyncTasks.GetUsersTask;
+import edu.byu.cs.tweeter.client.view.asyncTasks.GetUsersTask;
 
 /**
  * The fragment that displays on the 'Followers' tab.

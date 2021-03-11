@@ -1,11 +1,10 @@
-package edu.byu.cs.tweeter.view.asyncTasks;
+package edu.byu.cs.tweeter.client.view.asyncTasks;
 
 import android.os.AsyncTask;
 
 import edu.byu.cs.tweeter.model.service.request.PostRequest;
 import edu.byu.cs.tweeter.model.service.response.PostResponse;
-import edu.byu.cs.tweeter.presenter.PostPresenter;
-
+import edu.byu.cs.tweeter.client.presenter.PostPresenter;
 
 /**
  * An {@link AsyncTask} for saving a post for a user.

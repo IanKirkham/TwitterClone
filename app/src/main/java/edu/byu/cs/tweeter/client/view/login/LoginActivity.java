@@ -1,4 +1,4 @@
-package edu.byu.cs.tweeter.view.login;
+package edu.byu.cs.tweeter.client.view.login;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
@@ -16,7 +16,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        edu.byu.cs.tweeter.view.login.SectionsPagerAdapter sectionsPagerAdapter = new edu.byu.cs.tweeter.view.login.SectionsPagerAdapter(this, getSupportFragmentManager());
+        edu.byu.cs.tweeter.client.view.login.SectionsPagerAdapter sectionsPagerAdapter = new edu.byu.cs.tweeter.client.view.login.SectionsPagerAdapter(this, getSupportFragmentManager());
         ViewPager viewPager = findViewById(R.id.loginViewPager);
         viewPager.setAdapter(sectionsPagerAdapter);
         TabLayout tabs = findViewById(R.id.loginTabs);

@@ -1,4 +1,4 @@
-package edu.byu.cs.tweeter.presenter;
+package edu.byu.cs.tweeter.client.presenter;
 
 import java.io.IOException;
 
@@ -8,7 +8,7 @@ import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
 import edu.byu.cs.tweeter.model.service.UserService;
 import edu.byu.cs.tweeter.model.service.request.UserRequest;
 import edu.byu.cs.tweeter.model.service.response.UserResponse;
-import edu.byu.cs.tweeter.view.asyncTasks.GetUsersTask;
+import edu.byu.cs.tweeter.client.view.asyncTasks.GetUsersTask;
 
 /**
  * The presenter for the "Followers/Following" functionality of the application.

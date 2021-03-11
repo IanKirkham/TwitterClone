@@ -1,4 +1,4 @@
-package edu.byu.cs.tweeter.view.main;
+package edu.byu.cs.tweeter.client.view.main;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -24,12 +24,12 @@ import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.service.request.LogoutRequest;
 import edu.byu.cs.tweeter.model.service.response.LogoutResponse;
-import edu.byu.cs.tweeter.presenter.LogoutPresenter;
-import edu.byu.cs.tweeter.presenter.PostPresenter;
-import edu.byu.cs.tweeter.view.asyncTasks.LogoutTask;
-import edu.byu.cs.tweeter.view.login.LoginActivity;
-import edu.byu.cs.tweeter.view.main.post.PostFragment;
-import edu.byu.cs.tweeter.view.util.ImageUtils;
+import edu.byu.cs.tweeter.client.presenter.LogoutPresenter;
+import edu.byu.cs.tweeter.client.presenter.PostPresenter;
+import edu.byu.cs.tweeter.client.view.asyncTasks.LogoutTask;
+import edu.byu.cs.tweeter.client.view.login.LoginActivity;
+import edu.byu.cs.tweeter.client.view.main.post.PostFragment;
+import edu.byu.cs.tweeter.client.view.util.ImageUtils;
 
 /**
  * The main activity for the application. Contains tabs for feed, story, following, and followers.

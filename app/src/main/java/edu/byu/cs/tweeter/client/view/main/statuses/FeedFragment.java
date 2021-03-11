@@ -1,4 +1,4 @@
-package edu.byu.cs.tweeter.view.main.statuses;
+package edu.byu.cs.tweeter.client.view.main.statuses;
 
 
 import android.os.Bundle;
@@ -9,7 +9,7 @@ import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.service.request.StatusesRequest;
 
-import edu.byu.cs.tweeter.view.asyncTasks.GetStatusesTask;
+import edu.byu.cs.tweeter.client.view.asyncTasks.GetStatusesTask;
 
 /**
  * The fragment that displays on the 'Story' tab.

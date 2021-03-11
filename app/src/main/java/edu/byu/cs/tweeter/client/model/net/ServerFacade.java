@@ -1,15 +1,7 @@
 package edu.byu.cs.tweeter.client.model.net;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
-import edu.byu.cs.tweeter.BuildConfig;
-import edu.byu.cs.tweeter.model.domain.AuthToken;
-import edu.byu.cs.tweeter.model.domain.Status;
-import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
 import edu.byu.cs.tweeter.model.service.request.FollowUserRequest;
 import edu.byu.cs.tweeter.model.service.request.LoginRequest;
@@ -28,30 +20,18 @@ import edu.byu.cs.tweeter.model.service.response.StatusesResponse;
 import edu.byu.cs.tweeter.model.service.response.UnfollowUserResponse;
 import edu.byu.cs.tweeter.model.service.response.UserResponse;
 
-/**
- * Acts as a Facade to the Tweeter server. All network requests to the server should go through
- * this class.
- */
+// TODO: right now, all of these requests are going through the clientCommunicator.doPost() method,
+//  but I think some of them should be different. i.e. add a doDelete() for loging a user out?
+
+// TODO: lots of duplicate code here. Could be factored out into methods
+
 public class ServerFacade {
 
-    // TODO: Set this to the invoke URL of your API. Find it by going to your API in AWS, clicking
-    //  on stages in the right-side menu, and clicking on the stage you deployed your API to.
-    private static final String SERVER_URL = "Insert your API invoke URL here";
+    // TODO: Set this to the invoke URL of out API.
+    private static final String SERVER_URL = "Insert API base URL here";
 
     private final ClientCommunicator clientCommunicator = new ClientCommunicator(SERVER_URL);
 
-    // TODO: move the rest of this dummy data to their respective DAO objects
-    private static final List<Status> sessionStatuses = new ArrayList<>();
-
-    // TODO: finish refactoring each of these methods so each one uses the clientCommunicator to make requests.
-    //  All logic related to generating dummy data should also be put into its respective DAO
-    //  (i.e. getStatuses, getStatusesStartingIndex, etc.) all in one DAO
-    /**
-     * Performs a login and if successful, returns the logged in user and an auth token.
-     *
-     * @param request contains all information needed to perform a login.
-     * @return the login response.
-     */
     public LoginResponse login(LoginRequest request, String urlPath) throws IOException, TweeterRemoteException {
         LoginResponse response = clientCommunicator.doPost(urlPath, request, null, LoginResponse.class);
 
@@ -112,18 +92,30 @@ public class ServerFacade {
         }
     }
 
-    public FollowUserResponse followUser(FollowUserRequest followUserRequest) {
+    public FollowUserResponse followUser(FollowUserRequest request, String urlPath) throws IOException, TweeterRemoteException {
 
-        if (followUserRequest.getRootUser().getAlias().equals(followUserRequest.getCurrentUser().getAlias())) {
+        // TODO: client side error checking? Move this to server side?
+        if (request.getRootUser().getAlias().equals(request.getCurrentUser().getAlias())) {
             return new FollowUserResponse(false, "You cannot follow yourself!");
         }
+        //////////////////////////////////////////////////////////////
 
-        // make call to backend
-        return new FollowUserResponse(true,"Successfully followed user");
+        FollowUserResponse response = clientCommunicator.doPost(urlPath, request, null, FollowUserResponse.class);
+
+        if(response.isSuccess()) {
+            return response;
+        } else {
+            throw new RuntimeException(response.getMessage());
+        }
     }
 
-    public UnfollowUserResponse unfollowUser(UnfollowUserRequest unfollowUserRequest) {
-        // make call to backend
-        return new UnfollowUserResponse(true, "Successfully unfollowed user");
+    public UnfollowUserResponse unfollowUser(UnfollowUserRequest request, String urlPath) throws IOException, TweeterRemoteException {
+        UnfollowUserResponse response = clientCommunicator.doPost(urlPath, request, null, UnfollowUserResponse.class);
+
+        if(response.isSuccess()) {
+            return response;
+        } else {
+            throw new RuntimeException(response.getMessage());
+        }
     }
 }

@@ -2,13 +2,15 @@ package edu.byu.cs.tweeter.client.presenter;
 
 import java.io.IOException;
 
+import edu.byu.cs.tweeter.client.model.service.FollowEventServiceProxy;
+import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
 import edu.byu.cs.tweeter.model.service.FollowEventService;
 import edu.byu.cs.tweeter.model.service.request.FollowUserRequest;
 import edu.byu.cs.tweeter.model.service.request.UnfollowUserRequest;
 import edu.byu.cs.tweeter.model.service.response.FollowEventResponse;
 import edu.byu.cs.tweeter.model.service.response.FollowUserResponse;
 import edu.byu.cs.tweeter.model.service.response.UnfollowUserResponse;
-import edu.byu.cs.tweeter.view.asyncTasks.FollowEventTask;
+import edu.byu.cs.tweeter.client.view.asyncTasks.FollowEventTask;
 
 public class FollowEventPresenter implements FollowEventTask.Observer {
 
@@ -49,7 +51,7 @@ public class FollowEventPresenter implements FollowEventTask.Observer {
      *
      * @param followUserRequest the request.
      */
-    public FollowUserResponse followUser(FollowUserRequest followUserRequest) throws IOException {
+    public FollowUserResponse followUser(FollowUserRequest followUserRequest) throws IOException, TweeterRemoteException {
         FollowEventService followEventService = getFollowEventService();
         return followEventService.followUser(followUserRequest);
     }
@@ -59,7 +61,7 @@ public class FollowEventPresenter implements FollowEventTask.Observer {
      *
      * @param unfollowUserRequest the request.
      */
-    public UnfollowUserResponse unfollowUser(UnfollowUserRequest unfollowUserRequest) throws IOException {
+    public UnfollowUserResponse unfollowUser(UnfollowUserRequest unfollowUserRequest) throws IOException, TweeterRemoteException {
         FollowEventService followEventService = getFollowEventService();
         return followEventService.unfollowUser(unfollowUserRequest);
     }
@@ -81,6 +83,6 @@ public class FollowEventPresenter implements FollowEventTask.Observer {
      * @return the instance.
      */
     FollowEventService getFollowEventService() {
-        return new FollowEventService();
+        return new FollowEventServiceProxy();
     }
 }
