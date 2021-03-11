@@ -24,7 +24,6 @@ public class UserServiceProxy implements UserService {
      * @return the users.
      */
     public UserResponse getUsers(UserRequest request) throws IOException, TweeterRemoteException {
-        //UserResponse response = getServerFacade().getUsers(request);
         UserResponse response = getServerFacade().getUsers(request, URL_PATH);
 
         if (response.isSuccess()) {

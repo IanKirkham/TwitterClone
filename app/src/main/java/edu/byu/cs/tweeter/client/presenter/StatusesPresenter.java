@@ -2,6 +2,8 @@ package edu.byu.cs.tweeter.presenter;
 
 import java.io.IOException;
 
+import edu.byu.cs.tweeter.client.model.service.StatusesServiceProxy;
+import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
 import edu.byu.cs.tweeter.model.service.StatusesService;
 import edu.byu.cs.tweeter.model.service.request.StatusesRequest;
 import edu.byu.cs.tweeter.model.service.response.StatusesResponse;
@@ -39,7 +41,7 @@ public class StatusesPresenter implements GetStatusesTask.Observer {
      * @param request contains the data required to fulfill the request.
      * @return the statuses that form a story.
      */
-    public StatusesResponse getStatuses(StatusesRequest request) throws IOException {
+    public StatusesResponse getStatuses(StatusesRequest request) throws IOException, TweeterRemoteException {
         StatusesService statusesService = getStatusesService();
         return statusesService.getStatuses(request);
     }
@@ -66,6 +68,6 @@ public class StatusesPresenter implements GetStatusesTask.Observer {
      * @return the instance.
      */
     StatusesService getStatusesService() {
-        return new StatusesService();
+        return new StatusesServiceProxy();
     }
 }

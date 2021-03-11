@@ -1,5 +1,9 @@
-package edu.byu.cs.tweeter.presenter;
+package edu.byu.cs.tweeter.client.presenter;
 
+import java.io.IOException;
+
+import edu.byu.cs.tweeter.client.model.service.PostServiceProxy;
+import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
 import edu.byu.cs.tweeter.model.service.PostService;
 import edu.byu.cs.tweeter.model.service.request.PostRequest;
 import edu.byu.cs.tweeter.model.service.response.PostResponse;
@@ -35,7 +39,7 @@ public class PostPresenter implements PostTask.Observer {
      * @param request contains the data required to fulfill the request.
      * @return the statuses that form a story.
      */
-    public PostResponse savePost(PostRequest request) throws Exception {
+    public PostResponse savePost(PostRequest request) throws IOException, TweeterRemoteException {
         PostService postService = getPostService();
         return postService.savePost(request);
     }
@@ -62,6 +66,6 @@ public class PostPresenter implements PostTask.Observer {
      * @return the instance.
      */
     PostService getPostService() {
-        return new PostService();
+        return new PostServiceProxy();
     }
 }

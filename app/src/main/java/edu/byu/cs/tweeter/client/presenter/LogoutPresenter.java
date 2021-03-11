@@ -2,6 +2,7 @@ package edu.byu.cs.tweeter.presenter;
 
 import java.io.IOException;
 
+import edu.byu.cs.tweeter.client.model.service.LogoutServiceProxy;
 import edu.byu.cs.tweeter.model.service.LogoutService;
 import edu.byu.cs.tweeter.model.service.request.LogoutRequest;
 import edu.byu.cs.tweeter.model.service.response.LogoutResponse;
@@ -71,6 +72,6 @@ public class LogoutPresenter implements LogoutTask.Observer {
      * @return the instance.
      */
     LogoutService getLogoutService() {
-        return new LogoutService();
+        return new LogoutServiceProxy();
     }
 }

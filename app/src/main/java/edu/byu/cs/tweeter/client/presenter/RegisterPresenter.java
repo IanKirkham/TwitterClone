@@ -2,6 +2,8 @@ package edu.byu.cs.tweeter.presenter;
 
 import java.io.IOException;
 
+import edu.byu.cs.tweeter.client.model.service.RegisterServiceProxy;
+import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
 import edu.byu.cs.tweeter.model.service.RegisterService;
 import edu.byu.cs.tweeter.model.service.request.RegisterRequest;
 import edu.byu.cs.tweeter.model.service.response.RegisterResponse;
@@ -58,7 +60,7 @@ public class RegisterPresenter implements RegisterTask.Observer {
      *
      * @param registerRequest the request.
      */
-    public RegisterResponse register(RegisterRequest registerRequest) throws IOException {
+    public RegisterResponse register(RegisterRequest registerRequest) throws IOException, TweeterRemoteException {
         RegisterService registerService = getRegisterService();
         return registerService.register(registerRequest);
     }
@@ -71,6 +73,6 @@ public class RegisterPresenter implements RegisterTask.Observer {
      * @return the instance.
      */
     RegisterService getRegisterService() {
-        return new RegisterService();
+        return new RegisterServiceProxy();
     }
 }
