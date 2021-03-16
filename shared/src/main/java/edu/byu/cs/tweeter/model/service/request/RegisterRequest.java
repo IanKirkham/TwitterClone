@@ -5,19 +5,19 @@ package edu.byu.cs.tweeter.model.service.request;
  */
 public class RegisterRequest {
 
-    private final String firstName;
-    private final String lastName;
-    private final String username;
-    private final String password;
-    private final byte[] imageBytes;
+    private String firstName;
+    private String lastName;
+    private String username;
+    private String password;
+    private byte[] imageBytes;
 
     /**
      * Creates an instance.
      *
-     * @param firstName the first name of the user to be registered.
-     * @param lastName the last name of the user to be registered.
-     * @param username the username of the user to be registered.
-     * @param password the password of the user to be registered.
+     * @param firstName  the first name of the user to be registered.
+     * @param lastName   the last name of the user to be registered.
+     * @param username   the username of the user to be registered.
+     * @param password   the password of the user to be registered.
      * @param imageBytes the image of the user to be registered represented as a byte array.
      */
     public RegisterRequest(String firstName, String lastName, String username, String password, byte[] imageBytes) {
@@ -27,6 +27,8 @@ public class RegisterRequest {
         this.password = password;
         this.imageBytes = imageBytes;
     }
+
+    public RegisterRequest() {}
 
     /**
      * Returns the first name of the user to be registered by this request.
@@ -71,5 +73,25 @@ public class RegisterRequest {
      */
     public byte[] getImageBytes() {
         return imageBytes;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setImageBytes(byte[] imageBytes) {
+        this.imageBytes = imageBytes;
     }
 }

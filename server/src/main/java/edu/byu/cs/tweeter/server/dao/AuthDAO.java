@@ -8,7 +8,7 @@ import edu.byu.cs.tweeter.model.service.request.LogoutRequest;
 import edu.byu.cs.tweeter.model.service.response.LogoutResponse;
 
 public class AuthDAO {
-    private static final UUID AUTH_TOKEN_UUID = UUID.fromString("8af4d1be-f1fa-40a6-b56d-f741a31f8421");
+    private static final String AUTH_TOKEN_UUID = "8af4d1be-f1fa-40a6-b56d-f741a31f8421";
 
     public LogoutResponse logout(LogoutRequest request) {
         // TODO: invalidate token

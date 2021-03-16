@@ -10,9 +10,9 @@ import edu.byu.cs.tweeter.model.domain.Status;
  */
 public class StatusesRequest {
 
-    private final List<String> userAliases;
-    private final int limit;
-    private final Status lastStatus; // used to paginate Responses.
+    private List<String> userAliases;
+    private int limit;
+    private Status lastStatus; // used to paginate Responses.
 
     /**
      * Creates an instance.
@@ -28,6 +28,8 @@ public class StatusesRequest {
         this.limit = limit;
         this.lastStatus = lastStatus;
     }
+
+    public StatusesRequest() {}
 
     /**
      * Returns the user whose statuses are to be returned by this request.
@@ -55,5 +57,17 @@ public class StatusesRequest {
      */
     public Status getLastStatus() {
         return lastStatus;
+    }
+
+    public void setUserAliases(List<String> userAliases) {
+        this.userAliases = userAliases;
+    }
+
+    public void setLimit(int limit) {
+        this.limit = limit;
+    }
+
+    public void setLastStatus(Status lastStatus) {
+        this.lastStatus = lastStatus;
     }
 }

@@ -7,4 +7,8 @@ public class FollowUserRequest extends FollowEventRequest {
     public FollowUserRequest(User primaryUser, AuthToken authToken, User currentUser) {
         super(primaryUser, authToken, currentUser);
     }
+
+    public FollowUserRequest() {
+        super();
+    }
 }

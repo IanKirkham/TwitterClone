@@ -8,8 +8,8 @@ import edu.byu.cs.tweeter.model.domain.User;
  */
 public class LogoutRequest {
 
-    private final User user;
-    private final AuthToken authToken;
+    private User user;
+    private AuthToken authToken;
 
     /**
      * Creates an instance.
@@ -22,11 +22,21 @@ public class LogoutRequest {
         this.authToken = authToken;
     }
 
+    public LogoutRequest() {}
+
     public User getUser() {
         return user;
     }
 
     public AuthToken getAuthToken() {
         return authToken;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public void setAuthToken(AuthToken authToken) {
+        this.authToken = authToken;
     }
 }

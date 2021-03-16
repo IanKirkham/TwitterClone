@@ -7,4 +7,8 @@ public class UnfollowUserRequest extends FollowEventRequest {
     public UnfollowUserRequest(User primaryUser, AuthToken authToken, User currentUser) {
         super(primaryUser, authToken, currentUser);
     }
+
+    public UnfollowUserRequest() {
+        super();
+    }
 }

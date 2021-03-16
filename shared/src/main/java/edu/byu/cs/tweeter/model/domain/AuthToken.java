@@ -8,17 +8,19 @@ import java.util.UUID;
  * Represents an auth token in the system.
  */
 public class AuthToken implements Serializable {
-    private UUID token;
+    private String token;
 
-    public AuthToken(UUID uuid) {
+    public AuthToken(String uuid) {
         this.token = uuid;
     }
 
-    public UUID getToken() {
+    public AuthToken() {}
+
+    public String getToken() {
         return token;
     }
 
-    public void setToken(UUID token) {
+    public void setToken(String token) {
         this.token = token;
     }
 

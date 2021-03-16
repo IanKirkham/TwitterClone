@@ -15,6 +15,8 @@ public class PostRequest {
         this.timePublished = timePublished;
     }
 
+    public PostRequest() {}
+
     public User getAuthor() {
         return author;
     }

@@ -7,9 +7,9 @@ import java.util.List;
  */
 public class UserRequest {
 
-    private final List<String> userAliases;
-    private final int limit;
-    private final String lastUserAlias;
+    private List<String> userAliases;
+    private int limit;
+    private String lastUserAlias;
 
     /**
      * Creates an instance.
@@ -25,6 +25,8 @@ public class UserRequest {
         this.limit = limit;
         this.lastUserAlias = lastUserAlias;
     }
+
+    public UserRequest() {}
 
     /**
      * Returns the users who are to be returned by this request.
@@ -52,5 +54,17 @@ public class UserRequest {
      */
     public String getLastUserAlias() {
         return lastUserAlias;
+    }
+
+    public void setUserAliases(List<String> userAliases) {
+        this.userAliases = userAliases;
+    }
+
+    public void setLimit(int limit) {
+        this.limit = limit;
+    }
+
+    public void setLastUserAlias(String lastUserAlias) {
+        this.lastUserAlias = lastUserAlias;
     }
 }
