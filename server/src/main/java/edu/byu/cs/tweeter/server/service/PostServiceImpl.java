@@ -4,11 +4,15 @@ import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.service.PostService;
 import edu.byu.cs.tweeter.model.service.request.PostRequest;
 import edu.byu.cs.tweeter.model.service.response.PostResponse;
+import edu.byu.cs.tweeter.server.dao.StatusesDAO;
 
 public class PostServiceImpl implements PostService {
     @Override
     public PostResponse savePost(PostRequest request) {
-        Status status = new Status(request.getContent(), request.getAuthor(), request.getTimePublished());
-        return new PostResponse(status);
+        return getStatusesDAO().savePost(request);
+    }
+
+    public StatusesDAO getStatusesDAO() {
+        return new StatusesDAO();
     }
 }

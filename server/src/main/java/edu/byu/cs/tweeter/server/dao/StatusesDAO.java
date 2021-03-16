@@ -7,7 +7,9 @@ import java.util.List;
 
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
+import edu.byu.cs.tweeter.model.service.request.PostRequest;
 import edu.byu.cs.tweeter.model.service.request.StatusesRequest;
+import edu.byu.cs.tweeter.model.service.response.PostResponse;
 import edu.byu.cs.tweeter.model.service.response.StatusesResponse;
 
 /**
@@ -104,8 +106,13 @@ public class StatusesDAO {
         List<Status> statuses = new ArrayList<>(Arrays.asList(status1, status2, status3, status4, status5, status6,
                 status7, status8, status9, status10, status11, status12, status13, status14, status15, status16));
         statuses.addAll(sessionStatuses);
-        statuses.removeIf(status -> !userAliases.contains(status.getAuthor().getAlias())); // inefficient, but this is dummy code. The backend will replace this.
+        statuses.removeIf(status -> !userAliases.contains(status.getAuthor().getAlias())); // inefficient, but this is dummy code. The database will replace this.
         statuses.sort((s1, s2) -> s1.getTimePublished().compareTo(s2.getTimePublished()));
         return statuses;
+    }
+
+    public PostResponse savePost(PostRequest request) {
+        Status status = new Status(request.getContent(), request.getAuthor(), request.getTimePublished());
+        return new PostResponse(status);
     }
 }
