@@ -85,11 +85,11 @@ public class UserActivity extends AppCompatActivity implements FollowEventPresen
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    FollowUserRequest followUserRequest = new FollowUserRequest(rootUser, new AuthToken(), currentUser);
+                    FollowUserRequest followUserRequest = new FollowUserRequest(rootUser, authToken, currentUser);
                     FollowUserTask followUserTask = new FollowUserTask(presenter, presenter);
                     followUserTask.execute(followUserRequest);
                 } else {
-                    UnfollowUserRequest unfollowUserRequest = new UnfollowUserRequest(rootUser, new AuthToken(), currentUser);
+                    UnfollowUserRequest unfollowUserRequest = new UnfollowUserRequest(rootUser, authToken, currentUser);
                     UnfollowUserTask unfollowUserTask = new UnfollowUserTask(presenter, presenter);
                     unfollowUserTask.execute(unfollowUserRequest);
                 }
