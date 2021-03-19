@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -47,6 +48,11 @@ class ClientCommunicator {
                 }
             }
         };
+
+        if (headers == null) {
+            headers = new HashMap<>();
+        }
+        headers.put("Content-Type", "application/json");
 
         return doRequest(urlPath, headers, returnType, requestStrategy);
     }

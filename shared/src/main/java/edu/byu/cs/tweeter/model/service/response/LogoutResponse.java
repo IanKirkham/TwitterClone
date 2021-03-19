@@ -11,6 +11,7 @@ public class LogoutResponse extends Response {
      * @param message a message describing why the request was unsuccessful.
      */
     public LogoutResponse(String message) {
-        super(false, message);
+        super(false, message); // FIXME: It's weird that this is false by default. We even check this property later,
+                                      // FIXME: it just happens that the check doesn't really do much
     }
 }

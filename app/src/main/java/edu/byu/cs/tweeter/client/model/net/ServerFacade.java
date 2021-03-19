@@ -28,7 +28,7 @@ import edu.byu.cs.tweeter.model.service.response.UserResponse;
 public class ServerFacade {
 
     // TODO: Set this to the invoke URL of out API.
-    private static final String SERVER_URL = "Insert API base URL here";
+    private static final String SERVER_URL = "https://0gkzm3yiva.execute-api.us-west-2.amazonaws.com/dev";
 
     private final ClientCommunicator clientCommunicator = new ClientCommunicator(SERVER_URL);
 

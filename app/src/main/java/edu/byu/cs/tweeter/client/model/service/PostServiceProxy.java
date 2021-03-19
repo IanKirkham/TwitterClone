@@ -10,7 +10,7 @@ import edu.byu.cs.tweeter.model.service.response.PostResponse;
 
 public class PostServiceProxy implements PostService {
 
-    private static final String URL_PATH = "/post";
+    private static final String URL_PATH = "/statuses/new";
 
     public PostResponse savePost(PostRequest request) throws IOException, TweeterRemoteException {
         ServerFacade serverFacade = getServerFacade();

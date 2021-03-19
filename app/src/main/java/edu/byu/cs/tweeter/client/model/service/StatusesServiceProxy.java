@@ -6,6 +6,7 @@ import java.util.Set;
 
 import edu.byu.cs.tweeter.client.model.net.ServerFacade;
 import edu.byu.cs.tweeter.client.util.ByteArrayUtils;
+import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
 import edu.byu.cs.tweeter.model.service.StatusesService;
@@ -14,7 +15,7 @@ import edu.byu.cs.tweeter.model.service.response.StatusesResponse;
 
 public class StatusesServiceProxy implements StatusesService {
 
-    static final String URL_PATH = "/getstatuses";
+    static final String URL_PATH = "/statuses";
 
     /**
      * Returns the statuses of the specified user. Uses information in
@@ -48,6 +49,12 @@ public class StatusesServiceProxy implements StatusesService {
         for (User user : users) {
             byte [] bytes = ByteArrayUtils.bytesFromUrl(user.getImageUrl());
             user.setImageBytes(bytes);
+            // make sure that statuses with the same author share the same reference to that author
+            for (Status status : response.getStatuses()) {
+                if (status.getAuthor().equals(user)) {
+                    status.setAuthor(user);
+                }
+            }
         }
     }
 
