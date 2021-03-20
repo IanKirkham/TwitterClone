@@ -9,13 +9,15 @@ import org.mockito.Mockito;
 import java.io.IOException;
 import java.time.LocalDateTime;
 
+import edu.byu.cs.tweeter.client.model.service.PostServiceProxy;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.domain.Status;
-import edu.byu.cs.tweeter.model.net.ServerFacade;
+import edu.byu.cs.tweeter.client.model.net.ServerFacade;
+import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
 import edu.byu.cs.tweeter.model.service.request.PostRequest;
 import edu.byu.cs.tweeter.model.service.response.PostResponse;
 
-public class PostServiceTest {
+public class PostServiceProxyTest {
 
     private PostRequest validRequest;
     private PostRequest invalidRequest;
@@ -23,7 +25,7 @@ public class PostServiceTest {
     private PostResponse successResponse;
     private PostResponse failureResponse;
 
-    private PostService postServiceSpy;
+    private PostServiceProxy postServiceSpy;
 
     private static final LocalDateTime time1 = LocalDateTime.now();
 
@@ -32,7 +34,7 @@ public class PostServiceTest {
      * requests.
      */
     @BeforeEach
-    public void setup() {
+    public void setup() throws IOException, TweeterRemoteException {
         User currentUser = new User("FirstName", "LastName", "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/donald_duck.png");
 
         String content1 = "Content: Hello World! \uD83D\uDE03, Mentions: @BobBobson, URLs: http://www.google.com";
@@ -41,19 +43,18 @@ public class PostServiceTest {
 
         // Setup request objects to use in the tests
         validRequest = new PostRequest(currentUser, content1, time1);
-
         invalidRequest = new PostRequest(null, null, null);
 
         // Setup a mock ServerFacade that will return known responses
-        successResponse = new PostResponse(true, status1);
+        successResponse = new PostResponse(status1);
         ServerFacade mockServerFacade = Mockito.mock(ServerFacade.class);
-        Mockito.when(mockServerFacade.savePost(validRequest)).thenReturn(successResponse);
+        Mockito.when(mockServerFacade.savePost(validRequest, PostServiceProxy.URL_PATH)).thenReturn(successResponse);
 
-        failureResponse = new PostResponse(false, null);
-        Mockito.when(mockServerFacade.savePost(invalidRequest)).thenReturn(failureResponse);
+        failureResponse = new PostResponse(false, "Failed to post status");
+        Mockito.when(mockServerFacade.savePost(invalidRequest, PostServiceProxy.URL_PATH)).thenReturn(failureResponse);
 
         // Create a FollowingService instance and wrap it with a spy that will use the mock service
-        postServiceSpy = Mockito.spy(new PostService());
+        postServiceSpy = Mockito.spy(new PostServiceProxy());
         Mockito.when(postServiceSpy.getServerFacade()).thenReturn(mockServerFacade);
     }
 

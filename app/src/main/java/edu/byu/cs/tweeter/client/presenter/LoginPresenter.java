@@ -72,7 +72,7 @@ public class LoginPresenter implements LoginTask.Observer {
      *
      * @return the instance.
      */
-    LoginService getLoginService() {
+    public LoginService getLoginService() {
         return new LoginServiceProxy();
     }
 }

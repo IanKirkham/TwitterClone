@@ -9,12 +9,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import edu.byu.cs.tweeter.client.model.service.UserServiceProxy;
 import edu.byu.cs.tweeter.model.domain.User;
-import edu.byu.cs.tweeter.model.net.ServerFacade;
+import edu.byu.cs.tweeter.client.model.net.ServerFacade;
+import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
 import edu.byu.cs.tweeter.model.service.request.UserRequest;
 import edu.byu.cs.tweeter.model.service.response.UserResponse;
 
-public class UserServiceTest {
+public class UserServiceProxyTest {
 
     private UserRequest validFollowerRequest;
     private UserRequest validFollowingRequest;
@@ -24,14 +26,14 @@ public class UserServiceTest {
     private UserResponse successFollowingResponse;
     private UserResponse failureResponse;
 
-    private UserService followerServiceSpy;
+    private UserServiceProxy followerServiceSpy;
 
     /**
      * Create a UserService spy that uses a mock ServerFacade to return known responses to
      * requests.
      */
     @BeforeEach
-    public void setup() {
+    public void setup() throws IOException, TweeterRemoteException {
         User currentUser = new User("FirstName", "LastName", null);
 
         User resultUser1 = new User("FirstName1", "LastName1",
@@ -54,14 +56,14 @@ public class UserServiceTest {
         successFollowerResponse = new UserResponse(Arrays.asList(resultUser1, resultUser2), false);
         successFollowingResponse = new UserResponse(Arrays.asList(resultUser2, resultUser3), false);
         ServerFacade mockServerFacade = Mockito.mock(ServerFacade.class);
-        Mockito.when(mockServerFacade.getUsers(validFollowerRequest)).thenReturn(successFollowerResponse);
-        Mockito.when(mockServerFacade.getUsers(validFollowingRequest)).thenReturn(successFollowingResponse);
+        Mockito.when(mockServerFacade.getUsers(validFollowerRequest, UserServiceProxy.URL_PATH)).thenReturn(successFollowerResponse);
+        Mockito.when(mockServerFacade.getUsers(validFollowingRequest, UserServiceProxy.URL_PATH)).thenReturn(successFollowingResponse);
 
         failureResponse = new UserResponse("An exception occurred");
-        Mockito.when(mockServerFacade.getUsers(invalidRequest)).thenReturn(failureResponse);
+        Mockito.when(mockServerFacade.getUsers(invalidRequest, UserServiceProxy.URL_PATH)).thenReturn(failureResponse);
 
         // Create a FollowingService instance and wrap it with a spy that will use the mock service
-        followerServiceSpy = Mockito.spy(new UserService());
+        followerServiceSpy = Mockito.spy(new UserServiceProxy());
         Mockito.when(followerServiceSpy.getServerFacade()).thenReturn(mockServerFacade);
     }
 
@@ -73,7 +75,7 @@ public class UserServiceTest {
      * @throws IOException if an IO error occurs.
      */
     @Test
-    public void testGetFollowers_validRequest_correctResponse() throws IOException {
+    public void testGetFollowers_validRequest_correctResponse() throws IOException, TweeterRemoteException {
         UserResponse response = followerServiceSpy.getUsers(validFollowerRequest);
         Assertions.assertEquals(successFollowerResponse, response);
     }
@@ -85,7 +87,7 @@ public class UserServiceTest {
      * @throws IOException if an IO error occurs.
      */
     @Test
-    public void testGetFollowers_validRequest_loadsProfileImages() throws IOException {
+    public void testGetFollowers_validRequest_loadsProfileImages() throws IOException, TweeterRemoteException {
         UserResponse response = followerServiceSpy.getUsers(validFollowerRequest);
 
         for(User user : response.getUsers()) {
@@ -101,7 +103,7 @@ public class UserServiceTest {
      * @throws IOException if an IO error occurs.
      */
     @Test
-    public void testGetFollowees_validRequest_correctResponse() throws IOException {
+    public void testGetFollowees_validRequest_correctResponse() throws IOException, TweeterRemoteException {
         UserResponse response = followerServiceSpy.getUsers(validFollowingRequest);
         Assertions.assertEquals(successFollowingResponse, response);
     }
@@ -113,7 +115,7 @@ public class UserServiceTest {
      * @throws IOException if an IO error occurs.
      */
     @Test
-    public void testGetFollowees_validRequest_loadsProfileImages() throws IOException {
+    public void testGetFollowees_validRequest_loadsProfileImages() throws IOException, TweeterRemoteException {
         UserResponse response = followerServiceSpy.getUsers(validFollowingRequest);
 
         for (User user : response.getUsers()) {
@@ -128,7 +130,7 @@ public class UserServiceTest {
      * @throws IOException if an IO error occurs.
      */
     @Test
-    public void testGetFollowers_invalidRequest_returnsNoFollowers() throws IOException {
+    public void testGetFollowers_invalidRequest_returnsNoFollowers() throws IOException, TweeterRemoteException {
         UserResponse response = followerServiceSpy.getUsers(invalidRequest);
         Assertions.assertEquals(failureResponse, response);
     }

@@ -12,7 +12,7 @@ public class AuthDAO {
 
     public LogoutResponse logout(LogoutRequest request) {
         // TODO: invalidate token
-        return new LogoutResponse("Logout successful");
+        return new LogoutResponse(true, "Logout successful");
     }
 
     public boolean isValidTokenForUser(User user, AuthToken token) {

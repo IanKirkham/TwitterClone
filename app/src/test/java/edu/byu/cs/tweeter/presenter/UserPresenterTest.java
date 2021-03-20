@@ -9,8 +9,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import edu.byu.cs.tweeter.client.model.service.UserServiceProxy;
+import edu.byu.cs.tweeter.client.presenter.UserPresenter;
 import edu.byu.cs.tweeter.model.domain.User;
-import edu.byu.cs.tweeter.model.service.UserService;
+import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
 import edu.byu.cs.tweeter.model.service.request.UserRequest;
 import edu.byu.cs.tweeter.model.service.response.UserResponse;
 
@@ -21,13 +23,13 @@ public class UserPresenterTest {
     private UserResponse followingResponse;
     private UserResponse followersResponse;
     private UserResponse singleUserResponse;
-    private UserService mockUserService;
+    private UserServiceProxy mockUserService;
     private UserPresenter presenter;
 
     private boolean viewWasCalled = false;
 
     @BeforeEach
-    public void setup() throws IOException {
+    public void setup() throws IOException, TweeterRemoteException {
         User currentUser = new User("FirstName", "LastName", null);
 
         User resultUser1 = new User("FirstName1", "LastName1",
@@ -49,7 +51,7 @@ public class UserPresenterTest {
         singleUserResponse = new UserResponse(Arrays.asList(resultUser1), false);
 
         // Create a mock UserService
-        mockUserService = Mockito.mock(UserService.class);
+        mockUserService = Mockito.mock(UserServiceProxy.class);
         Mockito.when(mockUserService.getUsers(followingRequest)).thenReturn(followingResponse);
         Mockito.when(mockUserService.getUsers(followersRequest)).thenReturn(followersResponse);
 
@@ -66,7 +68,7 @@ public class UserPresenterTest {
     }
 
     @Test
-    public void testGetFollowing_returnsServiceResult() throws IOException {
+    public void testGetFollowing_returnsServiceResult() throws IOException, TweeterRemoteException {
         Mockito.when(mockUserService.getUsers(followingRequest)).thenReturn(followingResponse);
 
         // Assert that the presenter returns the same response as the service (it doesn't do
@@ -81,7 +83,7 @@ public class UserPresenterTest {
     }
 
     @Test
-    public void testGetFollowers_returnsServiceResult() throws IOException {
+    public void testGetFollowers_returnsServiceResult() throws IOException, TweeterRemoteException {
         Mockito.when(mockUserService.getUsers(followersRequest)).thenReturn(followersResponse);
 
         // Assert that the presenter returns the same response as the service (it doesn't do
@@ -90,7 +92,7 @@ public class UserPresenterTest {
     }
 
     @Test
-    public void testGetFollowing_serviceThrowsIOException_presenterThrowsIOException() throws IOException {
+    public void testGetFollowing_serviceThrowsIOException_presenterThrowsIOException() throws IOException, TweeterRemoteException {
         Mockito.when(mockUserService.getUsers(followersRequest)).thenThrow(new IOException());
 
         Assertions.assertThrows(IOException.class, () -> {

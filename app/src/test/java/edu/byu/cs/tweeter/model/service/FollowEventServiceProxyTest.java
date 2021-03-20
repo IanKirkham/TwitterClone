@@ -7,15 +7,17 @@ import org.mockito.Mockito;
 
 import java.io.IOException;
 
+import edu.byu.cs.tweeter.client.model.service.FollowEventServiceProxy;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
-import edu.byu.cs.tweeter.model.net.ServerFacade;
+import edu.byu.cs.tweeter.client.model.net.ServerFacade;
+import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
 import edu.byu.cs.tweeter.model.service.request.FollowUserRequest;
 import edu.byu.cs.tweeter.model.service.request.UnfollowUserRequest;
 import edu.byu.cs.tweeter.model.service.response.FollowUserResponse;
 import edu.byu.cs.tweeter.model.service.response.UnfollowUserResponse;
 
-public class FollowEventServiceTest {
+public class FollowEventServiceProxyTest {
 
     private FollowUserRequest validFollowUserRequest;
     private FollowUserRequest invalidFollowUserRequest;
@@ -27,10 +29,10 @@ public class FollowEventServiceTest {
     private UnfollowUserResponse successUnfollowUserResponse;
     private UnfollowUserResponse failureUnfollowUserResponse;
 
-    private FollowEventService followEventServiceSpy;
+    private FollowEventServiceProxy followEventServiceSpy;
 
     @BeforeEach
-    public void setup() {
+    public void setup() throws IOException, TweeterRemoteException {
         User primaryUser = new User("Test", "User",
                 "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/donald_duck.png");
         User currentUser = new User("Dummy", "User", "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/donald_duck.png");
@@ -44,19 +46,19 @@ public class FollowEventServiceTest {
         // Setup a mock ServerFacade that will return known responses
         successFollowUserResponse = new FollowUserResponse(true, "Successfully followed user");
         ServerFacade mockServerFacade = Mockito.mock(ServerFacade.class);
-        Mockito.when(mockServerFacade.followUser(validFollowUserRequest)).thenReturn(successFollowUserResponse);
+        Mockito.when(mockServerFacade.followUser(validFollowUserRequest, FollowEventServiceProxy.FOLLOW_URL_PATH)).thenReturn(successFollowUserResponse);
 
         failureFollowUserResponse = new FollowUserResponse(false, "Failed to follow user");
-        Mockito.when(mockServerFacade.followUser(invalidFollowUserRequest)).thenReturn(failureFollowUserResponse);
+        Mockito.when(mockServerFacade.followUser(invalidFollowUserRequest, FollowEventServiceProxy.FOLLOW_URL_PATH)).thenReturn(failureFollowUserResponse);
 
         successUnfollowUserResponse = new UnfollowUserResponse(true, "Successfully unfollowed user");
-        Mockito.when(mockServerFacade.unfollowUser(validUnfollowUserRequest)).thenReturn(successUnfollowUserResponse);
+        Mockito.when(mockServerFacade.unfollowUser(validUnfollowUserRequest, FollowEventServiceProxy.UNFOLLOW_URL_PATH)).thenReturn(successUnfollowUserResponse);
 
         failureUnfollowUserResponse = new UnfollowUserResponse(false, "Failed to unfollow user");
-        Mockito.when(mockServerFacade.unfollowUser(invalidUnfollowUserRequest)).thenReturn(failureUnfollowUserResponse);
+        Mockito.when(mockServerFacade.unfollowUser(invalidUnfollowUserRequest, FollowEventServiceProxy.UNFOLLOW_URL_PATH)).thenReturn(failureUnfollowUserResponse);
 
         // Create a LoginService instance and wrap it with a spy that will use the mock service
-        followEventServiceSpy = Mockito.spy(new FollowEventService());
+        followEventServiceSpy = Mockito.spy(new FollowEventServiceProxy());
         Mockito.when(followEventServiceSpy.getServerFacade()).thenReturn(mockServerFacade);
     }
 

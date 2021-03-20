@@ -72,7 +72,7 @@ public class RegisterPresenter implements RegisterTask.Observer {
      *
      * @return the instance.
      */
-    RegisterService getRegisterService() {
+    public RegisterService getRegisterService() {
         return new RegisterServiceProxy();
     }
 }

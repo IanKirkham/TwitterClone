@@ -12,8 +12,8 @@ import edu.byu.cs.tweeter.model.service.response.UnfollowUserResponse;
 
 public class FollowEventServiceProxy implements FollowEventService {
 
-    static final String FOLLOW_URL_PATH = "/follow";
-    static final String UNFOLLOW_URL_PATH = "/unfollow";
+    public static final String FOLLOW_URL_PATH = "/follow";
+    public static final String UNFOLLOW_URL_PATH = "/unfollow";
 
     public FollowUserResponse followUser(FollowUserRequest request) throws IOException, TweeterRemoteException {
         ServerFacade serverFacade = getServerFacade();
@@ -32,7 +32,7 @@ public class FollowEventServiceProxy implements FollowEventService {
      *
      * @return the instance.
      */
-    ServerFacade getServerFacade() {
+    public ServerFacade getServerFacade() {
         return new ServerFacade();
     }
 }

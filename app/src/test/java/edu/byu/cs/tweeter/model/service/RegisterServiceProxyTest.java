@@ -7,13 +7,15 @@ import org.mockito.Mockito;
 
 import java.io.IOException;
 
+import edu.byu.cs.tweeter.client.model.service.RegisterServiceProxy;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
-import edu.byu.cs.tweeter.model.net.ServerFacade;
+import edu.byu.cs.tweeter.client.model.net.ServerFacade;
+import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
 import edu.byu.cs.tweeter.model.service.request.RegisterRequest;
 import edu.byu.cs.tweeter.model.service.response.RegisterResponse;
 
-public class RegisterServiceTest {
+public class RegisterServiceProxyTest {
 
     private RegisterRequest validRequest;
     private RegisterRequest invalidRequest;
@@ -21,10 +23,10 @@ public class RegisterServiceTest {
     private RegisterResponse successResponse;
     private RegisterResponse failureResponse;
 
-    private RegisterService registerServiceSpy;
+    private RegisterServiceProxy registerServiceSpy;
 
     @BeforeEach
-    public void setup() {
+    public void setup() throws IOException, TweeterRemoteException {
         User testUser = new User("Test", "User",
                 "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/donald_duck.png");
 
@@ -35,13 +37,13 @@ public class RegisterServiceTest {
         // Setup a mock ServerFacade that will return known responses
         successResponse = new RegisterResponse(testUser, new AuthToken());
         ServerFacade mockServerFacade = Mockito.mock(ServerFacade.class);
-        Mockito.when(mockServerFacade.register(validRequest)).thenReturn(successResponse);
+        Mockito.when(mockServerFacade.register(validRequest, RegisterServiceProxy.URL_PATH)).thenReturn(successResponse);
 
         failureResponse = new RegisterResponse("Failed to register");
-        Mockito.when(mockServerFacade.register(invalidRequest)).thenReturn(failureResponse);
+        Mockito.when(mockServerFacade.register(invalidRequest, RegisterServiceProxy.URL_PATH)).thenReturn(failureResponse);
 
         // Create a RegisterService instance and wrap it with a spy that will use the mock service
-        registerServiceSpy = Mockito.spy(new RegisterService());
+        registerServiceSpy = Mockito.spy(new RegisterServiceProxy());
         Mockito.when(registerServiceSpy.getServerFacade()).thenReturn(mockServerFacade);
     }
 

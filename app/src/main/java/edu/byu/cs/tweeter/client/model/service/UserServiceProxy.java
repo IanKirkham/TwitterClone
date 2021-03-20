@@ -12,7 +12,7 @@ import edu.byu.cs.tweeter.model.service.response.UserResponse;
 
 public class UserServiceProxy implements UserService {
 
-    static final String URL_PATH = "/users";
+    public static final String URL_PATH = "/users";
 
     /**
      * Returns the users that are specified in the request. Uses information in
@@ -52,7 +52,7 @@ public class UserServiceProxy implements UserService {
      *
      * @return the instance.
      */
-    ServerFacade getServerFacade() {
+    public ServerFacade getServerFacade() {
         return new ServerFacade();
     }
 }

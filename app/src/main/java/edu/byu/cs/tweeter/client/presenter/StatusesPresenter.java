@@ -67,7 +67,7 @@ public class StatusesPresenter implements GetStatusesTask.Observer {
      *
      * @return the instance.
      */
-    StatusesService getStatusesService() {
+    public StatusesService getStatusesService() {
         return new StatusesServiceProxy();
     }
 }

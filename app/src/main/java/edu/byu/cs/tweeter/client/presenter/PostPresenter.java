@@ -65,7 +65,7 @@ public class PostPresenter implements PostTask.Observer {
      *
      * @return the instance.
      */
-    PostService getPostService() {
+    public PostService getPostService() {
         return new PostServiceProxy();
     }
 }

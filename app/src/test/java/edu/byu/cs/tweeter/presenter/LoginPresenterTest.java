@@ -7,9 +7,10 @@ import org.mockito.Mockito;
 
 import java.io.IOException;
 
+import edu.byu.cs.tweeter.client.model.service.LoginServiceProxy;
+import edu.byu.cs.tweeter.client.presenter.LoginPresenter;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
-import edu.byu.cs.tweeter.model.service.LoginService;
 import edu.byu.cs.tweeter.model.service.request.LoginRequest;
 import edu.byu.cs.tweeter.model.service.response.LoginResponse;
 
@@ -17,7 +18,7 @@ public class LoginPresenterTest {
 
     private LoginRequest loginRequest;
     private LoginResponse loginResponse;
-    private LoginService mockLoginService;
+    private LoginServiceProxy mockLoginService;
     private LoginPresenter presenter;
 
     private boolean viewWasCalled = false;
@@ -31,7 +32,7 @@ public class LoginPresenterTest {
         loginResponse = new LoginResponse(testUser, new AuthToken());
 
         // Create a mock LoginService
-        mockLoginService = Mockito.mock(LoginService.class);
+        mockLoginService = Mockito.mock(LoginServiceProxy.class);
         Mockito.when(mockLoginService.login(loginRequest)).thenReturn(loginResponse);
 
         // Wrap a LoginPresenter in a spy that will use the mock service.

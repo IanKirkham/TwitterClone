@@ -72,7 +72,7 @@ public class LogoutPresenter implements LogoutTask.Observer {
      *
      * @return the instance.
      */
-    LogoutService getLogoutService() {
+    public LogoutService getLogoutService() {
         return new LogoutServiceProxy();
     }
 }

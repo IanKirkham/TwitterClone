@@ -11,8 +11,8 @@ public class PostResponse extends Response {
      *
      * @param message a message describing why the request was unsuccessful.
      */
-    public PostResponse(String message) {
-        super(false, message);
+    public PostResponse(boolean success, String message) {
+        super(success, message);
     }
 
     /**

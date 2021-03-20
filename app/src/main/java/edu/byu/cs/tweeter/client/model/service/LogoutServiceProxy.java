@@ -10,7 +10,7 @@ import edu.byu.cs.tweeter.model.service.response.LogoutResponse;
 
 public class LogoutServiceProxy implements LogoutService {
 
-    private static final String URL_PATH = "/logout";
+    public static final String URL_PATH = "/logout";
 
     public LogoutResponse logout(LogoutRequest request) throws IOException, TweeterRemoteException {
         ServerFacade serverFacade = getServerFacade();
@@ -24,7 +24,7 @@ public class LogoutServiceProxy implements LogoutService {
      *
      * @return the instance.
      */
-    ServerFacade getServerFacade() {
+    public ServerFacade getServerFacade() {
         return new ServerFacade();
     }
 }

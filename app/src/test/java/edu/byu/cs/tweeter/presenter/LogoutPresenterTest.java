@@ -7,9 +7,10 @@ import org.mockito.Mockito;
 
 import java.io.IOException;
 
+import edu.byu.cs.tweeter.client.model.service.LogoutServiceProxy;
+import edu.byu.cs.tweeter.client.presenter.LogoutPresenter;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
-import edu.byu.cs.tweeter.model.service.LogoutService;
 import edu.byu.cs.tweeter.model.service.request.LogoutRequest;
 import edu.byu.cs.tweeter.model.service.response.LogoutResponse;
 
@@ -17,7 +18,7 @@ public class LogoutPresenterTest {
 
     private LogoutRequest logoutRequest;
     private LogoutResponse logoutResponse;
-    private LogoutService mockLogoutService;
+    private LogoutServiceProxy mockLogoutService;
     private LogoutPresenter presenter;
 
     private boolean viewWasCalled = false;
@@ -28,10 +29,10 @@ public class LogoutPresenterTest {
                 "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/donald_duck.png");
 
         logoutRequest = new LogoutRequest(testUser, new AuthToken());
-        logoutResponse = new LogoutResponse("Successfully logged out");
+        logoutResponse = new LogoutResponse(true, "Successfully logged out");
 
         // Create a mock LogoutService
-        mockLogoutService = Mockito.mock(LogoutService.class);
+        mockLogoutService = Mockito.mock(LogoutServiceProxy.class);
         Mockito.when(mockLogoutService.logout(logoutRequest)).thenReturn(logoutResponse);
 
         // Wrap a LogoutPresenter in a spy that will use the mock service.

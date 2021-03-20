@@ -7,13 +7,15 @@ import org.mockito.Mockito;
 
 import java.io.IOException;
 
+import edu.byu.cs.tweeter.client.model.service.LogoutServiceProxy;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
-import edu.byu.cs.tweeter.model.net.ServerFacade;
+import edu.byu.cs.tweeter.client.model.net.ServerFacade;
+import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
 import edu.byu.cs.tweeter.model.service.request.LogoutRequest;
 import edu.byu.cs.tweeter.model.service.response.LogoutResponse;
 
-public class LogoutServiceTest {
+public class LogoutServiceProxyTest {
 
     private LogoutRequest validRequest;
     private LogoutRequest invalidRequest;
@@ -21,10 +23,10 @@ public class LogoutServiceTest {
     private LogoutResponse successResponse;
     private LogoutResponse failureResponse;
 
-    private LogoutService logoutServiceSpy;
+    private LogoutServiceProxy logoutServiceSpy;
 
     @BeforeEach
-    public void setup() {
+    public void setup() throws IOException, TweeterRemoteException {
         User testUser = new User("Test", "User",
                 "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/donald_duck.png");
 
@@ -33,15 +35,15 @@ public class LogoutServiceTest {
         invalidRequest = new LogoutRequest(null, null);
 
         // Setup a mock ServerFacade that will return known responses
-        successResponse = new LogoutResponse("Successfully logged out");
+        successResponse = new LogoutResponse(true, "Successfully logged out");
         ServerFacade mockServerFacade = Mockito.mock(ServerFacade.class);
-        Mockito.when(mockServerFacade.logout(validRequest)).thenReturn(successResponse);
+        Mockito.when(mockServerFacade.logout(validRequest, LogoutServiceProxy.URL_PATH)).thenReturn(successResponse);
 
-        failureResponse = new LogoutResponse("An exception has occurred");
-        Mockito.when(mockServerFacade.logout(invalidRequest)).thenReturn(failureResponse);
+        failureResponse = new LogoutResponse(false, "An exception has occurred");
+        Mockito.when(mockServerFacade.logout(invalidRequest, LogoutServiceProxy.URL_PATH)).thenReturn(failureResponse);
 
         // Create a LogoutService instance and wrap it with a spy that will use the mock service
-        logoutServiceSpy = Mockito.spy(new LogoutService());
+        logoutServiceSpy = Mockito.spy(new LogoutServiceProxy());
         Mockito.when(logoutServiceSpy.getServerFacade()).thenReturn(mockServerFacade);
     }
 

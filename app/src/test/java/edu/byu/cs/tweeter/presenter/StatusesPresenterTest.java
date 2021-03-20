@@ -11,9 +11,11 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import edu.byu.cs.tweeter.client.model.service.StatusesServiceProxy;
+import edu.byu.cs.tweeter.client.presenter.StatusesPresenter;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
-import edu.byu.cs.tweeter.model.service.StatusesService;
+import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
 import edu.byu.cs.tweeter.model.service.request.StatusesRequest;
 import edu.byu.cs.tweeter.model.service.response.StatusesResponse;
 
@@ -23,7 +25,7 @@ public class StatusesPresenterTest {
     private StatusesRequest storyRequest;
     private StatusesResponse feedResponse;
     private StatusesResponse storyResponse;
-    private StatusesService mockStatusesService;
+    private StatusesServiceProxy mockStatusesService;
     private StatusesPresenter presenter;
 
     private boolean viewWasCalled = false;
@@ -31,7 +33,7 @@ public class StatusesPresenterTest {
     private static final LocalDateTime time1 = LocalDateTime.now();
 
     @BeforeEach
-    public void setup() throws IOException {
+    public void setup() throws IOException, TweeterRemoteException {
         User currentUser = new User("FirstName", "LastName", "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/donald_duck.png");
         User user1 = new User("Allen", "Anderson", "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/donald_duck.png");
 
@@ -52,7 +54,7 @@ public class StatusesPresenterTest {
         storyResponse = new StatusesResponse(Arrays.asList(status3, status4), false);
 
         // Create a mock UserService
-        mockStatusesService = Mockito.mock(StatusesService.class);
+        mockStatusesService = Mockito.mock(StatusesServiceProxy.class);
         Mockito.when(mockStatusesService.getStatuses(feedRequest)).thenReturn(feedResponse);
         Mockito.when(mockStatusesService.getStatuses(storyRequest)).thenReturn(storyResponse);
 
@@ -69,7 +71,7 @@ public class StatusesPresenterTest {
     }
 
     @Test
-    public void testGetFeed_returnsServiceResult() throws IOException {
+    public void testGetFeed_returnsServiceResult() throws IOException, TweeterRemoteException {
         Mockito.when(mockStatusesService.getStatuses(feedRequest)).thenReturn(feedResponse);
 
         // Assert that the presenter returns the same response as the service (it doesn't do
@@ -84,7 +86,7 @@ public class StatusesPresenterTest {
     }
 
     @Test
-    public void testGetStory_returnsServiceResult() throws IOException {
+    public void testGetStory_returnsServiceResult() throws IOException, TweeterRemoteException {
         Mockito.when(mockStatusesService.getStatuses(storyRequest)).thenReturn(storyResponse);
 
         // Assert that the presenter returns the same response as the service (it doesn't do
@@ -93,7 +95,7 @@ public class StatusesPresenterTest {
     }
 
     @Test
-    public void testGetFollowing_serviceThrowsIOException_presenterThrowsIOException() throws IOException {
+    public void testGetFollowing_serviceThrowsIOException_presenterThrowsIOException() throws IOException, TweeterRemoteException {
         Mockito.when(mockStatusesService.getStatuses(feedRequest)).thenThrow(new IOException());
 
         Assertions.assertThrows(IOException.class, () -> {

@@ -11,14 +11,16 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import edu.byu.cs.tweeter.client.model.service.StatusesServiceProxy;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
-import edu.byu.cs.tweeter.model.net.ServerFacade;
+import edu.byu.cs.tweeter.client.model.net.ServerFacade;
+import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
 import edu.byu.cs.tweeter.model.service.request.StatusesRequest;
 import edu.byu.cs.tweeter.model.service.request.UserRequest;
 import edu.byu.cs.tweeter.model.service.response.StatusesResponse;
 
-public class StatusesServiceTest {
+public class StatusesServiceProxyTest {
 
     private StatusesRequest validFeedRequest;
     private StatusesRequest validStoryRequest;
@@ -28,7 +30,7 @@ public class StatusesServiceTest {
     private StatusesResponse successStoryResponse;
     private StatusesResponse failureResponse;
 
-    private StatusesService statusesServiceSpy;
+    private StatusesServiceProxy statusesServiceSpy;
 
     private static final LocalDateTime time1 = LocalDateTime.now();
 
@@ -37,7 +39,7 @@ public class StatusesServiceTest {
      * requests.
      */
     @BeforeEach
-    public void setup() {
+    public void setup() throws IOException, TweeterRemoteException {
         User currentUser = new User("FirstName", "LastName", "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/donald_duck.png");
         User user1 = new User("Allen", "Anderson", "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/donald_duck.png");
 
@@ -61,14 +63,14 @@ public class StatusesServiceTest {
         successFeedResponse = new StatusesResponse(Arrays.asList(status1, status2), false);
         successStoryResponse = new StatusesResponse(Arrays.asList(status3, status4), false);
         ServerFacade mockServerFacade = Mockito.mock(ServerFacade.class);
-        Mockito.when(mockServerFacade.getStatuses(validFeedRequest)).thenReturn(successFeedResponse);
-        Mockito.when(mockServerFacade.getStatuses(validStoryRequest)).thenReturn(successStoryResponse);
+        Mockito.when(mockServerFacade.getStatuses(validFeedRequest, StatusesServiceProxy.URL_PATH)).thenReturn(successFeedResponse);
+        Mockito.when(mockServerFacade.getStatuses(validStoryRequest, StatusesServiceProxy.URL_PATH)).thenReturn(successStoryResponse);
 
         failureResponse = new StatusesResponse("An exception occurred");
-        Mockito.when(mockServerFacade.getStatuses(invalidRequest)).thenReturn(failureResponse);
+        Mockito.when(mockServerFacade.getStatuses(invalidRequest, StatusesServiceProxy.URL_PATH)).thenReturn(failureResponse);
 
         // Create a FollowingService instance and wrap it with a spy that will use the mock service
-        statusesServiceSpy = Mockito.spy(new StatusesService());
+        statusesServiceSpy = Mockito.spy(new StatusesServiceProxy());
         Mockito.when(statusesServiceSpy.getServerFacade()).thenReturn(mockServerFacade);
     }
 
@@ -80,7 +82,7 @@ public class StatusesServiceTest {
      * @throws IOException if an IO error occurs.
      */
     @Test
-    public void testGetFeed_validRequest_correctResponse() throws IOException {
+    public void testGetFeed_validRequest_correctResponse() throws IOException, TweeterRemoteException {
         StatusesResponse response = statusesServiceSpy.getStatuses(validFeedRequest);
         Assertions.assertEquals(successFeedResponse, response);
     }
@@ -92,7 +94,7 @@ public class StatusesServiceTest {
      * @throws IOException if an IO error occurs.
      */
     @Test
-    public void testGetFeed_validRequest_loadsProfileImages() throws IOException {
+    public void testGetFeed_validRequest_loadsProfileImages() throws IOException, TweeterRemoteException {
         StatusesResponse response = statusesServiceSpy.getStatuses(validFeedRequest);
 
         for (Status status : response.getStatuses()) {
@@ -108,7 +110,7 @@ public class StatusesServiceTest {
      * @throws IOException if an IO error occurs.
      */
     @Test
-    public void testGetStory_validRequest_correctResponse() throws IOException {
+    public void testGetStory_validRequest_correctResponse() throws IOException, TweeterRemoteException {
         StatusesResponse response = statusesServiceSpy.getStatuses(validStoryRequest);
         Assertions.assertEquals(successStoryResponse, response);
     }
@@ -120,7 +122,7 @@ public class StatusesServiceTest {
      * @throws IOException if an IO error occurs.
      */
     @Test
-    public void testGetStory_validRequest_loadsProfileImages() throws IOException {
+    public void testGetStory_validRequest_loadsProfileImages() throws IOException, TweeterRemoteException {
         StatusesResponse response = statusesServiceSpy.getStatuses(validStoryRequest);
 
         for (Status status : response.getStatuses()) {
@@ -135,7 +137,7 @@ public class StatusesServiceTest {
      * @throws IOException if an IO error occurs.
      */
     @Test
-    public void testGetFollowers_invalidRequest_returnsNoFollowers() throws IOException {
+    public void testGetFollowers_invalidRequest_returnsNoFollowers() throws IOException, TweeterRemoteException {
         StatusesResponse response = statusesServiceSpy.getStatuses(invalidRequest);
         Assertions.assertEquals(failureResponse, response);
     }

@@ -12,7 +12,7 @@ import edu.byu.cs.tweeter.model.service.response.RegisterResponse;
 
 public class RegisterServiceProxy implements RegisterService {
 
-    private static final String URL_PATH = "/register";
+    public static final String URL_PATH = "/register";
 
     public RegisterResponse register(RegisterRequest request) throws IOException, TweeterRemoteException {
         ServerFacade serverFacade = getServerFacade();
@@ -42,7 +42,7 @@ public class RegisterServiceProxy implements RegisterService {
      *
      * @return the instance.
      */
-    ServerFacade getServerFacade() {
+    public ServerFacade getServerFacade() {
         return new ServerFacade();
     }
 }

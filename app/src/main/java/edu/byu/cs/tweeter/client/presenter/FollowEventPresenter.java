@@ -82,7 +82,7 @@ public class FollowEventPresenter implements FollowEventTask.Observer {
      *
      * @return the instance.
      */
-    FollowEventService getFollowEventService() {
+    public FollowEventService getFollowEventService() {
         return new FollowEventServiceProxy();
     }
 }

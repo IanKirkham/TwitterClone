@@ -63,7 +63,7 @@ public class UserPresenter implements GetUsersTask.Observer {
      *
      * @return the instance.
      */
-    UserService getUserService() {
+    public UserService getUserService() {
         return new UserServiceProxy();
     }
 }

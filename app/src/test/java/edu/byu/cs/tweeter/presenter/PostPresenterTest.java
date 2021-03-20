@@ -8,9 +8,10 @@ import org.mockito.Mockito;
 import java.io.IOException;
 import java.time.LocalDateTime;
 
+import edu.byu.cs.tweeter.client.model.service.PostServiceProxy;
+import edu.byu.cs.tweeter.client.presenter.PostPresenter;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
-import edu.byu.cs.tweeter.model.service.PostService;
 import edu.byu.cs.tweeter.model.service.request.PostRequest;
 import edu.byu.cs.tweeter.model.service.response.PostResponse;
 
@@ -18,7 +19,7 @@ public class PostPresenterTest {
 
     private PostRequest postRequest;
     private PostResponse postResponse;
-    private PostService mockPostService;
+    private PostServiceProxy mockPostService;
     private PostPresenter presenter;
 
     private boolean viewWasCalled = false;
@@ -35,10 +36,10 @@ public class PostPresenterTest {
 
         postRequest = new PostRequest(currentUser, content1, time1);
 
-        postResponse = new PostResponse(true, status1);
+        postResponse = new PostResponse(status1);
 
         // Create a mock UserService
-        mockPostService = Mockito.mock(PostService.class);
+        mockPostService = Mockito.mock(PostServiceProxy.class);
         Mockito.when(mockPostService.savePost(postRequest)).thenReturn(postResponse);
 
         // Wrap a PostPresenter in a spy that will use the mock service.

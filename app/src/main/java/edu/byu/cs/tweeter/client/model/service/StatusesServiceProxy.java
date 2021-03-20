@@ -15,7 +15,7 @@ import edu.byu.cs.tweeter.model.service.response.StatusesResponse;
 
 public class StatusesServiceProxy implements StatusesService {
 
-    static final String URL_PATH = "/statuses";
+    public static final String URL_PATH = "/statuses";
 
     /**
      * Returns the statuses of the specified user. Uses information in
@@ -65,7 +65,7 @@ public class StatusesServiceProxy implements StatusesService {
      *
      * @return the instance.
      */
-    ServerFacade getServerFacade() {
+    public ServerFacade getServerFacade() {
         return new ServerFacade();
     }
 }
