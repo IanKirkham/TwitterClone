@@ -49,9 +49,9 @@ class SectionsPagerAdapter extends FragmentPagerAdapter {
             case FOLLOWING_FRAGMENT_POSITION:
                 return FollowingFragment.newInstance(user, authToken);
             case  STORY_FRAGMENT_POSITION:
-                return StoryFragment.newInstance(user, authToken);
+                return StoryFragment.newInstance(user, user, authToken);
             case FEED_FRAGMENT_POSITION:
-                return FeedFragment.newInstance(user, authToken);
+                return FeedFragment.newInstance(user, user, authToken);
             case FOLLOWER_FRAGMENT_POSITION:
                 return FollowerFragment.newInstance(user, authToken);
             default:

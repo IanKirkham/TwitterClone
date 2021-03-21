@@ -29,13 +29,14 @@ public class StoryFragment extends StatusesFragment implements PostPresenter.Vie
      * @param authToken the auth token for this user's session.
      * @return the fragment.
      */
-    public static StoryFragment newInstance(User user, AuthToken authToken) {
+    public static StoryFragment newInstance(User rootUser, User user, AuthToken authToken) {
         StoryFragment fragment = new StoryFragment();
 
         fragment.postPresenter = new PostPresenter(fragment);
 
         Bundle args = new Bundle(2);
-        args.putSerializable(USER_KEY, user);
+        args.putSerializable(ROOT_USER_KEY, rootUser);
+        args.putSerializable(CURRENT_USER_KEY, user);
         args.putSerializable(AUTH_TOKEN_KEY, authToken);
 
         fragment.setArguments(args);

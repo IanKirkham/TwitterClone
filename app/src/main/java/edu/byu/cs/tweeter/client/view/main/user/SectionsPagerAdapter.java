@@ -44,7 +44,7 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case  STORY_FRAGMENT_POSITION:
-                return StoryFragment.newInstance(currentUser, authToken);
+                return StoryFragment.newInstance(rootUser, currentUser, authToken);
             case FOLLOWING_FRAGMENT_POSITION:
                 return FollowingFragment.newInstance(currentUser, authToken);
             case FOLLOWER_FRAGMENT_POSITION:

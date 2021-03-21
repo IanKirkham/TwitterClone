@@ -93,12 +93,9 @@ public class ServerFacade {
     }
 
     public FollowUserResponse followUser(FollowUserRequest request, String urlPath) throws IOException, TweeterRemoteException {
-
-        // TODO: client side error checking? Move this to server side?
         if (request.getRootUser().getAlias().equals(request.getCurrentUser().getAlias())) {
             return new FollowUserResponse(false, "You cannot follow yourself!");
         }
-        //////////////////////////////////////////////////////////////
 
         FollowUserResponse response = clientCommunicator.doPost(urlPath, request, null, FollowUserResponse.class);
 

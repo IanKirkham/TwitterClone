@@ -50,13 +50,15 @@ import edu.byu.cs.tweeter.client.view.util.ImageUtils;
 public abstract class StatusesFragment extends Fragment implements UserPresenter.View {
 
     private static final String LOG_TAG = "StatusesFragment";
-    protected static final String USER_KEY = "UserKey";
+    protected static final String ROOT_USER_KEY = "RootUserKey";
+    protected static final String CURRENT_USER_KEY = "CurrentUserKey";
     protected static final String AUTH_TOKEN_KEY = "AuthTokenKey";
 
     protected static final int LOADING_DATA_VIEW = 0;
     protected static final int ITEM_VIEW = 1;
     protected static final int PAGE_SIZE = 10;
 
+    protected User rootUser;
     protected User user;
     protected AuthToken authToken;
     private UserPresenter userPresenter;
@@ -71,7 +73,8 @@ public abstract class StatusesFragment extends Fragment implements UserPresenter
         View view = inflater.inflate(R.layout.fragment_statuses, container, false);
 
         //noinspection ConstantConditions
-        user = (User) getArguments().getSerializable(USER_KEY);
+        rootUser = (User) getArguments().getSerializable(ROOT_USER_KEY);
+        user = (User) getArguments().getSerializable(CURRENT_USER_KEY);
         authToken = (AuthToken) getArguments().getSerializable(AUTH_TOKEN_KEY);
 
         userPresenter = new UserPresenter(this);
@@ -139,7 +142,7 @@ public abstract class StatusesFragment extends Fragment implements UserPresenter
                 public void onClick(@NonNull View widget) {
                     Toast.makeText(getContext(), "Clicked the user alias!", Toast.LENGTH_LONG).show();
                     Intent intent = new Intent(getActivity(), UserActivity.class);
-                    intent.putExtra(UserActivity.ROOT_USER_KEY, user);
+                    intent.putExtra(UserActivity.ROOT_USER_KEY, rootUser);
                     intent.putExtra(UserActivity.CURRENT_USER_KEY, status.getAuthor());
                     intent.putExtra(UserActivity.AUTH_TOKEN_KEY, authToken);
                     Objects.requireNonNull(getActivity()).startActivity(intent);
@@ -212,7 +215,7 @@ public abstract class StatusesFragment extends Fragment implements UserPresenter
     @Override
     public void presentNewUserView(User currentUser) {
         Intent intent = new Intent(getActivity(), UserActivity.class);
-        intent.putExtra(UserActivity.ROOT_USER_KEY, user);
+        intent.putExtra(UserActivity.ROOT_USER_KEY, rootUser);
         intent.putExtra(UserActivity.CURRENT_USER_KEY, currentUser);
         intent.putExtra(UserActivity.AUTH_TOKEN_KEY, authToken);
         Objects.requireNonNull(getActivity()).startActivity(intent);
