@@ -1,5 +1,7 @@
 package edu.byu.cs.tweeter.model.service.response;
 
+import java.util.Objects;
+
 /**
  * A base class for server responses.
  */
@@ -44,5 +46,14 @@ class Response {
      */
     public String getMessage() {
         return message;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Response response = (Response) o;
+        return success == response.success &&
+                Objects.equals(message, response.message);
     }
 }

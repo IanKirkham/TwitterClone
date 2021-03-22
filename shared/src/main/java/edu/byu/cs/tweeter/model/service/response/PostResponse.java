@@ -1,5 +1,7 @@
 package edu.byu.cs.tweeter.model.service.response;
 
+import java.util.Objects;
+
 import edu.byu.cs.tweeter.model.domain.Status;
 
 public class PostResponse extends Response {
@@ -27,5 +29,14 @@ public class PostResponse extends Response {
 
     public Status getStatus() {
         return status;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        PostResponse that = (PostResponse) o;
+        return Objects.equals(status, that.status);
     }
 }

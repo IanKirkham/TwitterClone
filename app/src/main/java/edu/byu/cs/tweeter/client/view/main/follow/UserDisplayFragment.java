@@ -101,7 +101,6 @@ public abstract class UserDisplayFragment extends Fragment implements UserPresen
                 itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        // TODO: Open user page on click (optional)
                         Toast.makeText(getContext(), "You selected '" + userName.getText() + "'.", Toast.LENGTH_SHORT).show();
                     }
                 });

@@ -65,7 +65,6 @@ public class StatusesDAO {
     private static final List<Status> sessionStatuses = new ArrayList<>();
 
     public StatusesResponse getStatuses(StatusesRequest request) {
-        // TODO: Generates dummy data. Replace with a real implementation.
         assert request.getLimit() > 0;
         assert request.getUserAliases() != null;
 

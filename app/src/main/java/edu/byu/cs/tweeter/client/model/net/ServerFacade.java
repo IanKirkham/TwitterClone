@@ -20,14 +20,10 @@ import edu.byu.cs.tweeter.model.service.response.StatusesResponse;
 import edu.byu.cs.tweeter.model.service.response.UnfollowUserResponse;
 import edu.byu.cs.tweeter.model.service.response.UserResponse;
 
-// TODO: right now, all of these requests are going through the clientCommunicator.doPost() method,
-//  but I think some of them should be different. i.e. add a doDelete() for loging a user out?
 
 // TODO: lots of duplicate code here. Could be factored out into methods
 
 public class ServerFacade {
-
-    // TODO: Set this to the invoke URL of out API.
     private static final String SERVER_URL = "https://0gkzm3yiva.execute-api.us-west-2.amazonaws.com/dev";
 
     private final ClientCommunicator clientCommunicator = new ClientCommunicator(SERVER_URL);

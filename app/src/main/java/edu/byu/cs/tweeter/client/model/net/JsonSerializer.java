@@ -24,17 +24,28 @@ public class JsonSerializer {
                     @Override
                     public LocalDateTime deserialize(JsonElement json, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
                         JsonObject jo = json.getAsJsonObject();
-                        return LocalDateTime.of(jo.get("year").getAsInt(),
-                                jo.get("monthValue").getAsInt(),
-                                jo.get("dayOfMonth").getAsInt(),
-                                jo.get("hour").getAsInt(),
-                                jo.get("minute").getAsInt(),
-                                jo.get("second").getAsInt(),
-                                jo.get("nano").getAsInt());
+                        if (jo.get("year") != null) {
+                            return LocalDateTime.of(jo.get("year").getAsInt(),
+                                    jo.get("monthValue").getAsInt(),
+                                    jo.get("dayOfMonth").getAsInt(),
+                                    jo.get("hour").getAsInt(),
+                                    jo.get("minute").getAsInt(),
+                                    jo.get("second").getAsInt(),
+                                    jo.get("nano").getAsInt());
+                        } else {
+                            JsonObject d = jo.getAsJsonObject("date");
+                            JsonObject t = jo.getAsJsonObject("time");
+                            return LocalDateTime.of(d.get("year").getAsInt(),
+                                    d.get("month").getAsInt(),
+                                    d.get("day").getAsInt(),
+                                    t.get("hour").getAsInt(),
+                                    t.get("minute").getAsInt(),
+                                    t.get("second").getAsInt(),
+                                    t.get("nano").getAsInt());
+                        }
                     }
                 }).create();
 
-//        return (new Gson()).fromJson(value, returnType);
         return gson.fromJson(value, returnType);
     }
 }

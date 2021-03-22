@@ -48,7 +48,6 @@ public class UserDAO {
     private static final User user20 = new User("Jill", "Johnson", FEMALE_IMAGE_URL);
 
     public UserResponse getUsers(UserRequest request) {
-        // TODO: Generates dummy data. Replace with a real implementation.
         // TODO: Authenticate the request
         assert request.getLimit() > 0;
         assert request.getUserAliases() != null;

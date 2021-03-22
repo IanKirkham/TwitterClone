@@ -16,6 +16,8 @@ public class Status implements Comparable<Status>, Serializable {
         this.timePublished = timePublished;
     }
 
+    public Status() {}
+
     public String getContent() {
         return content;
     }
