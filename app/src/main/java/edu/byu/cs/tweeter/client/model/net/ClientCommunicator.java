@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
+import edu.byu.cs.tweeter.model.service.request.PostRequest;
 
 class ClientCommunicator {
 
