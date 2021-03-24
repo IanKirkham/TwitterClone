@@ -143,7 +143,11 @@ public abstract class StatusesFragment extends Fragment implements UserPresenter
                     Toast.makeText(getContext(), "Clicked the user alias!", Toast.LENGTH_LONG).show();
                     Intent intent = new Intent(getActivity(), UserActivity.class);
                     intent.putExtra(UserActivity.ROOT_USER_KEY, rootUser);
-                    intent.putExtra(UserActivity.CURRENT_USER_KEY, status.getAuthor());
+                    if (rootUser.equals(status.getAuthor())) {
+                        intent.putExtra(UserActivity.CURRENT_USER_KEY, rootUser);
+                    } else {
+                        intent.putExtra(UserActivity.CURRENT_USER_KEY, status.getAuthor());
+                    }
                     intent.putExtra(UserActivity.AUTH_TOKEN_KEY, authToken);
                     Objects.requireNonNull(getActivity()).startActivity(intent);
                 }

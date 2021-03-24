@@ -28,7 +28,7 @@ import edu.byu.cs.tweeter.client.view.util.ImageUtils;
 /**
  * The fragment that displays on the 'Following' tab.
  */
-public class PostFragment extends DialogFragment implements PostPresenter.View {
+    public class PostFragment extends DialogFragment implements PostPresenter.View {
 
     private static final String LOG_TAG = "PostFragment";
     private static final String USER_KEY = "UserKey";

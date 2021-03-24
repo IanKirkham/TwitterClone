@@ -120,11 +120,20 @@ public class UserDAO {
 
     List<String> getDummyUserAliases() {
         ArrayList<String> userAliases = new ArrayList<>();
-        getDummyUsers().forEach(user -> { userAliases.add(user.getAlias()); });
+        getBasicDummyUsers().forEach(user -> { userAliases.add(user.getAlias()); });
         return userAliases;
     }
 
     List<User> getDummyUsers() {
+        User user = new User("Test", "User", "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/donald_duck.png");
+        user.setFollowees(getDummyUserAliases());
+        user.setFollowers(getDummyUserAliases());
+        return Arrays.asList(user, user1, user2, user3, user4, user5, user6, user7,
+                user8, user9, user10, user11, user12, user13, user14, user15, user16, user17, user18,
+                user19, user20);
+    }
+
+    List<User> getBasicDummyUsers() {
         return Arrays.asList(user1, user2, user3, user4, user5, user6, user7,
                 user8, user9, user10, user11, user12, user13, user14, user15, user16, user17, user18,
                 user19, user20);

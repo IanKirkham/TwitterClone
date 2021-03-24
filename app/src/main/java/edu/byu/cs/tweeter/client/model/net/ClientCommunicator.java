@@ -92,7 +92,7 @@ class ClientCommunicator {
                 }
             }
 
-            requestStrategy.sendRequest(connection);
+                requestStrategy.sendRequest(connection);
 
             switch (connection.getResponseCode()) {
                 case HttpURLConnection.HTTP_OK:
