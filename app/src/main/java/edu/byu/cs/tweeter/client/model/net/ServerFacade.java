@@ -71,7 +71,7 @@ public class ServerFacade {
     public StatusesResponse getStatuses(StatusesRequest request, String urlPath) throws IOException, TweeterRemoteException {
         StatusesResponse response = clientCommunicator.doPost(urlPath, request, null, StatusesResponse.class);
 
-        if(response.isSuccess()) {
+        if (response.isSuccess()) {
             return response;
         } else {
             throw new RuntimeException(response.getMessage());
