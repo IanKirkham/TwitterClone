@@ -1,8 +1,15 @@
 package edu.byu.cs.tweeter.server.dao;
 
+import java.math.BigInteger;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
 
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.service.request.FollowUserRequest;
@@ -101,6 +108,16 @@ public class UserDAO {
     }
 
     public LoginResponse login(LoginRequest request) {
+
+        String generatedSecuredPasswordHash = ""; // TODO: retrieve hashed password from database here
+        boolean matched = false;
+        try {
+            matched = validatePassword(request.getPassword(), generatedSecuredPasswordHash);
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            e.printStackTrace();
+        }
+        System.out.println("Passwords Match: " + matched);
+
         // TODO: Hash request password and lookup user's password hash in table
         // TODO: Error checking
         User user = new User("Test", "User", "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/donald_duck.png");
@@ -110,6 +127,16 @@ public class UserDAO {
     }
 
     public RegisterResponse register(RegisterRequest request) {
+
+        // TODO: Store hashed + salted password in database
+        String generatedSecuredPasswordHash = null;
+        try {
+            generatedSecuredPasswordHash = generateStrongPasswordHash(request.getPassword());
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            e.printStackTrace();
+        }
+        System.out.println("Generated Password: " + generatedSecuredPasswordHash);
+
         // TODO: Add user to the database
         // TODO: Error checking
         User user = new User("Test", "User", "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/donald_duck.png");
@@ -149,5 +176,80 @@ public class UserDAO {
         // TODO: Modify user12's followers, user1's following in the table
         // TODO: Authenticate the request
         return new UnfollowUserResponse(true, "Successfully unfollowed user");
+    }
+
+    // TODO: should the logic for hashing / validating passwords be in the DAO or the service class?
+    //  violation of Single Responsibility Principle?
+    /**
+     * Generate strong hashed and salted password using PBKDF2
+     * @param password password from register request
+     * @return hashed + salted password
+     * @throws NoSuchAlgorithmException exception
+     * @throws InvalidKeySpecException exception
+     */
+    private static String generateStrongPasswordHash(String password) throws NoSuchAlgorithmException, InvalidKeySpecException {
+        int iterations = 1000;
+        char[] chars = password.toCharArray();
+        byte[] salt = getSalt();
+
+        PBEKeySpec spec = new PBEKeySpec(chars, salt, iterations, 64 * 8);
+        SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+        byte[] hash = skf.generateSecret(spec).getEncoded();
+        return iterations + ":" + toHex(salt) + ":" + toHex(hash);
+    }
+
+    private static byte[] getSalt() throws NoSuchAlgorithmException {
+        SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
+        byte[] salt = new byte[16];
+        sr.nextBytes(salt);
+        return salt;
+    }
+
+    /**
+     * Validate password using PBKDF2 hashing algorithm
+     * @param originalPassword password provided by user
+     * @param storedPassword securely hashed password for a given username
+     * @return boolean for valid password or not
+     * @throws NoSuchAlgorithmException exception
+     * @throws InvalidKeySpecException exception
+     */
+    private static boolean validatePassword(String originalPassword, String storedPassword) throws NoSuchAlgorithmException, InvalidKeySpecException
+    {
+        String[] parts = storedPassword.split(":");
+        int iterations = Integer.parseInt(parts[0]);
+        byte[] salt = fromHex(parts[1]);
+        byte[] hash = fromHex(parts[2]);
+
+        PBEKeySpec spec = new PBEKeySpec(originalPassword.toCharArray(), salt, iterations, hash.length * 8);
+        SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+        byte[] testHash = skf.generateSecret(spec).getEncoded();
+
+        int diff = hash.length ^ testHash.length;
+        for(int i = 0; i < hash.length && i < testHash.length; i++)
+        {
+            diff |= hash[i] ^ testHash[i];
+        }
+        return diff == 0;
+    }
+
+    private static String toHex(byte[] array) {
+        BigInteger bi = new BigInteger(1, array);
+        String hex = bi.toString(16);
+        int paddingLength = (array.length * 2) - hex.length();
+        if(paddingLength > 0)
+        {
+            return String.format("%0"  +paddingLength + "d", 0) + hex;
+        }else{
+            return hex;
+        }
+    }
+
+    private static byte[] fromHex(String hex) {
+        byte[] bytes = new byte[hex.length() / 2];
+        for(int i = 0; i<bytes.length ;i++)
+        {
+            bytes[i] = (byte)Integer.parseInt(hex.substring(2 * i, 2 * i + 2), 16);
+        }
+        return bytes;
     }
 }
