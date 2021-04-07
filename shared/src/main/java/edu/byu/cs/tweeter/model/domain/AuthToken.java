@@ -2,15 +2,16 @@ package edu.byu.cs.tweeter.model.domain;
 
 import java.io.Serializable;
 import java.util.Objects;
-import java.util.UUID;
 
 /**
  * Represents an auth token in the system.
  */
 public class AuthToken implements Serializable {
     private String token;
+    private String alias;
 
-    public AuthToken(String uuid) {
+    public AuthToken(String alias, String uuid) {
+        this.alias = alias;
         this.token = uuid;
     }
 
@@ -20,8 +21,16 @@ public class AuthToken implements Serializable {
         return token;
     }
 
+    public String getAlias() {
+        return alias;
+    }
+
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public void setAlias(String alias) {
+        this.alias = alias;
     }
 
     @Override
