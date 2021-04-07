@@ -12,11 +12,10 @@ import edu.byu.cs.tweeter.client.presenter.UserPresenter;
 /**
  * An {@link AsyncTask} for retrieving users.
  */
-public class GetUsersTask extends AsyncTask<UserRequest, Void, UserResponse> {
-
-    private final UserPresenter presenter;
-    private final Observer observer;
-    private Exception exception;
+public abstract class GetUsersTask extends AsyncTask<UserRequest, Void, UserResponse> {
+    protected final UserPresenter presenter;
+    protected final Observer observer;
+    protected Exception exception;
 
     /**
      * An observer interface to be implemented by observers who want to be notified when this task
@@ -50,18 +49,7 @@ public class GetUsersTask extends AsyncTask<UserRequest, Void, UserResponse> {
      * @return the response.
      */
     @Override
-    protected UserResponse doInBackground(UserRequest... userRequests) {
-
-        UserResponse response = null;
-
-        try {
-            response = presenter.getUsers(userRequests[0]);
-        } catch (IOException | TweeterRemoteException ex) {
-            exception = ex;
-        }
-
-        return response;
-    }
+    protected abstract UserResponse doInBackground(UserRequest... userRequests);
 
     /**
      * Notifies the observer (on the UI thread) when the task completes.

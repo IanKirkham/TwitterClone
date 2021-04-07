@@ -12,11 +12,11 @@ import edu.byu.cs.tweeter.client.presenter.StatusesPresenter;
 /**
  * An {@link AsyncTask} for retrieving statuses for a user.
  */
-public class GetStatusesTask extends AsyncTask<StatusesRequest, Void, StatusesResponse> {
+public abstract class GetStatusesTask extends AsyncTask<StatusesRequest, Void, StatusesResponse> {
 
-    private final StatusesPresenter presenter;
-    private final Observer observer;
-    private Exception exception;
+    protected final StatusesPresenter presenter;
+    protected final Observer observer;
+    protected Exception exception;
 
     /**
      * An observer interface to be implemented by observers who want to be notified when this task
@@ -50,18 +50,7 @@ public class GetStatusesTask extends AsyncTask<StatusesRequest, Void, StatusesRe
      * @return the response.
      */
     @Override
-    protected StatusesResponse doInBackground(StatusesRequest... statusesRequests) {
-
-        StatusesResponse response = null;
-
-        try {
-            response = presenter.getStatuses(statusesRequests[0]);
-        } catch (IOException | TweeterRemoteException ex) {
-            exception = ex;
-        }
-
-        return response;
-    }
+    protected abstract StatusesResponse doInBackground(StatusesRequest... statusesRequests);
 
     /**
      * Notifies the observer (on the UI thread) when the task completes.

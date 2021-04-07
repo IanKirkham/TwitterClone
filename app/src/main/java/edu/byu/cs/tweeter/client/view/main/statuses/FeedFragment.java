@@ -5,8 +5,10 @@ import android.os.Bundle;
 
 import java.util.List;
 
+import edu.byu.cs.tweeter.client.view.asyncTasks.GetFeedTask;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
+import edu.byu.cs.tweeter.model.service.request.FeedRequest;
 import edu.byu.cs.tweeter.model.service.request.StatusesRequest;
 
 import edu.byu.cs.tweeter.client.view.asyncTasks.GetStatusesTask;
@@ -48,10 +50,9 @@ public class FeedFragment extends StatusesFragment {
             isLoading = true;
             addLoadingFooter();
 
-            GetStatusesTask getStatusesTask = new GetStatusesTask(presenter, presenter);
-            List<String> retrieveStatusesFor = user.getFollowees();
-            StatusesRequest request = new StatusesRequest(retrieveStatusesFor, PAGE_SIZE, lastStatus);
-            getStatusesTask.execute(request);
+            GetFeedTask getFeedTask = new GetFeedTask(presenter, presenter);
+            FeedRequest request = new FeedRequest(user.getAlias(), PAGE_SIZE, lastStatus);
+            getFeedTask.execute(request);
         }
     }
 }

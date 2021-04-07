@@ -2,8 +2,10 @@ package edu.byu.cs.tweeter.client.view.main.follow;
 
 import android.os.Bundle;
 
+import edu.byu.cs.tweeter.client.view.asyncTasks.GetFolloweesTask;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
+import edu.byu.cs.tweeter.model.service.request.FolloweeRequest;
 import edu.byu.cs.tweeter.model.service.request.UserRequest;
 import edu.byu.cs.tweeter.client.view.asyncTasks.GetUsersTask;
 
@@ -48,10 +50,10 @@ public class FollowingFragment extends UserDisplayFragment {
             isLoading = true;
             addLoadingFooter();
 
-            GetUsersTask getUsersTask = new GetUsersTask(presenter, this);
-            UserRequest request = new UserRequest(user.getFollowees(), PAGE_SIZE, (lastFollower == null ? null : lastFollower.getAlias()));
+            GetFolloweesTask getFolloweesTask = new GetFolloweesTask(presenter, this);
+            FolloweeRequest request = new FolloweeRequest(user.getAlias(), PAGE_SIZE, (lastFollower == null ? null : lastFollower.getAlias()));
 
-            getUsersTask.execute(request);
+            getFolloweesTask.execute(request);
         }
     }
 }

@@ -8,7 +8,7 @@ import edu.byu.cs.tweeter.model.domain.User;
  * A paged response for a {@link edu.byu.cs.tweeter.model.service.request.UserRequest}.
  */
 public class UserResponse extends PagedResponse {
-
+    private User queriedUser;
     private List<User> users;
 
     /**
@@ -27,7 +27,7 @@ public class UserResponse extends PagedResponse {
      * @param users the followees to be included in the result.
      * @param hasMorePages an indicator of whether more data is available for the request.
      */
-    public UserResponse(List<User> users, boolean hasMorePages) {
+    public UserResponse(User queriedUser, List<User> users, boolean hasMorePages) {
         super(true, hasMorePages);
         this.users = users;
     }
@@ -39,6 +39,10 @@ public class UserResponse extends PagedResponse {
      */
     public List<User> getUsers() {
         return users;
+    }
+
+    public User getQueriedUser() {
+        return queriedUser;
     }
 
     @Override

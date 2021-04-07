@@ -8,9 +8,11 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import edu.byu.cs.tweeter.client.view.asyncTasks.GetStoryTask;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.service.request.StatusesRequest;
+import edu.byu.cs.tweeter.model.service.request.StoryRequest;
 import edu.byu.cs.tweeter.model.service.response.PostResponse;
 import edu.byu.cs.tweeter.client.presenter.PostPresenter;
 import edu.byu.cs.tweeter.client.view.asyncTasks.GetStatusesTask;
@@ -71,10 +73,9 @@ public class StoryFragment extends StatusesFragment implements PostPresenter.Vie
             isLoading = true;
             addLoadingFooter();
 
-            GetStatusesTask getStatusesTask = new GetStatusesTask(presenter, presenter);
-            ArrayList<String> retrieveStatusesFor = new ArrayList<>(Arrays.asList(user.getAlias()));
-            StatusesRequest request = new StatusesRequest(retrieveStatusesFor, PAGE_SIZE, lastStatus);
-            getStatusesTask.execute(request);
+            GetStoryTask getStoryTask = new GetStoryTask(presenter, presenter);
+            StoryRequest request = new StoryRequest(user.getAlias(), PAGE_SIZE, lastStatus);
+            getStoryTask.execute(request);
         }
     }
 }

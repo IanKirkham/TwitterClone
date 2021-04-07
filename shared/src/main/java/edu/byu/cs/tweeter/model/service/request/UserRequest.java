@@ -1,27 +1,24 @@
 package edu.byu.cs.tweeter.model.service.request;
 
-import java.util.List;
-
 /**
  * Contains all the information needed to make a request to have the server return the next page of users.
  */
 public class UserRequest {
-
-    private List<String> userAliases;
+    private String userAlias;
     private int limit;
     private String lastUserAlias;
 
     /**
      * Creates an instance.
      *
-     * @param userAliases the aliases of the users who are to be returned.
+     * @param userAlias the alias of the user whose followers/followees are to be returned.
      * @param limit the maximum number of users to return.
      * @param lastUserAlias the alias of the last user that was returned in the previous request (null if
      *                     there was no previous request or if no users were returned in the
      *                     previous request).
      */
-    public UserRequest(List<String> userAliases, int limit, String lastUserAlias) {
-        this.userAliases = userAliases;
+    public UserRequest(String userAlias, int limit, String lastUserAlias) {
+        this.userAlias = userAlias;
         this.limit = limit;
         this.lastUserAlias = lastUserAlias;
     }
@@ -33,8 +30,8 @@ public class UserRequest {
      *
      * @return the user.
      */
-    public List<String> getUserAliases() {
-        return userAliases;
+    public String getUserAlias() {
+        return userAlias;
     }
 
     /**
@@ -56,8 +53,8 @@ public class UserRequest {
         return lastUserAlias;
     }
 
-    public void setUserAliases(List<String> userAliases) {
-        this.userAliases = userAliases;
+    public void setUserAlias(String userAlias) {
+        this.userAlias = userAlias;
     }
 
     public void setLimit(int limit) {

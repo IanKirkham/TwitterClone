@@ -16,9 +16,6 @@ public class User implements Comparable<User>, Serializable {
     private String imageUrl;
     private byte [] imageBytes;
 
-    private List<String> followers; // list of userAliases?
-    private List<String> followees; // list of userAliases?
-
     public User() {}
 
     public User(String firstName, String lastName, String imageURL) {
@@ -30,17 +27,6 @@ public class User implements Comparable<User>, Serializable {
         this.lastName = lastName;
         this.alias = alias;
         this.imageUrl = imageURL;
-        this.followers = new ArrayList<>();
-        this.followees = new ArrayList<>();
-    }
-
-    public User(String firstName, String lastName, String alias, String imageURL, List<String> followers, List<String> followees) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.alias = alias;
-        this.imageUrl = imageURL;
-        this.followers = followers;
-        this.followees = followees;
     }
 
     public String getFirstName() {
@@ -86,39 +72,6 @@ public class User implements Comparable<User>, Serializable {
     public void setImageBytes(byte[] imageBytes) {
         this.imageBytes = imageBytes;
     }
-
-    public List<String> getFollowers() {
-        return followers;
-    }
-
-    public List<String> getFollowees() {
-        return followees;
-    }
-
-    public void setFollowers(List<String> followers) {
-        this.followers = followers;
-    }
-
-    public void setFollowees(List<String> followees) {
-        this.followees = followees;
-    }
-
-    public void addFollower(String userAlias) {
-        followers.add(userAlias);
-    }
-
-    public void addFollowee(String userAlias) {
-        followers.add(userAlias);
-    }
-
-    public void removeFollower(String userAlias) {
-        followers.remove(userAlias);
-    }
-
-    public void removeFollowees(String userAlias) {
-        followees.remove(userAlias);
-    }
-
 
     @Override
     public boolean equals(Object o) {

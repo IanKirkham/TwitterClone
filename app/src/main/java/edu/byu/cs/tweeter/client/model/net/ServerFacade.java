@@ -3,6 +3,7 @@ package edu.byu.cs.tweeter.client.model.net;
 import java.io.IOException;
 
 import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
+import edu.byu.cs.tweeter.model.service.request.DoesFollowRequest;
 import edu.byu.cs.tweeter.model.service.request.FollowUserRequest;
 import edu.byu.cs.tweeter.model.service.request.LoginRequest;
 import edu.byu.cs.tweeter.model.service.request.LogoutRequest;
@@ -11,6 +12,7 @@ import edu.byu.cs.tweeter.model.service.request.RegisterRequest;
 import edu.byu.cs.tweeter.model.service.request.StatusesRequest;
 import edu.byu.cs.tweeter.model.service.request.UnfollowUserRequest;
 import edu.byu.cs.tweeter.model.service.request.UserRequest;
+import edu.byu.cs.tweeter.model.service.response.DoesFollowResponse;
 import edu.byu.cs.tweeter.model.service.response.FollowUserResponse;
 import edu.byu.cs.tweeter.model.service.response.LoginResponse;
 import edu.byu.cs.tweeter.model.service.response.LogoutResponse;
@@ -106,6 +108,16 @@ public class ServerFacade {
         UnfollowUserResponse response = clientCommunicator.doPost(urlPath, request, null, UnfollowUserResponse.class);
 
         if(response.isSuccess()) {
+            return response;
+        } else {
+            throw new RuntimeException(response.getMessage());
+        }
+    }
+
+    public DoesFollowResponse doesFollowUser(DoesFollowRequest request, String urlPath) throws IOException, TweeterRemoteException {
+        DoesFollowResponse response = clientCommunicator.doPost(urlPath, request, null, DoesFollowResponse.class);
+
+        if (response.isSuccess()) {
             return response;
         } else {
             throw new RuntimeException(response.getMessage());

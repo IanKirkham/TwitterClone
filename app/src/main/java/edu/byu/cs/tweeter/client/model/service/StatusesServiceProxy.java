@@ -10,12 +10,15 @@ import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
 import edu.byu.cs.tweeter.model.service.StatusesService;
+import edu.byu.cs.tweeter.model.service.request.FeedRequest;
 import edu.byu.cs.tweeter.model.service.request.StatusesRequest;
+import edu.byu.cs.tweeter.model.service.request.StoryRequest;
 import edu.byu.cs.tweeter.model.service.response.StatusesResponse;
 
 public class StatusesServiceProxy implements StatusesService {
 
-    public static final String URL_PATH = "/statuses";
+    public static final String STORY_URL_PATH = "/statuses/story";
+    public static final String FEED_URL_PATH = "/statuses/feed";
 
     /**
      * Returns the statuses of the specified user. Uses information in
@@ -26,8 +29,27 @@ public class StatusesServiceProxy implements StatusesService {
      * @param request contains the data required to fulfill the request.
      * @return the statuses.
      */
-    public StatusesResponse getStatuses(StatusesRequest request) throws IOException, TweeterRemoteException {
-        StatusesResponse response = getServerFacade().getStatuses(request, URL_PATH);
+    public StatusesResponse getStory(StoryRequest request) throws IOException, TweeterRemoteException {
+        StatusesResponse response = getServerFacade().getStatuses(request, STORY_URL_PATH);
+
+        if (response.isSuccess()) {
+            loadImages(response); // the profile pictures associated with the statuses
+        }
+
+        return response;
+    }
+
+    /**
+     * Returns the statuses of the specified user. Uses information in
+     * the request object to limit the number of statuses returned and to return the next set of
+     * statuses after any that were returned in a previous request. Uses the {@link ServerFacade} to
+     * get the statuses from the server.
+     *
+     * @param request contains the data required to fulfill the request.
+     * @return the statuses.
+     */
+    public StatusesResponse getFeed(FeedRequest request) throws IOException, TweeterRemoteException {
+        StatusesResponse response = getServerFacade().getStatuses(request, FEED_URL_PATH);
 
         if (response.isSuccess()) {
             loadImages(response); // the profile pictures associated with the statuses

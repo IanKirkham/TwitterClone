@@ -15,10 +15,13 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import edu.byu.cs.tweeter.R;
+import edu.byu.cs.tweeter.client.view.asyncTasks.DoesFollowUserTask;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
+import edu.byu.cs.tweeter.model.service.request.DoesFollowRequest;
 import edu.byu.cs.tweeter.model.service.request.FollowUserRequest;
 import edu.byu.cs.tweeter.model.service.request.UnfollowUserRequest;
+import edu.byu.cs.tweeter.model.service.response.DoesFollowResponse;
 import edu.byu.cs.tweeter.model.service.response.FollowEventResponse;
 import edu.byu.cs.tweeter.client.presenter.FollowEventPresenter;
 import edu.byu.cs.tweeter.client.view.asyncTasks.FollowUserTask;
@@ -56,6 +59,10 @@ public class UserActivity extends AppCompatActivity implements FollowEventPresen
 
         presenter = new FollowEventPresenter(this);
 
+        DoesFollowUserTask doesFollowUserTask = new DoesFollowUserTask(presenter, presenter);
+        DoesFollowRequest doesFollowRequest = new DoesFollowRequest(rootUser, authToken , currentUser);
+        doesFollowUserTask.execute(doesFollowRequest);
+
         SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager(), rootUser, currentUser, authToken);
         ViewPager viewPager = findViewById(R.id.view_pager);
         viewPager.setAdapter(sectionsPagerAdapter);
@@ -78,9 +85,7 @@ public class UserActivity extends AppCompatActivity implements FollowEventPresen
         followerCount.setText(getString(R.string.followerCount, 27));
 
         followButton = findViewById(R.id.followButton);
-        if (rootUser.getFollowees().contains(currentUser.getAlias())) {
-            followButton.setChecked(true);
-        }
+        followButton.setChecked(false); //Assume they don't follow until proven otherwise with the DoesFollowUserTask
         followButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -99,13 +104,18 @@ public class UserActivity extends AppCompatActivity implements FollowEventPresen
 
     @Override
     public void requestSuccessful(FollowEventResponse response) {
-        Toast.makeText(this, response.getMessage(), Toast.LENGTH_LONG).show();
+        if (response instanceof DoesFollowResponse) {
+            followButton.setChecked(response.isSuccess());
+        }
     }
 
     @Override
-    public void requestUnsuccessful(FollowEventResponse response) {
+    public void requestUnsuccessful(FollowEventResponse response) { // FIXME: This introduces a network race condition.
+        if (response instanceof DoesFollowResponse) {
+            followButton.setChecked(response.isSuccess());
+            return;
+        }
         followButton.setChecked(!followButton.isChecked());
-        Toast.makeText(this, response.getMessage(), Toast.LENGTH_LONG).show();
     }
 
     @Override

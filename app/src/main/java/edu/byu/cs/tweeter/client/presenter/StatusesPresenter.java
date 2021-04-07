@@ -5,7 +5,9 @@ import java.io.IOException;
 import edu.byu.cs.tweeter.client.model.service.StatusesServiceProxy;
 import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
 import edu.byu.cs.tweeter.model.service.StatusesService;
+import edu.byu.cs.tweeter.model.service.request.FeedRequest;
 import edu.byu.cs.tweeter.model.service.request.StatusesRequest;
+import edu.byu.cs.tweeter.model.service.request.StoryRequest;
 import edu.byu.cs.tweeter.model.service.response.StatusesResponse;
 import edu.byu.cs.tweeter.client.view.asyncTasks.GetStatusesTask;
 
@@ -41,9 +43,22 @@ public class StatusesPresenter implements GetStatusesTask.Observer {
      * @param request contains the data required to fulfill the request.
      * @return the statuses that form a story.
      */
-    public StatusesResponse getStatuses(StatusesRequest request) throws IOException, TweeterRemoteException {
+    public StatusesResponse getStory(StoryRequest request) throws IOException, TweeterRemoteException {
         StatusesService statusesService = getStatusesService();
-        return statusesService.getStatuses(request);
+        return statusesService.getStory(request);
+    }
+
+    /**
+     * Returns the story for the given user. Uses information in
+     * the request object to limit the number of statuses returned and to return the next set of
+     * statuses after any that were returned in a previous request.
+     *
+     * @param request contains the data required to fulfill the request.
+     * @return the statuses that form a story.
+     */
+    public StatusesResponse getFeed(FeedRequest request) throws IOException, TweeterRemoteException {
+        StatusesService statusesService = getStatusesService();
+        return statusesService.getFeed(request);
     }
 
     @Override

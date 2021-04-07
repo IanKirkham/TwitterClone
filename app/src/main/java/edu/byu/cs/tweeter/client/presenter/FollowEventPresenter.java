@@ -5,8 +5,10 @@ import java.io.IOException;
 import edu.byu.cs.tweeter.client.model.service.FollowEventServiceProxy;
 import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
 import edu.byu.cs.tweeter.model.service.FollowEventService;
+import edu.byu.cs.tweeter.model.service.request.DoesFollowRequest;
 import edu.byu.cs.tweeter.model.service.request.FollowUserRequest;
 import edu.byu.cs.tweeter.model.service.request.UnfollowUserRequest;
+import edu.byu.cs.tweeter.model.service.response.DoesFollowResponse;
 import edu.byu.cs.tweeter.model.service.response.FollowEventResponse;
 import edu.byu.cs.tweeter.model.service.response.FollowUserResponse;
 import edu.byu.cs.tweeter.model.service.response.UnfollowUserResponse;
@@ -64,6 +66,16 @@ public class FollowEventPresenter implements FollowEventTask.Observer {
     public UnfollowUserResponse unfollowUser(UnfollowUserRequest unfollowUserRequest) throws IOException, TweeterRemoteException {
         FollowEventService followEventService = getFollowEventService();
         return followEventService.unfollowUser(unfollowUserRequest);
+    }
+
+    /**
+     * Makes an does follow user request.
+     *
+     * @param doesFollowRequest the request.
+     */
+    public DoesFollowResponse doesFollowUser(DoesFollowRequest doesFollowRequest) throws IOException, TweeterRemoteException {
+        FollowEventService followEventService = getFollowEventService();
+        return followEventService.doesFollowUser(doesFollowRequest);
     }
 
     /**
