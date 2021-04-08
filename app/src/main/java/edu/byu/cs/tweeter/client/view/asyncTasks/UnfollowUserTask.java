@@ -43,7 +43,7 @@ public class UnfollowUserTask extends AsyncTask<UnfollowUserRequest, Void, Unfol
 
         try {
             unfollowUserResponse = presenter.unfollowUser(unfollowRequests[0]);
-        } catch (IOException | TweeterRemoteException ex) {
+        } catch (Exception ex) {
             exception = ex;
         }
 

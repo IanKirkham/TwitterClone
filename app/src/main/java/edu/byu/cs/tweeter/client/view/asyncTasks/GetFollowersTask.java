@@ -25,7 +25,7 @@ public class GetFollowersTask extends GetUsersTask {
 
         try {
             response = presenter.getFollowers((FollowerRequest) userRequests[0]);
-        } catch (IOException | TweeterRemoteException ex) {
+        } catch (Exception ex) {
             exception = ex;
         }
 

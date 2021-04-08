@@ -60,7 +60,7 @@ public class RegisterTask extends AsyncTask<RegisterRequest, Void, RegisterRespo
             if(registerResponse.isSuccess()) {
                 loadImage(registerResponse.getUser());
             }
-        } catch (IOException | TweeterRemoteException ex) {
+        } catch (Exception ex) {
             exception = ex;
         }
 

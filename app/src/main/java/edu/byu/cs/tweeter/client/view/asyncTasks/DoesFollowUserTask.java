@@ -42,7 +42,7 @@ public class DoesFollowUserTask extends AsyncTask<DoesFollowRequest, Void, DoesF
 
         try {
             doesFollowResponse = presenter.doesFollowUser(doesFollowRequests[0]);
-        } catch (IOException | TweeterRemoteException ex) {
+        } catch (Exception ex) {
             exception = ex;
         }
 

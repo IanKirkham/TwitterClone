@@ -25,7 +25,7 @@ public class GetStoryTask extends GetStatusesTask {
 
         try {
             response = presenter.getStory((StoryRequest) statusesRequests[0]);
-        } catch (IOException | TweeterRemoteException ex) {
+        } catch (Exception ex) {
             exception = ex;
         }
 

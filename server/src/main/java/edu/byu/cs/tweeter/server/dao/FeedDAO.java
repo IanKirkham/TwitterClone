@@ -24,14 +24,14 @@ public class FeedDAO {
 
     // Attributes
     private static final String AliasAttr = "alias";
-    private static final String AuthorAttr = "author";
     private static final String TimePublishedAttr = "timePublished";
+    private static final String AuthorAttr = "author";
     private static final String ContentAttr = "content";
 
     // DynamoDB Client
     private static final AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard().withRegion("us-west-2").build();
 
-    public StatusesResponse getStory(FeedRequest request) {
+    public StatusesResponse getFeed(FeedRequest request) {
         if (request.getLimit() <= 0) {
             throw new RuntimeException("[Bad Request] Invalid limit");
         }
@@ -66,7 +66,8 @@ public class FeedDAO {
         List<Map<String, AttributeValue>> items = queryResult.getItems();
         if (items != null) {
             for (Map<String, AttributeValue> item : items) {
-                Status status = new Status(item.get(ContentAttr).getS(), new User(), LocalDateTime.parse(item.get(TimePublishedAttr).getS())); // TODO: change user.. do we need to do a database lookup?
+                // TODO: change dummy user.. do we need to do a database lookup?
+                Status status = new Status(item.get(ContentAttr).getS(), new User("dummy", "user", "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/donald_duck.png"), LocalDateTime.parse(item.get(TimePublishedAttr).getS()));
                 statuses.add(status);
             }
         }
@@ -78,9 +79,5 @@ public class FeedDAO {
         }
 
         return new StatusesResponse(statuses, lastKeyString != null, lastKeyString);
-    }
-
-    public StatusesResponse getFeed(FeedRequest request) {
-        return null;
     }
 }

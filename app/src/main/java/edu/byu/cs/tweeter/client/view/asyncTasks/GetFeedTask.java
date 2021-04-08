@@ -25,7 +25,7 @@ public class GetFeedTask extends GetStatusesTask {
 
         try {
             response = presenter.getFeed((FeedRequest) statusesRequests[0]);
-        } catch (IOException | TweeterRemoteException ex) {
+        } catch (Exception ex) {
             exception = ex;
         }
 

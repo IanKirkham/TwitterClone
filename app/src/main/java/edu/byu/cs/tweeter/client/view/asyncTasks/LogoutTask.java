@@ -53,7 +53,7 @@ public class LogoutTask extends AsyncTask<LogoutRequest, Void, LogoutResponse> {
 
         try {
             logoutResponse = presenter.logout(logoutRequests[0]);
-        } catch (IOException | TweeterRemoteException ex) {
+        } catch (Exception ex) {
             exception = ex;
         }
 

@@ -52,7 +52,7 @@ public class FollowRelationship implements Serializable {
 
     @Override
     public String toString() {
-        return "FollowRelatationship{" +
+        return "FollowRelationship{" +
                 "follower_handle='" + follower_handle + '\'' +
                 ", followee_handle='" + followee_handle + '\'' +
                 ", follower_name='" + follower_name + '\'' +
