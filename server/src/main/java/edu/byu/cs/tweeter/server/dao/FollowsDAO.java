@@ -42,7 +42,7 @@ public class FollowsDAO {
         return table.query(querySpec).getAccumulatedItemCount(); // TODO: I am not sure if this is the right way to get the count, there may be a better way
     }
 
-    public UserResponse getFollowees(FolloweeRequest request) {
-
-    }
+//    public UserResponse getFollowees(FolloweeRequest request) {
+//
+//    }
 }

@@ -2,80 +2,34 @@ package edu.byu.cs.tweeter.server.dao;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
-import com.amazonaws.services.dynamodbv2.document.DynamoDB;
-import com.amazonaws.services.dynamodbv2.document.Item;
-import com.amazonaws.services.dynamodbv2.document.ItemCollection;
-import com.amazonaws.services.dynamodbv2.document.KeyAttribute;
-import com.amazonaws.services.dynamodbv2.document.QueryOutcome;
-import com.amazonaws.services.dynamodbv2.document.Table;
-import com.amazonaws.services.dynamodbv2.document.spec.QuerySpec;
-import com.amazonaws.services.dynamodbv2.document.utils.ValueMap;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.QueryRequest;
 import com.amazonaws.services.dynamodbv2.model.QueryResult;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
-import edu.byu.cs.tweeter.model.service.request.PostRequest;
 import edu.byu.cs.tweeter.model.service.request.StoryRequest;
-import edu.byu.cs.tweeter.model.service.response.PostResponse;
 import edu.byu.cs.tweeter.model.service.response.StatusesResponse;
 
 public class StoryDAO {
-    private static final AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard().withRegion("us-west-2").build();
-    private static final DynamoDB dynamoDB = new DynamoDB(client);
-    private static final Table table = dynamoDB.getTable("story");
 
-//    // This is the hard coded statuses data returned by the 'getStatuses()' method
-//    private static final User testUser = new User("Test", "User",
-//            "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/donald_duck.png");
-//
-//    private static final String MALE_IMAGE_URL = "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/donald_duck.png";
-//    private static final String FEMALE_IMAGE_URL = "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/daisy_duck.png";
-//
-//    private static final User user1 = new User("Allen", "Anderson", MALE_IMAGE_URL);
-//    private static final User user2 = new User("Amy", "Ames", FEMALE_IMAGE_URL);
-//    private static final User user3 = new User("Bob", "Bobson", MALE_IMAGE_URL);
-//    private static final User user4 = new User("Bonnie", "Beatty", FEMALE_IMAGE_URL);
-//    private static final User user5 = new User("Chris", "Colston", MALE_IMAGE_URL);
-//    private static final User user6 = new User("Cindy", "Coats", FEMALE_IMAGE_URL);
-//    private static final User user7 = new User("Dan", "Donaldson", MALE_IMAGE_URL);
-//    private static final User user8 = new User("Dee", "Dempsey", FEMALE_IMAGE_URL);
-//    private static final User user9 = new User("Elliott", "Enderson", MALE_IMAGE_URL);
-//    private static final User user10 = new User("Elizabeth", "Engle", FEMALE_IMAGE_URL);
-//    private static final User user11 = new User("Frank", "Frandson", MALE_IMAGE_URL);
-//    private static final User user12 = new User("Fran", "Franklin", FEMALE_IMAGE_URL);
-//    private static final User user13 = new User("Gary", "Gilbert", MALE_IMAGE_URL);
-//    private static final User user14 = new User("Giovanna", "Giles", FEMALE_IMAGE_URL);
-//    private static final User user15 = new User("Henry", "Henderson", MALE_IMAGE_URL);
-//    private static final User user16 = new User("Helen", "Hopwell", FEMALE_IMAGE_URL);
-//    private static final User user17 = new User("Igor", "Isaacson", MALE_IMAGE_URL);
-//    private static final User user18 = new User("Isabel", "Isaacson", FEMALE_IMAGE_URL);
-//    private static final User user19 = new User("Justin", "Jones", MALE_IMAGE_URL);
-//    private static final User user20 = new User("Jill", "Johnson", FEMALE_IMAGE_URL);
-//
-//    private static final Status status1 = new Status("Content: Hello World! \uD83D\uDE03, Mentions: @BobBobson, URLs: http://www.google.com", user1, LocalDateTime.now());
-//    private static final Status status2 = new Status("Content: Hello World!, Mentions: @BobBobson, URLs: https://www.google.com", user1, LocalDateTime.now());
-//    private static final Status status3 = new Status("Content: Hello World!, Mentions: @BobBobson, URLs: www.google.com", user1, LocalDateTime.now());
-//    private static final Status status4 = new Status("Content: Hello World!, Mentions: @BobBobson, URLs: http://www.4jflr8hdjjdla.com", user1, LocalDateTime.now());
-//    private static final Status status5 = new Status("Content: Hello World! \uD83D\uDE03, Mentions: @AllenAnderson, URLs: http://www.google.com", user2, LocalDateTime.now());
-//    private static final Status status6 = new Status("Content: Hello World!, Mentions: @AllenAnderson, URLs: https://www.google.com", user2, LocalDateTime.now());
-//    private static final Status status7 = new Status("Content: Hello World!, Mentions: @AllenAnderson, URLs: www.google.com", user2, LocalDateTime.now());
-//    private static final Status status8 = new Status("Content: Hello World!, Mentions: @AllenAnderson, URLs: http://www.4jflr8hdjjdla.com", user2, LocalDateTime.now());
-//    private static final Status status9 = new Status("Content: Hello World! \uD83D\uDE03, Mentions: @AmyAmes, URLs: http://www.google.com", user3, LocalDateTime.now());
-//    private static final Status status10 = new Status("Content: Hello World!, Mentions: @AmyAmes, URLs: https://www.google.com", user3, LocalDateTime.now());
-//    private static final Status status11 = new Status("Content: Hello World!, Mentions: @AmyAmes, URLs: www.google.com", user3, LocalDateTime.now());
-//    private static final Status status12 = new Status("Content: Hello World!, Mentions: @AmyAmes, URLs: http://www.4jflr8hdjjdla.com", user3, LocalDateTime.now());
-//    private static final Status status13 = new Status("Content: Hello World! \uD83D\uDE03, Mentions: @BobBobson, URLs: http://www.google.com", testUser, LocalDateTime.now());
-//    private static final Status status14 = new Status("Content: Hello World!, Mentions: @BobBobson, URLs: https://www.google.com", testUser, LocalDateTime.now());
-//    private static final Status status15 = new Status("Content: Hello World!, Mentions: @BobBobson, URLs: www.google.com", testUser, LocalDateTime.now());
-//    private static final Status status16 = new Status("Content: Hello World!, Mentions: @BobBobson, URLs: http://www.4jflr8hdjjdla.com", testUser, LocalDateTime.now());
-//
-//    private static final List<Status> sessionStatuses = new ArrayList<>();
+    // Table
+    private static final String TableName = "story";
+
+    // Attributes
+    private static final String AliasAttr = "alias";
+    private static final String TimePublishedAttr = "timePublished";
+    private static final String ContentAttr = "content";
+
+    // DynamoDB Client
+    private static final AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard().withRegion("us-west-2").build();
+    //private static final DynamoDB dynamoDB = new DynamoDB(client);
 
     public StatusesResponse getStory(StoryRequest request) {
         if (request.getLimit() <= 0) {
@@ -85,77 +39,110 @@ public class StoryDAO {
             throw new RuntimeException("[Bad Request] User not found");
         }
 
+        List<Status> statuses = new ArrayList<>();
 
+        Map<String, String> attrNames = new HashMap<>();
+        attrNames.put("#alias", AliasAttr);
 
-        QuerySpec querySpec = new QuerySpec()
-                .withMaxPageSize(request.getLimit())
-                .withScanIndexForward(true)
-                .withKeyConditionExpression("alias = :v_alias")
-                .withExclusiveStartKey((KeyAttribute) request.getLastStatus())
-                .withValueMap(new ValueMap()
-                    .withString(":v_alias", request.getUserAlias()));
+        Map<String, AttributeValue> attrValues = new HashMap<>();
+        attrValues.put(":alias", new AttributeValue().withS(request.getUserAlias()));
 
-        ItemCollection<QueryOutcome> items = null;
-        Iterator<Item> iterator = null;
-        Item item = null;
+        QueryRequest queryRequest = new QueryRequest()
+                .withTableName(TableName)
+                .withKeyConditionExpression("#alias = :alias")
+                .withExpressionAttributeNames(attrNames)
+                .withExpressionAttributeValues(attrValues)
+                .withLimit(request.getLimit());
 
-        try {
-            items = table.query(querySpec);
+        if (request.getLastStatusKey() != null) {
+            Map<String, AttributeValue> startKey = new HashMap<>();
+            startKey.put(AliasAttr, new AttributeValue().withS(request.getUserAlias()));
+            startKey.put(TimePublishedAttr, new AttributeValue().withS(request.getLastStatusKey()));
 
-            iterator = items.iterator();
-            while (iterator.hasNext()) {
-                QueryOutcome outcome = items.getLastLowLevelResult();
-                QueryResult result = outcome.getQueryResult();
-                result.getLastEvaluatedKey("")
+            queryRequest.withExclusiveStartKey(startKey);
+        }
+
+        QueryResult queryResult = client.query(queryRequest);
+        List<Map<String, AttributeValue>> items = queryResult.getItems();
+        if (items != null) {
+            for (Map<String, AttributeValue> item : items) {
+                Status status = new Status(item.get(ContentAttr).getS(), new User(), LocalDateTime.parse(item.get(TimePublishedAttr).getS())); // TODO: change user.. do we need to do a database lookup?
+                statuses.add(status);
             }
         }
 
-
-
-        List<Status> allStatuses = getDummyStatuses(request.getUserAlias()); // sorted by date published
-        List<Status> responseStatuses = new ArrayList<>(request.getLimit());
-
-        boolean hasMorePages = false;
-
-        if (request.getLimit() > 0) {
-            int statusesIndex = getStatusesStartingIndex(request.getLastStatus(), allStatuses);
-
-            for (int limitCounter = 0; statusesIndex < allStatuses.size() && limitCounter < request.getLimit(); statusesIndex++, limitCounter++) {
-                responseStatuses.add(allStatuses.get(statusesIndex));
-            }
-
-            hasMorePages = statusesIndex < allStatuses.size();
+        String lastKeyString = null;
+        Map<String, AttributeValue> lastKey = queryResult.getLastEvaluatedKey();
+        if (lastKey != null) {
+            lastKeyString = lastKey.get(TimePublishedAttr).getS();
         }
 
-        return new StatusesResponse(responseStatuses, hasMorePages);
+        return new StatusesResponse(statuses, lastKeyString != null, lastKeyString);
     }
 
-    private int getStatusesStartingIndex(Status lastStatus, List<Status> allStatuses) {
-        int statusesIndex = 0;
+//    private int getStatusesStartingIndex(Status lastStatus, List<Status> allStatuses) {
+//        int statusesIndex = 0;
+//
+//        if (lastStatus != null) {
+//            for (int i = 0; i < allStatuses.size(); i++) {
+//                if (lastStatus.equals(allStatuses.get(i))) {
+//                    statusesIndex = i + 1;
+//                    break;
+//                }
+//            }
+//        }
+//
+//        return statusesIndex;
+//    }
 
-        if (lastStatus != null) {
-            for (int i = 0; i < allStatuses.size(); i++) {
-                if (lastStatus.equals(allStatuses.get(i))) {
-                    statusesIndex = i + 1;
-                    break;
-                }
-            }
-        }
-
-        return statusesIndex;
-    }
-
-    List<Status> getDummyStatuses(List<String> userAliases) {
-        List<Status> statuses = new ArrayList<>(Arrays.asList(status1, status2, status3, status4, status5, status6,
-                status7, status8, status9, status10, status11, status12, status13, status14, status15, status16));
-        statuses.addAll(sessionStatuses);
-        statuses.removeIf(status -> !userAliases.contains(status.getAuthor().getAlias())); // inefficient, but this is dummy code. The database will replace this.
-        statuses.sort((s1, s2) -> s1.getTimePublished().compareTo(s2.getTimePublished()));
-        return statuses;
-    }
-
-    public PostResponse savePost(PostRequest request) {
-        Status status = new Status(request.getContent(), request.getAuthor(), request.getTimePublished());
-        return new PostResponse(status);
-    }
+//    List<Status> getStatuses(Table table, StoryRequest request) {
+//        List<Status> statuses = new ArrayList<>();
+//
+//        Map<String, AttributeValue> exclusiveStartKey = null;
+//        if (request.getLastStatus() != null) {
+//            exclusiveStartKey = new HashMap<String, AttributeValue>();
+//            exclusiveStartKey.put("alias", new AttributeValue().withS(request.getLastStatus().getAuthor()));
+//            exclusiveStartKey.put("timePublished", new AttributeValue().withS(request.getLastStatus().getTimePublished().toString()));
+//        }
+//
+//        QuerySpec querySpec = new QuerySpec()
+//                .withScanIndexForward(false) // sort descending?
+//                .withKeyConditionExpression("alias = :v_alias")
+//                .withExclusiveStartKey((KeyAttribute) exclusiveStartKey)
+//                .withValueMap(new ValueMap()
+//                    .withString(":v_alias", request.getUserAlias()));
+//
+//        ItemCollection<QueryOutcome> items = null;
+//        Iterator<Item> iterator = null;
+//        Item item = null;
+//
+//        try {
+//            items = table.query(querySpec);
+//
+//            iterator = items.iterator();
+//            while (iterator.hasNext()) {
+//                item = iterator.next();
+//                statuses.add(new Status(item.get("content").toString(), item.get("alias").toString(), item.get("timePublished")));
+//            }
+//
+//        }
+//        catch (Exception e) {
+//            System.err.println("Unable to query data");
+//            System.err.println(e.getMessage());
+//        }
+//    }
+//
+//    List<Status> getDummyStatuses(List<String> userAliases) {
+//        List<Status> statuses = new ArrayList<>(Arrays.asList(status1, status2, status3, status4, status5, status6,
+//                status7, status8, status9, status10, status11, status12, status13, status14, status15, status16));
+//        statuses.addAll(sessionStatuses);
+//        statuses.removeIf(status -> !userAliases.contains(status.getAuthor().getAlias())); // inefficient, but this is dummy code. The database will replace this.
+//        statuses.sort((s1, s2) -> s1.getTimePublished().compareTo(s2.getTimePublished()));
+//        return statuses;
+//    }
+//
+//    public PostResponse savePost(PostRequest request) {
+//        Status status = new Status(request.getContent(), request.getAuthor(), request.getTimePublished());
+//        return new PostResponse(status);
+//    }
 }

@@ -9,7 +9,7 @@ import edu.byu.cs.tweeter.model.domain.Status;
 public class StatusesRequest {
     private String userAlias;
     private int limit;
-    private Status lastStatus; // used to paginate Responses.
+    private String lastStatus; // used to paginate Responses.
 
     /**
      * Creates an instance.
@@ -20,7 +20,7 @@ public class StatusesRequest {
      *                                there was no previous request or if no Statuses were returned in the
      *                                previous request).
      */
-    public StatusesRequest(String userAlias, int limit, Status lastStatus) {
+    public StatusesRequest(String userAlias, int limit, String lastStatus) {
         this.userAlias = userAlias;
         this.limit = limit;
         this.lastStatus = lastStatus;
@@ -52,7 +52,7 @@ public class StatusesRequest {
      *
      * @return the last status.
      */
-    public Status getLastStatus() {
+    public String getLastStatusKey() {
         return lastStatus;
     }
 
@@ -64,7 +64,7 @@ public class StatusesRequest {
         this.limit = limit;
     }
 
-    public void setLastStatus(Status lastStatus) {
+    public void setLastStatus(String lastStatus) {
         this.lastStatus = lastStatus;
     }
 }

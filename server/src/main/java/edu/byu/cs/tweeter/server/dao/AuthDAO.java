@@ -24,8 +24,6 @@ public class AuthDAO {
     private static final DynamoDB dynamoDB = new DynamoDB(client);
     private static final Table table = dynamoDB.getTable("authtoken");
 
-    //private static final String AUTH_TOKEN_UUID = "8af4d1be-f1fa-40a6-b56d-f741a31f8421";
-
     private static final SecureRandom secureRandom = new SecureRandom();
     private static final Base64.Encoder base64Encoder = Base64.getUrlEncoder();
 
@@ -41,7 +39,7 @@ public class AuthDAO {
 
     public boolean isValidTokenForUser(User user, AuthToken token) {
         Item item = table.getItem("token", token.getToken());
-        String expectedAlias = item.getString("alias").toString();
+        String expectedAlias = item.getString("alias");
         return expectedAlias.equals(user.getAlias());
     }
 

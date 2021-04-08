@@ -234,7 +234,7 @@ public abstract class StatusesFragment extends Fragment implements UserPresenter
     protected abstract class StatusRecyclerViewAdapter extends RecyclerView.Adapter<StatusHolder> implements StatusesPresenter.View, Serializable {
 
         protected final List<Status> statuses = new ArrayList<>();
-        protected Status lastStatus;
+        protected String lastStatus;
         protected StatusesPresenter presenter;
 
         private boolean hasMorePages;
@@ -362,7 +362,8 @@ public abstract class StatusesFragment extends Fragment implements UserPresenter
 
             List<Status> statuses = statusesResponse.getStatuses();
 
-            lastStatus = (statuses.size() > 0) ? statuses.get(statuses.size() - 1) : null;
+            //lastStatus = (statuses.size() > 0) ? statuses.get(statuses.size() - 1) : null;
+            lastStatus = statusesResponse.getLastKey();
             hasMorePages = statusesResponse.getHasMorePages();
 
             isLoading = false;

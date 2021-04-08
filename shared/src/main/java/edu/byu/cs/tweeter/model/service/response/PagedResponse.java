@@ -6,15 +6,18 @@ package edu.byu.cs.tweeter.model.service.response;
 public class PagedResponse extends Response {
 
     private final boolean hasMorePages;
+    private final String lastKey;
 
-    PagedResponse(boolean success, boolean hasMorePages) {
+    PagedResponse(boolean success, boolean hasMorePages, String lastKey) {
         super(success);
         this.hasMorePages = hasMorePages;
+        this.lastKey = lastKey;
     }
 
-    PagedResponse(boolean success, String message, boolean hasMorePages) {
+    PagedResponse(boolean success, String message, boolean hasMorePages, String lastKey) {
         super(success, message);
         this.hasMorePages = hasMorePages;
+        this.lastKey = lastKey;
     }
 
     /**
@@ -26,5 +29,9 @@ public class PagedResponse extends Response {
      */
     public boolean getHasMorePages() {
         return hasMorePages;
+    }
+
+    public String getLastKey() {
+        return lastKey;
     }
 }

@@ -19,8 +19,8 @@ public class StatusesResponse extends PagedResponse {
      *
      * @param message a message describing why the request was unsuccessful.
      */
-    public StatusesResponse(String message) {
-        super(false, message, false);
+    public StatusesResponse(String message, String lastKey) {
+        super(false, message, false, lastKey);
     }
 
     /**
@@ -29,8 +29,8 @@ public class StatusesResponse extends PagedResponse {
      * @param statuses the statuses that form the requested Feed/Story.
      * @param hasMorePages an indicator of whether more data is available for the request.
      */
-    public StatusesResponse(List<Status> statuses, boolean hasMorePages) {
-        super(true, hasMorePages);
+    public StatusesResponse(List<Status> statuses, boolean hasMorePages, String lastKey) {
+        super(true, hasMorePages, lastKey);
         this.statuses = statuses;
     }
 

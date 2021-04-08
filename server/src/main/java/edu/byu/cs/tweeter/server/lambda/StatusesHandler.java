@@ -21,8 +21,10 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
+import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
 import edu.byu.cs.tweeter.model.service.request.PostRequest;
 import edu.byu.cs.tweeter.model.service.request.StatusesRequest;
+import edu.byu.cs.tweeter.model.service.request.StoryRequest;
 import edu.byu.cs.tweeter.model.service.response.PostResponse;
 import edu.byu.cs.tweeter.model.service.response.StatusesResponse;
 import edu.byu.cs.tweeter.server.service.PostServiceImpl;
@@ -50,10 +52,11 @@ public class StatusesHandler implements RequestStreamHandler  {
                     }
                 }).create();
 
-        StatusesRequest request = gson.fromJson(result, StatusesRequest.class);
+        StoryRequest request = gson.fromJson(result, StoryRequest.class);
 
         StatusesServiceImpl service = new StatusesServiceImpl();
-        StatusesResponse response = service.getStatuses(request);
+        StatusesResponse response = service.getStory(request); // TODO: split this between story and feed, two seperate handlers
+
         String responseJSON = gson.toJson(response);
         outputStream.write(responseJSON.getBytes(StandardCharsets.UTF_8));
     }

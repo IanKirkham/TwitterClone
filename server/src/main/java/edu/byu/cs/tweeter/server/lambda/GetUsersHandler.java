@@ -12,6 +12,7 @@ public class GetUsersHandler implements RequestHandler<UserRequest, UserResponse
     @Override
     public UserResponse handleRequest(UserRequest request, Context context) {
         UserServiceImpl service = new UserServiceImpl();
-        return service.getUsers(request);
+        //return service.getUsers(request);
+        return null;
     }
 }
