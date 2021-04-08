@@ -5,29 +5,27 @@ import java.io.IOException;
 import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
 import edu.byu.cs.tweeter.model.service.StatusesService;
 import edu.byu.cs.tweeter.model.service.request.FeedRequest;
-import edu.byu.cs.tweeter.model.service.request.StatusesRequest;
 import edu.byu.cs.tweeter.model.service.request.StoryRequest;
 import edu.byu.cs.tweeter.model.service.response.StatusesResponse;
-import edu.byu.cs.tweeter.server.dao.StatusesDAO;
+import edu.byu.cs.tweeter.server.dao.FeedDAO;
 import edu.byu.cs.tweeter.server.dao.StoryDAO;
 
 public class StatusesServiceImpl implements StatusesService {
-//    @Override
-//    public StatusesResponse getStatuses(StatusesRequest request) {
-//        return getStatusesDAO().getStatuses(request);
-//    }
-
-    StatusesDAO getStatusesDAO() {
-        return new StatusesDAO();
+    @Override
+    public StatusesResponse getStory(StoryRequest request) throws IOException, TweeterRemoteException {
+        return getStoryDAO().getStory(request);
     }
 
     @Override
-    public StatusesResponse getStory(StoryRequest request) {
-        return new StoryDAO().getStory(request);
+    public StatusesResponse getFeed(FeedRequest request) throws IOException, TweeterRemoteException {
+        return getFeedDAO().getFeed(request);
     }
 
-    @Override
-    public StatusesResponse getFeed(FeedRequest request) {
-        return null;
+    FeedDAO getFeedDAO() {
+        return new FeedDAO();
+    }
+
+    StoryDAO getStoryDAO() {
+        return new StoryDAO();
     }
 }

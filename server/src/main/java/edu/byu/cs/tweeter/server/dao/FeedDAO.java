@@ -79,4 +79,8 @@ public class FeedDAO {
 
         return new StatusesResponse(statuses, lastKeyString != null, lastKeyString);
     }
+
+    public StatusesResponse getFeed(FeedRequest request) {
+        return null;
+    }
 }

@@ -10,27 +10,26 @@ import edu.byu.cs.tweeter.model.service.request.UnfollowUserRequest;
 import edu.byu.cs.tweeter.model.service.response.DoesFollowResponse;
 import edu.byu.cs.tweeter.model.service.response.FollowUserResponse;
 import edu.byu.cs.tweeter.model.service.response.UnfollowUserResponse;
+import edu.byu.cs.tweeter.server.dao.FollowsDAO;
 import edu.byu.cs.tweeter.server.dao.UserDAO;
 
 public class FollowEventServiceImpl implements FollowEventService {
     @Override
-    public FollowUserResponse followUser(FollowUserRequest request) {
-        //return getUserDAO().followUser(request);
-        return null;
+    public FollowUserResponse followUser(FollowUserRequest request) throws IOException, TweeterRemoteException {
+        return getFollowsDAO().followUser(request);
     }
 
     @Override
-    public UnfollowUserResponse unfollowUser(UnfollowUserRequest request) {
-        //return getUserDAO().unfollowUser(request);
-        return null;
+    public UnfollowUserResponse unfollowUser(UnfollowUserRequest request) throws IOException, TweeterRemoteException {
+        return getFollowsDAO().unfollowUser(request);
     }
 
     @Override
     public DoesFollowResponse doesFollowUser(DoesFollowRequest request) throws IOException, TweeterRemoteException {
-        return null;
+        return getFollowsDAO().doesFollowUser(request);
     }
 
-    UserDAO getUserDAO() {
-        return new UserDAO();
+    FollowsDAO getFollowsDAO() {
+        return new FollowsDAO();
     }
 }

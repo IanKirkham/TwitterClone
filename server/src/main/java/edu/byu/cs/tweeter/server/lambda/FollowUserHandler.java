@@ -3,6 +3,9 @@ package edu.byu.cs.tweeter.server.lambda;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 
+import java.io.IOException;
+
+import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
 import edu.byu.cs.tweeter.model.service.request.FollowUserRequest;
 import edu.byu.cs.tweeter.model.service.response.FollowUserResponse;
 import edu.byu.cs.tweeter.server.service.FollowEventServiceImpl;
@@ -11,6 +14,13 @@ public class FollowUserHandler implements RequestHandler<FollowUserRequest, Foll
     @Override
     public FollowUserResponse handleRequest(FollowUserRequest request, Context context) {
         FollowEventServiceImpl service = new FollowEventServiceImpl();
-        return service.followUser(request);
+        FollowUserResponse response = null;
+        try {
+            response = service.followUser(request);
+            return response;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new FollowUserResponse(false);
     }
 }

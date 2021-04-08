@@ -1,8 +1,7 @@
 package edu.byu.cs.tweeter.server.lambda;
 
-
-import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
 import com.amazonaws.services.lambda.runtime.Context;
+import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
@@ -22,15 +21,11 @@ import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
 import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
-import edu.byu.cs.tweeter.model.service.request.PostRequest;
-import edu.byu.cs.tweeter.model.service.request.StatusesRequest;
-import edu.byu.cs.tweeter.model.service.request.StoryRequest;
-import edu.byu.cs.tweeter.model.service.response.PostResponse;
+import edu.byu.cs.tweeter.model.service.request.FeedRequest;
 import edu.byu.cs.tweeter.model.service.response.StatusesResponse;
-import edu.byu.cs.tweeter.server.service.PostServiceImpl;
 import edu.byu.cs.tweeter.server.service.StatusesServiceImpl;
 
-public class StatusesHandler implements RequestStreamHandler  {
+public class FeedHandler implements RequestStreamHandler {
     @Override
     public void handleRequest(InputStream inputStream, OutputStream outputStream, Context context) throws IOException {
         String result = new BufferedReader(new InputStreamReader(inputStream)).lines().collect(Collectors.joining("\n"));
@@ -52,11 +47,15 @@ public class StatusesHandler implements RequestStreamHandler  {
                     }
                 }).create();
 
-        StoryRequest request = gson.fromJson(result, StoryRequest.class);
+        FeedRequest request = gson.fromJson(result, FeedRequest.class);
 
         StatusesServiceImpl service = new StatusesServiceImpl();
-        StatusesResponse response = service.getStory(request); // TODO: split this between story and feed, two seperate handlers
-
+        StatusesResponse response = null;
+        try {
+            response = service.getFeed(request);
+        } catch (TweeterRemoteException e) {
+            e.printStackTrace();
+        }
         String responseJSON = gson.toJson(response);
         outputStream.write(responseJSON.getBytes(StandardCharsets.UTF_8));
     }
