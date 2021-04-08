@@ -1,9 +1,11 @@
 package edu.byu.cs.tweeter.model.service.request;
 
+import edu.byu.cs.tweeter.model.domain.AuthToken;
+
 /**
  * Contains all the information needed to make a request to have the server return the next page of users.
  */
-public class UserRequest {
+public class UserRequest extends AuthenticatedRequest {
     private String userAlias;
     private int limit;
     private String lastUserAlias;
@@ -17,7 +19,8 @@ public class UserRequest {
      *                     there was no previous request or if no users were returned in the
      *                     previous request).
      */
-    public UserRequest(String userAlias, int limit, String lastUserAlias) {
+    public UserRequest(String userAlias, int limit, String lastUserAlias, AuthToken authToken) {
+        super(authToken);
         this.userAlias = userAlias;
         this.limit = limit;
         this.lastUserAlias = lastUserAlias;

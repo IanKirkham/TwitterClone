@@ -4,7 +4,6 @@ package edu.byu.cs.tweeter.model.service.request;
  * Contains all the information needed to make a register request.
  */
 public class RegisterRequest {
-
     private String firstName;
     private String lastName;
     private String username;

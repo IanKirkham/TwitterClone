@@ -74,7 +74,7 @@ public class StoryFragment extends StatusesFragment implements PostPresenter.Vie
             addLoadingFooter();
 
             GetStoryTask getStoryTask = new GetStoryTask(presenter, presenter);
-            StoryRequest request = new StoryRequest(user.getAlias(), PAGE_SIZE, lastStatus);
+            StoryRequest request = new StoryRequest(user.getAlias(), PAGE_SIZE, lastStatus, authToken);
             getStoryTask.execute(request);
         }
     }

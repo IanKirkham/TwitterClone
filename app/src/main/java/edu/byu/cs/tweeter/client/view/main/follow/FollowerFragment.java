@@ -51,7 +51,7 @@ public class FollowerFragment extends UserDisplayFragment {
             addLoadingFooter();
 
             GetFollowersTask getFollowersTask = new GetFollowersTask(presenter, this);
-            FollowerRequest request = new FollowerRequest(user.getAlias(), PAGE_SIZE, (lastFollower == null ? null : lastFollower.getAlias()));
+            FollowerRequest request = new FollowerRequest(user.getAlias(), PAGE_SIZE, (lastFollower == null ? null : lastFollower.getAlias()), authToken);
             getFollowersTask.execute(request);
         }
     }

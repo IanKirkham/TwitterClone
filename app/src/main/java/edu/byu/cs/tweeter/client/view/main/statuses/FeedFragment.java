@@ -51,7 +51,7 @@ public class FeedFragment extends StatusesFragment {
             addLoadingFooter();
 
             GetFeedTask getFeedTask = new GetFeedTask(presenter, presenter);
-            FeedRequest request = new FeedRequest(user.getAlias(), PAGE_SIZE, lastStatus);
+            FeedRequest request = new FeedRequest(user.getAlias(), PAGE_SIZE, lastStatus, authToken);
             getFeedTask.execute(request);
         }
     }

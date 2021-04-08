@@ -16,16 +16,10 @@ import javax.crypto.spec.PBEKeySpec;
 
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
-import edu.byu.cs.tweeter.model.service.request.DoesFollowRequest;
-import edu.byu.cs.tweeter.model.service.request.FollowUserRequest;
 import edu.byu.cs.tweeter.model.service.request.LoginRequest;
 import edu.byu.cs.tweeter.model.service.request.RegisterRequest;
-import edu.byu.cs.tweeter.model.service.request.UnfollowUserRequest;
-import edu.byu.cs.tweeter.model.service.response.DoesFollowResponse;
-import edu.byu.cs.tweeter.model.service.response.FollowUserResponse;
 import edu.byu.cs.tweeter.model.service.response.LoginResponse;
 import edu.byu.cs.tweeter.model.service.response.RegisterResponse;
-import edu.byu.cs.tweeter.model.service.response.UnfollowUserResponse;
 
 /**
  * A DAO for accessing 'user' data from the database.
@@ -104,23 +98,23 @@ public class UserDAO {
         return table.putItem(item).getItem();
     }
 
+    public User getUser(String alias) {
+        Item item = table.getItem("alias", alias);
+        if (item == null) {
+            return null;
+        }
+        User user = new User(
+                item.get("firstName").toString(),
+                item.get("lastName").toString(),
+                item.get("alias").toString(),
+                item.get("imageURL").toString()
+        );
+        return user;
+    }
+
     public static Item readUser(Table table, String alias) {
         return table.getItem("alias", alias);
     }
-
-
-//    //TODO:  move out of this class
-//    public FollowUserResponse followUser(FollowUserRequest request) {
-//        // TODO: Modify user1's followers, user2's following in the table
-//        // TODO: Authenticate the request
-//        return new FollowUserResponse(true, "Successfully followed user");
-//    }
-//
-//    public UnfollowUserResponse unfollowUser(UnfollowUserRequest request) {
-//        // TODO: Modify user12's followers, user1's following in the table
-//        // TODO: Authenticate the request
-//        return new UnfollowUserResponse(true, "Successfully unfollowed user");
-//    }
 
     /**
      * Generate strong hashed and salted password using PBKDF2

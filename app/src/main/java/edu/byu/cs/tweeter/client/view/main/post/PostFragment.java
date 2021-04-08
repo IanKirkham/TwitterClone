@@ -101,7 +101,7 @@ import edu.byu.cs.tweeter.client.view.util.ImageUtils;
             public void onClick(View v) {
                 String postText = postContent.getText().toString();
 
-                PostRequest request = new PostRequest(user, postText, LocalDateTime.now());
+                PostRequest request = new PostRequest(user, postText, LocalDateTime.now(), authToken);
                 PostTask task = new PostTask(presenter, PostFragment.this.observer);
                 task.execute(request);
 

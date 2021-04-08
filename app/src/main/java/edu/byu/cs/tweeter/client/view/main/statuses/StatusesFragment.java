@@ -207,7 +207,7 @@ public abstract class StatusesFragment extends Fragment implements UserPresenter
                         Toast.makeText(getContext(), "Clicked a Mention!", Toast.LENGTH_LONG).show();
 
                         GetFollowersTask getFollowersTask = new GetFollowersTask(StatusesFragment.this.userPresenter, StatusesFragment.this.userPresenter);
-                        FollowerRequest request = new FollowerRequest(string.subSequence(start, end).toString(), PAGE_SIZE, null);
+                        FollowerRequest request = new FollowerRequest(string.subSequence(start, end).toString(), PAGE_SIZE, null, authToken);
                         getFollowersTask.execute(request);
                     }
                 }, start, end, Spanned.SPAN_COMPOSING);

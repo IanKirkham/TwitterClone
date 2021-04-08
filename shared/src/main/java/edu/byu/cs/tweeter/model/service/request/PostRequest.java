@@ -2,14 +2,16 @@ package edu.byu.cs.tweeter.model.service.request;
 
 import java.time.LocalDateTime;
 
+import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class PostRequest {
+public class PostRequest extends AuthenticatedRequest {
     private User author;
     private String content;
     private LocalDateTime timePublished;
 
-    public PostRequest(User author, String content, LocalDateTime timePublished) {
+    public PostRequest(User author, String content, LocalDateTime timePublished, AuthToken authToken) {
+        super(authToken);
         this.author = author;
         this.content = content;
         this.timePublished = timePublished;

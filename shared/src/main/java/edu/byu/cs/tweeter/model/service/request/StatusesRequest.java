@@ -1,12 +1,12 @@
 package edu.byu.cs.tweeter.model.service.request;
 
-import edu.byu.cs.tweeter.model.domain.Status;
+import edu.byu.cs.tweeter.model.domain.AuthToken;
 
 /**
  * Contains all the information needed to make a request to have the server return the next page of
  * statuses for a specified user.
  */
-public class StatusesRequest {
+public class StatusesRequest extends AuthenticatedRequest {
     private String userAlias;
     private int limit;
     private String lastStatus; // used to paginate Responses.
@@ -20,7 +20,8 @@ public class StatusesRequest {
      *                                there was no previous request or if no Statuses were returned in the
      *                                previous request).
      */
-    public StatusesRequest(String userAlias, int limit, String lastStatus) {
+    public StatusesRequest(String userAlias, int limit, String lastStatus, AuthToken authToken) {
+        super(authToken);
         this.userAlias = userAlias;
         this.limit = limit;
         this.lastStatus = lastStatus;
