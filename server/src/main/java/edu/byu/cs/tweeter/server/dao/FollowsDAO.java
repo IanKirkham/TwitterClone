@@ -56,7 +56,7 @@ public class FollowsDAO {
         valueMap.put(":e", request.getUserAlias());
 
         QuerySpec querySpec = new QuerySpec().withKeyConditionExpression("#handle = :e").withNameMap(nameMap)
-                .withValueMap(valueMap).withScanIndexForward(false).withMaxPageSize(request.getLimit()).withMaxResultSize(request.getLimit());
+                .withValueMap(valueMap).withScanIndexForward(true).withMaxPageSize(request.getLimit()).withMaxResultSize(request.getLimit());
         if (request.getLastUserAlias() != null) {
             querySpec.withExclusiveStartKey(R_HANDLE, request.getLastUserAlias(), E_HANDLE, request.getUserAlias());
         }
