@@ -17,7 +17,7 @@ import edu.byu.cs.tweeter.model.service.request.PostRequest;
 
 class ClientCommunicator {
 
-    private static final int TIMEOUT_MILLIS = 10000;
+    private static final int TIMEOUT_MILLIS = 25000;
 
     private final String baseURL;
 
