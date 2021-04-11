@@ -10,13 +10,9 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.amazonaws.services.s3.model.PutObjectResult;
 
-import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.math.BigInteger;
-import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
@@ -24,7 +20,6 @@ import java.util.Base64;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
-import javax.imageio.ImageIO;
 
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
@@ -37,11 +32,17 @@ import edu.byu.cs.tweeter.model.service.response.RegisterResponse;
  * A DAO for accessing 'user' data from the database.
  */
 public class UserDAO {
+
+    // Table name
+    private static final String tableName = "user";
+
+    // DynamoDB client
     private static final AuthDAO authDAO = new AuthDAO();
     private static final AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard().withRegion("us-west-2").build();
     private static final DynamoDB dynamoDB = new DynamoDB(client);
-    private static final Table table = dynamoDB.getTable("user");
+    private static final Table table = dynamoDB.getTable(tableName);
 
+    // s3
     private static final AmazonS3 s3 = AmazonS3ClientBuilder.standard().withRegion("us-west-2").build();
     private static final String bucketName = "tweeter-user-pics";
 

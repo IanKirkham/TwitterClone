@@ -4,30 +4,50 @@ import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class FollowEventRequest extends AuthenticatedRequest {
-    private User rootUser;
-    private User currentUser;
+    private String primaryUserAlias;
+    private String currentUserAlias;
+    private String primaryUserName;
+    private String currentUserName;
 
-    public FollowEventRequest(User rootUser, AuthToken authToken, User currentUser) {
+    public FollowEventRequest(String primaryUserAlias, AuthToken authToken, String currentUserAlias, String primaryUserName, String currentUserName) {
         super(authToken);
-        this.rootUser = rootUser;
-        this.currentUser = currentUser;
+        this.primaryUserAlias = primaryUserAlias;
+        this.currentUserAlias = currentUserAlias;
+        this.primaryUserName = primaryUserName;
+        this.currentUserName = currentUserName;
     }
 
     public FollowEventRequest() {}
 
-    public User getRootUser() {
-        return rootUser;
+    public String getPrimaryUserAlias() {
+        return primaryUserAlias;
     }
 
-    public User getCurrentUser() {
-        return currentUser;
+    public String getCurrentUserAlias() {
+        return currentUserAlias;
     }
 
-    public void setRootUser(User rootUser) {
-        this.rootUser = rootUser;
+    public void setPrimaryUserAlias(String primaryUserAlias) {
+        this.primaryUserAlias = primaryUserAlias;
     }
 
-    public void setCurrentUser(User currentUser) {
-        this.currentUser = currentUser;
+    public void setCurrentUserAlias(String currentUserAlias) {
+        this.currentUserAlias = currentUserAlias;
+    }
+
+    public String getPrimaryUserName() {
+        return primaryUserName;
+    }
+
+    public void setPrimaryUserName(String primaryUserName) {
+        this.primaryUserName = primaryUserName;
+    }
+
+    public String getCurrentUserName() {
+        return currentUserName;
+    }
+
+    public void setCurrentUserName(String currentUserName) {
+        this.currentUserName = currentUserName;
     }
 }

@@ -60,7 +60,7 @@ public class PostQueueHandler implements RequestHandler<SQSEvent, Void> {
             String postJSON = msg.getBody();
             PostRequest request = gson.fromJson(postJSON, PostRequest.class);
 
-            List<String> userAliases = followsDAO.getFollowers(request.getAuthor().getAlias());
+            List<String> userAliases = followsDAO.getFollowers(request.getAuthor());
             System.out.println(userAliases); // TODO: Delete me
 
             for (int i = 0; i < userAliases.size(); i += 25) {
@@ -70,7 +70,7 @@ public class PostQueueHandler implements RequestHandler<SQSEvent, Void> {
                 } else {
                     subList = userAliases.subList(i, i + 25);
                 }
-                FeedUpdateJob job = new FeedUpdateJob(subList, request.getAuthor().getAlias(), request.getTimePublished().toString(), request.getContent());
+                FeedUpdateJob job = new FeedUpdateJob(subList, request.getAuthor(), request.getTimePublished().toString(), request.getContent());
                 String jobJSON = gson.toJson(job);
                 SendMessageRequest send_msg_request = new SendMessageRequest()
                         .withQueueUrl(qURL)

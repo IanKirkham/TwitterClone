@@ -1,5 +1,6 @@
 package edu.byu.cs.tweeter.client.view.main.post;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.DialogFragment;
@@ -17,6 +18,7 @@ import android.widget.Toast;
 import java.time.LocalDateTime;
 
 import edu.byu.cs.tweeter.R;
+import edu.byu.cs.tweeter.client.view.login.LoginActivity;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.service.request.PostRequest;
@@ -101,7 +103,7 @@ import edu.byu.cs.tweeter.client.view.util.ImageUtils;
             public void onClick(View v) {
                 String postText = postContent.getText().toString();
 
-                PostRequest request = new PostRequest(user, postText, LocalDateTime.now(), authToken);
+                PostRequest request = new PostRequest(user.getAlias(), postText, LocalDateTime.now(), authToken);
                 PostTask task = new PostTask(presenter, PostFragment.this.observer);
                 task.execute(request);
 
@@ -132,6 +134,11 @@ import edu.byu.cs.tweeter.client.view.util.ImageUtils;
 
     @Override
     public void handleException(Exception exception) {
-        Toast.makeText(getContext(), "Post Failed to Save", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "Error: " + exception.getMessage() , Toast.LENGTH_SHORT).show();
+        if (exception.getMessage() != null && exception.getMessage().contains("Authentication")) {
+            Intent intent = new Intent(getActivity(), LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+        }
     }
 }

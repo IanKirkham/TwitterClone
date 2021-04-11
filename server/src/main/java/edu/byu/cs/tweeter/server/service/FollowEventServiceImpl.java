@@ -11,7 +11,6 @@ import edu.byu.cs.tweeter.model.service.response.DoesFollowResponse;
 import edu.byu.cs.tweeter.model.service.response.FollowUserResponse;
 import edu.byu.cs.tweeter.model.service.response.UnfollowUserResponse;
 import edu.byu.cs.tweeter.server.dao.FollowsDAO;
-import edu.byu.cs.tweeter.server.dao.UserDAO;
 
 public class FollowEventServiceImpl implements FollowEventService {
     @Override

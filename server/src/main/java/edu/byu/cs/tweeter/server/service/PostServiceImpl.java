@@ -12,7 +12,7 @@ import com.amazonaws.services.sqs.model.SendMessageResult;
 import com.google.gson.Gson;
 
 public class PostServiceImpl implements PostService {
-    private static String qURL = "https://sqs.us-west-2.amazonaws.com/036224226136/postsQ";
+    private static final String qURL = "https://sqs.us-west-2.amazonaws.com/036224226136/postsQ";
 
     @Override
     public PostResponse savePost(PostRequest request) {

@@ -1,5 +1,6 @@
 package edu.byu.cs.tweeter.client.view.main.follow;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.byu.cs.tweeter.R;
+import edu.byu.cs.tweeter.client.view.login.LoginActivity;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.service.response.UserResponse;
@@ -271,6 +273,11 @@ public abstract class UserDisplayFragment extends Fragment implements UserPresen
             Log.e(LOG_TAG, exception.getMessage(), exception);
             removeLoadingFooter();
             Toast.makeText(getContext(), exception.getMessage(), Toast.LENGTH_LONG).show();
+            if (exception.getMessage() != null && exception.getMessage().contains("Authentication")) {
+                Intent intent = new Intent(getActivity(), LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+            }
         }
 
         /**

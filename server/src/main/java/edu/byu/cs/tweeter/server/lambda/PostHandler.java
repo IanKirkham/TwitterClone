@@ -1,6 +1,5 @@
 package edu.byu.cs.tweeter.server.lambda;
 
-
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.google.gson.Gson;

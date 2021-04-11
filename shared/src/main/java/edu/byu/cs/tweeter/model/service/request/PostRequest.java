@@ -6,11 +6,11 @@ import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class PostRequest extends AuthenticatedRequest {
-    private User author;
+    private String author;
     private String content;
     private LocalDateTime timePublished;
 
-    public PostRequest(User author, String content, LocalDateTime timePublished, AuthToken authToken) {
+    public PostRequest(String author, String content, LocalDateTime timePublished, AuthToken authToken) {
         super(authToken);
         this.author = author;
         this.content = content;
@@ -19,11 +19,11 @@ public class PostRequest extends AuthenticatedRequest {
 
     public PostRequest() {}
 
-    public User getAuthor() {
+    public String getAuthor() {
         return author;
     }
 
-    public void setAuthor(User author) {
+    public void setAuthor(String author) {
         this.author = author;
     }
 

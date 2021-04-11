@@ -91,7 +91,7 @@ public class ServerFacade {
     }
 
     public FollowUserResponse followUser(FollowUserRequest request, String urlPath) throws IOException, TweeterRemoteException {
-        if (request.getRootUser().getAlias().equals(request.getCurrentUser().getAlias())) {
+        if (request.getPrimaryUserAlias().equals(request.getCurrentUserAlias())) {
             return new FollowUserResponse(false, "You cannot follow yourself!");
         }
 

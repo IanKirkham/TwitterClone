@@ -5,7 +5,6 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.document.BatchWriteItemOutcome;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Item;
-import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.services.dynamodbv2.document.TableWriteItems;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.QueryRequest;
@@ -23,6 +22,9 @@ import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.service.request.FeedRequest;
 import edu.byu.cs.tweeter.model.service.response.StatusesResponse;
 
+/**
+ * A DAO for accessing 'feed' data from the database.
+ */
 public class FeedDAO {
 
     // Table
@@ -39,6 +41,11 @@ public class FeedDAO {
     private static final DynamoDB dynamoDB = new DynamoDB(client);
 
     public StatusesResponse getFeed(FeedRequest request) {
+        // Authenticate
+        if (!AuthDAO.isValidTokenForUser(request.getUserAlias(), request.getAuthToken())) {
+            throw new RuntimeException("[Bad Request] Authentication Failed");
+        }
+
         if (request.getLimit() <= 0) {
             throw new RuntimeException("[Bad Request] Invalid limit");
         }
@@ -57,6 +64,7 @@ public class FeedDAO {
         QueryRequest queryRequest = new QueryRequest()
                 .withTableName(TableName)
                 .withKeyConditionExpression("#alias = :alias")
+                .withScanIndexForward(false)
                 .withExpressionAttributeNames(attrNames)
                 .withExpressionAttributeValues(attrValues)
                 .withLimit(request.getLimit());
@@ -72,9 +80,11 @@ public class FeedDAO {
         QueryResult queryResult = client.query(queryRequest);
         List<Map<String, AttributeValue>> items = queryResult.getItems();
         if (items != null) {
+            UserDAO userDAO = new UserDAO();
+
             for (Map<String, AttributeValue> item : items) {
-                // TODO: change dummy user.. do we need to do a database lookup?
-                Status status = new Status(item.get(ContentAttr).getS(), new User("dummy", "user", "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/donald_duck.png"), LocalDateTime.parse(item.get(TimePublishedAttr).getS()));
+                User user = userDAO.getUser(item.get(AuthorAttr).getS());
+                Status status = new Status(item.get(ContentAttr).getS(),  user, LocalDateTime.parse(item.get(TimePublishedAttr).getS()));
                 statuses.add(status);
             }
         }

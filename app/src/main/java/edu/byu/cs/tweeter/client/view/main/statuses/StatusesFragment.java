@@ -26,7 +26,6 @@ import org.jetbrains.annotations.NotNull;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -34,15 +33,14 @@ import java.util.regex.Pattern;
 
 import edu.byu.cs.tweeter.R;
 import edu.byu.cs.tweeter.client.view.asyncTasks.GetFollowersTask;
+import edu.byu.cs.tweeter.client.view.login.LoginActivity;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.service.request.FollowerRequest;
-import edu.byu.cs.tweeter.model.service.request.UserRequest;
 import edu.byu.cs.tweeter.model.service.response.StatusesResponse;
 import edu.byu.cs.tweeter.client.presenter.StatusesPresenter;
 import edu.byu.cs.tweeter.client.presenter.UserPresenter;
-import edu.byu.cs.tweeter.client.view.asyncTasks.GetUsersTask;
 import edu.byu.cs.tweeter.client.view.main.user.UserActivity;
 import edu.byu.cs.tweeter.client.view.util.ImageUtils;
 
@@ -362,7 +360,6 @@ public abstract class StatusesFragment extends Fragment implements UserPresenter
 
             List<Status> statuses = statusesResponse.getStatuses();
 
-            //lastStatus = (statuses.size() > 0) ? statuses.get(statuses.size() - 1) : null;
             lastStatus = statusesResponse.getLastKey();
             hasMorePages = statusesResponse.getHasMorePages();
 
@@ -381,6 +378,11 @@ public abstract class StatusesFragment extends Fragment implements UserPresenter
             Log.e(LOG_TAG, exception.getMessage(), exception);
             removeLoadingFooter();
             Toast.makeText(getContext(), exception.getMessage(), Toast.LENGTH_LONG).show();
+            if (exception.getMessage() != null && exception.getMessage().contains("Authentication")) {
+                Intent intent = new Intent(getActivity(), LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+            }
         }
 
         /**

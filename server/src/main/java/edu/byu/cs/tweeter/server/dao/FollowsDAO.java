@@ -32,23 +32,32 @@ import edu.byu.cs.tweeter.model.service.response.DoesFollowResponse;
 import edu.byu.cs.tweeter.model.service.response.FollowUserResponse;
 import edu.byu.cs.tweeter.model.service.response.UnfollowUserResponse;
 import edu.byu.cs.tweeter.model.service.response.UserResponse;
-import jdk.nashorn.internal.runtime.ECMAException;
 
 /**
  * A DAO for accessing 'follows' data from the database.
  */
 public class FollowsDAO {
+
+    // Table and Index
+    private static final String TableName = "follows";
+    private static final String IndexName = "follows_index";
+
+    // Attributes
     private static final String R_HANDLE = "follower_handle";
     private static final String E_HANDLE = "followee_handle";
     private static final String R_NAME   = "follower_name";
     private static final String E_NAME   = "followee_name";
 
+    // DynamoDB client
     private static final AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard().withRegion("us-west-2").build();
     private static final DynamoDB dynamoDB = new DynamoDB(client);
-    private static final Table table = dynamoDB.getTable("follows");
+    private static final Table table = dynamoDB.getTable(TableName);
 
     public UserResponse getFollowers(FollowerRequest request) {
-        // TODO: Authenticate
+        // Authenticate
+        if (!AuthDAO.isValidTokenForUser(request.getUserAlias(), request.getAuthToken())) {
+            throw new RuntimeException("[Bad Request] Authentication Failed");
+        }
 
         HashMap<String, String> nameMap = new HashMap<>();
         nameMap.put("#handle", E_HANDLE);
@@ -69,7 +78,7 @@ public class FollowsDAO {
         List<String> handles = new ArrayList<>();
 
         try {
-            items = table.getIndex("follows_index").query(querySpec);
+            items = table.getIndex(IndexName).query(querySpec);
             iterator = items.iterator();
             while (iterator.hasNext()) {
                 item = iterator.next();
@@ -104,8 +113,12 @@ public class FollowsDAO {
         }
     }
 
-    // TODO: Template/Strategy pattern?
     public UserResponse getFollowees(FolloweeRequest request) {
+        // Authenticate
+        if (!AuthDAO.isValidTokenForUser(request.getUserAlias(), request.getAuthToken())) {
+            throw new RuntimeException("[Bad Request] Authentication Failed");
+        }
+
         HashMap<String, String> nameMap = new HashMap<>();
         nameMap.put("#handle", R_HANDLE);
 
@@ -161,21 +174,31 @@ public class FollowsDAO {
         }
     }
 
-    public Integer getFolloweeCount(User follower) {
-        if (follower == null) {
+    // TODO: refactor / implement
+    public Integer getFolloweeCount(String alias) {
+        if (alias == null) {
             throw new RuntimeException("[Bad Request] Invalid user");
         }
         QuerySpec querySpec = new QuerySpec()
                 .withKeyConditionExpression("follower_handle = :v_name")
                 .withValueMap(new ValueMap()
-                        .withString(":v_name", follower.getAlias()));
+                        .withString(":v_name", alias));
 
-        return table.query(querySpec).getAccumulatedItemCount(); // TODO: I am not sure if this is the right way to get the count, there may be a better way
+        return table.query(querySpec).getAccumulatedItemCount();
+    }
+
+    // TODO: refactor / implement
+    public Integer getFollowerCount(String alias) {
+        return null;
     }
 
     public DoesFollowResponse doesFollowUser(DoesFollowRequest request) {
-        // TODO: Authenticate
-        if (get(request.getRootUser().getAlias(), request.getCurrentUser().getAlias()) != null) {
+        // Authenticate
+        if (!AuthDAO.isValidTokenForUser(request.getPrimaryUserAlias(), request.getAuthToken())) {
+            throw new RuntimeException("[Bad Request] Authentication Failed");
+        }
+
+        if (get(request.getPrimaryUserAlias(), request.getCurrentUserAlias()) != null) {
             return new DoesFollowResponse(true);
         } else {
             return new DoesFollowResponse(false);
@@ -183,12 +206,15 @@ public class FollowsDAO {
     }
 
     public FollowUserResponse followUser(FollowUserRequest request) {
-        // TODO: Authenticate
+        // Authenticate
+        if (!AuthDAO.isValidTokenForUser(request.getPrimaryUserAlias(), request.getAuthToken())) {
+            throw new RuntimeException("[Bad Request] Authentication Failed");
+        }
 
-        FollowRelationship followRelationship = new FollowRelationship(request.getRootUser().getAlias(),
-                                                                        request.getRootUser().getName(),
-                                                                        request.getCurrentUser().getAlias(),
-                                                                        request.getCurrentUser().getName());
+        FollowRelationship followRelationship = new FollowRelationship(request.getPrimaryUserAlias(),
+                                                                        request.getPrimaryUserName(),
+                                                                        request.getCurrentUserAlias(),
+                                                                        request.getCurrentUserName());
         if (put(followRelationship)) {
             return new FollowUserResponse(true, "Successfully followed user");
         } else {
@@ -197,12 +223,15 @@ public class FollowsDAO {
     }
 
     public UnfollowUserResponse unfollowUser(UnfollowUserRequest request) {
-        // TODO: Authenticate
+        // Authenticate
+        if (!AuthDAO.isValidTokenForUser(request.getPrimaryUserAlias(), request.getAuthToken())) {
+            throw new RuntimeException("[Bad Request] Authentication Failed");
+        }
 
-        FollowRelationship followRelationship = new FollowRelationship(request.getRootUser().getAlias(),
-                request.getRootUser().getName(),
-                request.getCurrentUser().getAlias(),
-                request.getCurrentUser().getName());
+        FollowRelationship followRelationship = new FollowRelationship(request.getPrimaryUserAlias(),
+                request.getPrimaryUserName(),
+                request.getCurrentUserAlias(),
+                request.getCurrentUserName());
         if (delete(followRelationship)) {
             return new UnfollowUserResponse(true, "Successfully unfollowed user");
         } else {
@@ -211,7 +240,7 @@ public class FollowsDAO {
     }
 
     public List<String> getFollowers(String userAlias) {
-        // TODO: Authenticate
+        // TODO: Authenticate -- do we need to authenticate here? It only takes a userAlias, no authToken to check
 
         HashMap<String, String> nameMap = new HashMap<>();
         nameMap.put("#handle", E_HANDLE);
@@ -229,7 +258,7 @@ public class FollowsDAO {
         List<String> handles = new ArrayList<>();
 
         try {
-            items = table.getIndex("follows_index").query(querySpec);
+            items = table.getIndex(IndexName).query(querySpec);
             iterator = items.iterator();
             while (iterator.hasNext()) {
                 item = iterator.next();
@@ -263,6 +292,9 @@ public class FollowsDAO {
 
         try {
             Item outcome = table.getItem(spec);
+            if (outcome == null) {
+                return null;
+            }
             return new FollowRelationship(outcome.getString(R_HANDLE), outcome.getString(R_NAME), outcome.getString(E_HANDLE), outcome.getString(E_NAME));
         } catch (Exception e) {
             e.printStackTrace();

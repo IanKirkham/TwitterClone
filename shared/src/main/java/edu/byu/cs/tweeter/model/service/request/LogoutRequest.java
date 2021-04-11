@@ -7,26 +7,26 @@ import edu.byu.cs.tweeter.model.domain.User;
  * Contains all the information needed to make a logout request.
  */
 public class LogoutRequest extends AuthenticatedRequest {
-    private User user;
+    private String userAlias;
 
     /**
      * Creates an instance.
      *
-     * @param user the user to be logged out.
+     * @param userAlias the user to be logged out.
      * @param authToken the password of the user to be logged out.
      */
-    public LogoutRequest(User user, AuthToken authToken) {
+    public LogoutRequest(String userAlias, AuthToken authToken) {
         super(authToken);
-        this.user = user;
+        this.userAlias = userAlias;
     }
 
     public LogoutRequest() {}
 
-    public User getUser() {
-        return user;
+    public String getUser() {
+        return userAlias;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUser(String user) {
+        this.userAlias = userAlias;
     }
 }

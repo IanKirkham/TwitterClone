@@ -15,15 +15,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.service.request.PostRequest;
 import edu.byu.cs.tweeter.model.service.request.StoryRequest;
 import edu.byu.cs.tweeter.model.service.response.PostResponse;
-import edu.byu.cs.tweeter.model.service.response.RegisterResponse;
 import edu.byu.cs.tweeter.model.service.response.StatusesResponse;
-// TODO: combine story and feed DAO using design pattern ?
+
+/**
+ * A DAO for accessing 'story' data from the database.
+ */
 public class StoryDAO {
 
     // Table
@@ -40,6 +41,11 @@ public class StoryDAO {
     private static final Table table = dynamoDB.getTable(TableName);
 
     public StatusesResponse getStory(StoryRequest request) {
+        // Authenticate
+        if (!AuthDAO.isValidTokenForUser(request.getUserAlias(), request.getAuthToken())) {
+            throw new RuntimeException("[Bad Request] Authentication Failed");
+        }
+
         if (request.getLimit() <= 0) {
             throw new RuntimeException("[Bad Request] Invalid limit");
         }
@@ -58,6 +64,7 @@ public class StoryDAO {
         QueryRequest queryRequest = new QueryRequest()
                 .withTableName(TableName)
                 .withKeyConditionExpression("#alias = :alias")
+                .withScanIndexForward(false)
                 .withExpressionAttributeNames(attrNames)
                 .withExpressionAttributeValues(attrValues)
                 .withLimit(request.getLimit());
@@ -72,9 +79,11 @@ public class StoryDAO {
         QueryResult queryResult = client.query(queryRequest);
         List<Map<String, AttributeValue>> items = queryResult.getItems();
         if (items != null) {
+            UserDAO userDAO = new UserDAO();
+
             for (Map<String, AttributeValue> item : items) {
-                // TODO: change dummy user.. do we need to do a database lookup?
-                Status status = new Status(item.get(ContentAttr).getS(), new User("dummy", "user", "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/donald_duck.png"), LocalDateTime.parse(item.get(TimePublishedAttr).getS()));
+                User user = userDAO.getUser(item.get(AliasAttr).getS());
+                Status status = new Status(item.get(ContentAttr).getS(), user, LocalDateTime.parse(item.get(TimePublishedAttr).getS()));
                 statuses.add(status);
             }
         }
@@ -89,11 +98,21 @@ public class StoryDAO {
     }
 
     public PostResponse savePost(PostRequest request) {
+        // Authenticate
+        if (!AuthDAO.isValidTokenForUser(request.getAuthor(), request.getAuthToken())) {
+            AuthDAO.invalidateToken(request.getAuthToken());
+            throw new RuntimeException("[Bad Request] Authentication Failed");
+        }
+
         Item item = new Item()
-                .withPrimaryKey(AliasAttr, request.getAuthor().getAlias())
+                .withPrimaryKey(AliasAttr, request.getAuthor())
                 .withString(TimePublishedAttr, request.getTimePublished().toString())
                 .withString(ContentAttr, request.getContent());
-        Status status = new Status(request.getContent(), request.getAuthor(), request.getTimePublished());
+
+        UserDAO userDAO = new UserDAO();
+        User user = userDAO.getUser(request.getAuthor());
+
+        Status status = new Status(request.getContent(), user, request.getTimePublished());
         try {
             table.putItem(item);
             return new PostResponse(status);

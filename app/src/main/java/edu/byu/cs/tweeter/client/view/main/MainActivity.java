@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements LogoutPresenter.V
         if (item.getItemId() == R.id.logoutMenu) {
             Toast.makeText(this, "Logging out", Toast.LENGTH_LONG).show();
 
-            LogoutRequest logoutRequest = new LogoutRequest(user, authToken);
+            LogoutRequest logoutRequest = new LogoutRequest(user.getAlias(), authToken);
             LogoutTask logoutTask = new LogoutTask(presenter, presenter);
             logoutTask.execute(logoutRequest);
             return true;
@@ -132,6 +132,6 @@ public class MainActivity extends AppCompatActivity implements LogoutPresenter.V
     @Override
     public void handleException(Exception exception) {
         Log.e(LOG_TAG, exception.getMessage(), exception);
-        Toast.makeText(this, "Failed to logout because of exception: " + exception.getMessage(), Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "Error: " + exception.getMessage(), Toast.LENGTH_LONG).show();
     }
 }

@@ -1,5 +1,6 @@
 package edu.byu.cs.tweeter.client.view.main.user;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.google.android.material.tabs.TabLayout;
@@ -16,6 +17,7 @@ import android.widget.ToggleButton;
 
 import edu.byu.cs.tweeter.R;
 import edu.byu.cs.tweeter.client.view.asyncTasks.DoesFollowUserTask;
+import edu.byu.cs.tweeter.client.view.login.LoginActivity;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.service.request.DoesFollowRequest;
@@ -60,7 +62,7 @@ public class UserActivity extends AppCompatActivity implements FollowEventPresen
         presenter = new FollowEventPresenter(this);
 
         DoesFollowUserTask doesFollowUserTask = new DoesFollowUserTask(presenter, presenter);
-        DoesFollowRequest doesFollowRequest = new DoesFollowRequest(rootUser, authToken , currentUser);
+        DoesFollowRequest doesFollowRequest = new DoesFollowRequest(rootUser.getAlias(), authToken , currentUser.getAlias(), rootUser.getName(), currentUser.getName());
         doesFollowUserTask.execute(doesFollowRequest);
 
         SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager(), rootUser, currentUser, authToken);
@@ -90,11 +92,11 @@ public class UserActivity extends AppCompatActivity implements FollowEventPresen
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    FollowUserRequest followUserRequest = new FollowUserRequest(rootUser, authToken, currentUser);
+                    FollowUserRequest followUserRequest = new FollowUserRequest(rootUser.getAlias(), authToken , currentUser.getAlias(), rootUser.getName(), currentUser.getName());
                     FollowUserTask followUserTask = new FollowUserTask(presenter, presenter);
                     followUserTask.execute(followUserRequest);
                 } else {
-                    UnfollowUserRequest unfollowUserRequest = new UnfollowUserRequest(rootUser, authToken, currentUser);
+                    UnfollowUserRequest unfollowUserRequest = new UnfollowUserRequest(rootUser.getAlias(), authToken , currentUser.getAlias(), rootUser.getName(), currentUser.getName());
                     UnfollowUserTask unfollowUserTask = new UnfollowUserTask(presenter, presenter);
                     unfollowUserTask.execute(unfollowUserRequest);
                 }
@@ -122,6 +124,11 @@ public class UserActivity extends AppCompatActivity implements FollowEventPresen
     public void handleException(Exception exception) {
         followButton.setChecked(!followButton.isChecked());
         Log.e(LOG_TAG, exception.getMessage(), exception);
-        Toast.makeText(this, "Failed to unfollow user because of exception: " + exception.getMessage(), Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "Error: " + exception.getMessage(), Toast.LENGTH_LONG).show();
+        if (exception.getMessage() != null && exception.getMessage().contains("Authentication")) {
+            Intent intent = new Intent(this, LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+        }
     }
 }
