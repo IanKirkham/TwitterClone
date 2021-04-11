@@ -21,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Base64;
 
 import edu.byu.cs.tweeter.R;
 import edu.byu.cs.tweeter.model.service.request.RegisterRequest;
@@ -101,7 +102,7 @@ public class RegisterFragment extends Fragment implements RegisterPresenter.View
                 registerToast.show();
 
                 RegisterRequest registerRequest = new RegisterRequest(firstNameField.getText().toString(),
-                        lastNameField.getText().toString(), usernameField.getText().toString(), passwordField.getText().toString(), imageBytes);
+                        lastNameField.getText().toString(), usernameField.getText().toString(), passwordField.getText().toString(), Base64.getEncoder().encode(imageBytes));
                 RegisterTask registerTask = new RegisterTask(presenter, presenter);
                 registerTask.execute(registerRequest);
             }

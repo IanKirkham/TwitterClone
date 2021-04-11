@@ -5,14 +5,26 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Item;
 import com.amazonaws.services.dynamodbv2.document.Table;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.PutObjectResult;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.math.BigInteger;
+import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
+import java.util.Base64;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
+import javax.imageio.ImageIO;
 
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
@@ -29,6 +41,10 @@ public class UserDAO {
     private static final AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard().withRegion("us-west-2").build();
     private static final DynamoDB dynamoDB = new DynamoDB(client);
     private static final Table table = dynamoDB.getTable("user");
+
+    private static final AmazonS3 s3 = AmazonS3ClientBuilder.standard().withRegion("us-west-2").build();
+    private static final String bucketName = "tweeter-user-pics";
+
 
     public LoginResponse login(LoginRequest request) {
 
@@ -57,7 +73,9 @@ public class UserDAO {
                 retrievedUser.get("alias").toString(),
                 retrievedUser.get("imageURL").toString()
         );
-        return new LoginResponse(user, authDAO.generateTokenForUser(user));
+        AuthToken authToken = authDAO.generateTokenForUser(user);
+
+        return new LoginResponse(user, authToken);
     }
 
     public RegisterResponse register(RegisterRequest request) {
@@ -67,35 +85,47 @@ public class UserDAO {
             return new RegisterResponse("Username already exists");
         }
 
-        // create user
-        Item item;
-        try {
-            item = createUser(table, request);
+        User user = createUser(table, request);
+        AuthToken authToken = authDAO.generateTokenForUser(user);
 
-            User user = new User(
-                    item.get("firstName").toString(),
-                    item.get("lastName").toString(),
-                    item.get("alias").toString(),
-                    item.get("imageURL").toString()
-            );
-            AuthToken authToken = authDAO.generateTokenForUser(user);
-
-            return new RegisterResponse(user, authToken);
-
-        } catch (Exception e) {
-            throw new RuntimeException("[Internal Error] Please try again");
-        }
+        return new RegisterResponse(user, authToken);
     }
 
-    public static Item createUser(Table table, RegisterRequest request) throws InvalidKeySpecException, NoSuchAlgorithmException {
-        Item item = new Item()
-                .withPrimaryKey("alias", request.getUsername())
-                .withString("firstName", request.getFirstName())
-                .withString("lastName", request.getLastName())
-                .withString("password", generateStrongPasswordHash(request.getPassword()))
-                .withString("imageURL", "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/donald_duck.png"); // TODO upload image bytes to s3 and put URL here
+    public User createUser(Table table, RegisterRequest request) {
 
-        return table.putItem(item).getItem();
+        // decode base64 byte array
+        byte[] decodedByteArray = Base64.getDecoder().decode(request.getImageBytes());
+
+        // upload image to s3 bucket
+        String imageURL = uploadToS3(decodedByteArray, request.getUsername());
+
+        Item item = null;
+        try {
+            item = new Item()
+                    .withPrimaryKey("alias", request.getUsername())
+                    .withString("firstName", request.getFirstName())
+                    .withString("lastName", request.getLastName())
+                    .withString("password", generateStrongPasswordHash(request.getPassword()))
+                    .withString("imageURL", imageURL);
+        } catch (Exception e) {
+            throw new RuntimeException("[Internal Error] An error occurred while registering");
+        }
+
+        table.putItem(item);
+        return new User(
+                item.get("firstName").toString(),
+                item.get("lastName").toString(),
+                item.get("alias").toString(),
+                item.get("imageURL").toString()
+        );
+    }
+
+    public String uploadToS3(byte[] byteArray, String user) {
+        ByteArrayInputStream bis = new ByteArrayInputStream(byteArray);
+        String key = user.substring(1) + ".jpg";
+
+        s3.putObject(new PutObjectRequest(bucketName, key, bis, new ObjectMetadata()).withCannedAcl(CannedAccessControlList.PublicRead));
+        return s3.getUrl(bucketName, key).toString();
     }
 
     public User getUser(String alias) {
@@ -103,13 +133,12 @@ public class UserDAO {
         if (item == null) {
             return null;
         }
-        User user = new User(
+        return new User(
                 item.get("firstName").toString(),
                 item.get("lastName").toString(),
                 item.get("alias").toString(),
                 item.get("imageURL").toString()
         );
-        return user;
     }
 
     public static Item readUser(Table table, String alias) {
