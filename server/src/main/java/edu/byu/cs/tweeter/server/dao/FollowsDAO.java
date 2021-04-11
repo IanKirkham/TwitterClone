@@ -32,6 +32,7 @@ import edu.byu.cs.tweeter.model.service.response.DoesFollowResponse;
 import edu.byu.cs.tweeter.model.service.response.FollowUserResponse;
 import edu.byu.cs.tweeter.model.service.response.UnfollowUserResponse;
 import edu.byu.cs.tweeter.model.service.response.UserResponse;
+import jdk.nashorn.internal.runtime.ECMAException;
 
 /**
  * A DAO for accessing 'follows' data from the database.
@@ -183,7 +184,6 @@ public class FollowsDAO {
 
     public FollowUserResponse followUser(FollowUserRequest request) {
         // TODO: Authenticate
-        // TODO: Update the Feed table as well
 
         FollowRelationship followRelationship = new FollowRelationship(request.getRootUser().getAlias(),
                                                                         request.getRootUser().getName(),
@@ -198,7 +198,6 @@ public class FollowsDAO {
 
     public UnfollowUserResponse unfollowUser(UnfollowUserRequest request) {
         // TODO: Authenticate
-        // TODO: Update the Feed table as well
 
         FollowRelationship followRelationship = new FollowRelationship(request.getRootUser().getAlias(),
                 request.getRootUser().getName(),
@@ -208,6 +207,38 @@ public class FollowsDAO {
             return new UnfollowUserResponse(true, "Successfully unfollowed user");
         } else {
             return new UnfollowUserResponse(false, "[Internal Error] Failed to unfollow user");
+        }
+    }
+
+    public List<String> getFollowers(String userAlias) {
+        // TODO: Authenticate
+
+        HashMap<String, String> nameMap = new HashMap<>();
+        nameMap.put("#handle", E_HANDLE);
+
+        HashMap<String, Object> valueMap = new HashMap<>();
+        valueMap.put(":e", userAlias);
+
+        QuerySpec querySpec = new QuerySpec().withKeyConditionExpression("#handle = :e").withNameMap(nameMap)
+                .withValueMap(valueMap).withScanIndexForward(true);
+
+        ItemCollection<QueryOutcome> items = null;
+        Iterator<Item> iterator = null;
+        Item item = null;
+
+        List<String> handles = new ArrayList<>();
+
+        try {
+            items = table.getIndex("follows_index").query(querySpec);
+            iterator = items.iterator();
+            while (iterator.hasNext()) {
+                item = iterator.next();
+                handles.add(item.getString(R_HANDLE));
+            }
+            return handles;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
     }
 

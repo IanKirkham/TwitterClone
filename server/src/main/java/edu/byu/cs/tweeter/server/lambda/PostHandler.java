@@ -29,7 +29,6 @@ public class PostHandler implements RequestStreamHandler  {
     @Override
     public void handleRequest(InputStream inputStream, OutputStream outputStream, Context context) throws IOException {
         String result = new BufferedReader(new InputStreamReader(inputStream)).lines().collect(Collectors.joining("\n"));
-        System.out.println(result);
 
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(LocalDateTime.class, new JsonDeserializer<LocalDateTime>() {
@@ -49,12 +48,10 @@ public class PostHandler implements RequestStreamHandler  {
                 }).create();
 
         PostRequest request = gson.fromJson(result, PostRequest.class);
-        System.out.println("Time published before additional read " + request.getTimePublished());
 
         PostServiceImpl service = new PostServiceImpl();
         PostResponse response = service.savePost(request);
         String responseJSON = gson.toJson(response);
-        System.out.println(responseJSON);
         outputStream.write(responseJSON.getBytes(StandardCharsets.UTF_8));
     }
 }

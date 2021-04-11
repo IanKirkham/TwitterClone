@@ -2,6 +2,9 @@ package edu.byu.cs.tweeter.server.dao;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
+import com.amazonaws.services.dynamodbv2.document.DynamoDB;
+import com.amazonaws.services.dynamodbv2.document.Item;
+import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.QueryRequest;
 import com.amazonaws.services.dynamodbv2.model.QueryResult;
@@ -12,9 +15,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
+import edu.byu.cs.tweeter.model.service.request.PostRequest;
 import edu.byu.cs.tweeter.model.service.request.StoryRequest;
+import edu.byu.cs.tweeter.model.service.response.PostResponse;
+import edu.byu.cs.tweeter.model.service.response.RegisterResponse;
 import edu.byu.cs.tweeter.model.service.response.StatusesResponse;
 // TODO: combine story and feed DAO using design pattern ?
 public class StoryDAO {
@@ -29,6 +36,8 @@ public class StoryDAO {
 
     // DynamoDB Client
     private static final AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard().withRegion("us-west-2").build();
+    private static final DynamoDB dynamoDB = new DynamoDB(client);
+    private static final Table table = dynamoDB.getTable(TableName);
 
     public StatusesResponse getStory(StoryRequest request) {
         if (request.getLimit() <= 0) {
@@ -77,5 +86,19 @@ public class StoryDAO {
         }
 
         return new StatusesResponse(statuses, lastKeyString != null, lastKeyString);
+    }
+
+    public PostResponse savePost(PostRequest request) {
+        Item item = new Item()
+                .withPrimaryKey(AliasAttr, request.getAuthor().getAlias())
+                .withString(TimePublishedAttr, request.getTimePublished().toString())
+                .withString(ContentAttr, request.getContent());
+        Status status = new Status(request.getContent(), request.getAuthor(), request.getTimePublished());
+        try {
+            table.putItem(item);
+            return new PostResponse(status);
+        } catch (Exception e) {
+            throw new RuntimeException("[Internal Error] Failed to insert Status into Story");
+        }
     }
 }

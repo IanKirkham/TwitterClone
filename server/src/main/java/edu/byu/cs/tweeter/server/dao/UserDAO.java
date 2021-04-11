@@ -93,7 +93,7 @@ public class UserDAO {
                 .withString("firstName", request.getFirstName())
                 .withString("lastName", request.getLastName())
                 .withString("password", generateStrongPasswordHash(request.getPassword()))
-                .withString("imageURL", "dummy url"); // TODO upload image bytes to s3 and put URL here
+                .withString("imageURL", "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/donald_duck.png"); // TODO upload image bytes to s3 and put URL here
 
         return table.putItem(item).getItem();
     }
