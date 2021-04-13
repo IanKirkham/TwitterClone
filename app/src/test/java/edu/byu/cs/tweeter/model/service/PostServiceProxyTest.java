@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 
 import edu.byu.cs.tweeter.client.model.service.PostServiceProxy;
+import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.client.model.net.ServerFacade;
@@ -42,8 +43,8 @@ public class PostServiceProxyTest {
         Status status1 = new Status(content1, currentUser, time1);
 
         // Setup request objects to use in the tests
-        validRequest = new PostRequest(currentUser, content1, time1);
-        invalidRequest = new PostRequest(null, null, null);
+        validRequest = new PostRequest(currentUser.getAlias(), content1, time1, new AuthToken());
+        invalidRequest = new PostRequest(null, null, null, null);
 
         // Setup a mock ServerFacade that will return known responses
         successResponse = new PostResponse(status1);

@@ -7,26 +7,45 @@ import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 
 import edu.byu.cs.tweeter.client.model.service.UserServiceProxy;
+import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.client.model.net.ServerFacade;
 import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
+import edu.byu.cs.tweeter.model.service.request.FolloweeRequest;
+import edu.byu.cs.tweeter.model.service.request.FollowerRequest;
+import edu.byu.cs.tweeter.model.service.request.GetCountRequest;
 import edu.byu.cs.tweeter.model.service.request.UserRequest;
+import edu.byu.cs.tweeter.model.service.response.GetCountResponse;
 import edu.byu.cs.tweeter.model.service.response.UserResponse;
 
 public class UserServiceProxyTest {
 
-    private UserRequest validFollowerRequest;
-    private UserRequest validFollowingRequest;
-    private UserRequest invalidRequest;
+    private FollowerRequest validFollowerRequest;
+    private FolloweeRequest validFolloweeRequest;
+    private GetCountRequest validGetCountRequest;
+    private UserRequest validUserRequest;
+
+    private FollowerRequest invalidFollowerRequest;
+    private FolloweeRequest invalidFolloweeRequest;
+    private GetCountRequest invalidGetCountRequest;
+    private UserRequest invalidUserRequest;
 
     private UserResponse successFollowerResponse;
-    private UserResponse successFollowingResponse;
-    private UserResponse failureResponse;
+    private UserResponse successFolloweeResponse;
+    private GetCountResponse successGetCountResponse;
+    private UserResponse successUserResponse;
 
-    private UserServiceProxy followerServiceSpy;
+    private UserResponse failureFollowerResponse;
+    private UserResponse failureFolloweeResponse;
+    private GetCountResponse failureGetCountResponse;
+    private UserResponse failureUserResponse;
+
+    private UserServiceProxy userServiceProxySpy;
+
+    private static int PAGE_SIZE = 10;
 
     /**
      * Create a UserService spy that uses a mock ServerFacade to return known responses to
@@ -43,32 +62,55 @@ public class UserServiceProxyTest {
         User resultUser3 = new User("FirstName3", "LastName3",
                 "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/daisy_duck.png");
 
-        currentUser.setFollowers(new ArrayList<>(Arrays.asList(resultUser1.getAlias(), resultUser2.getAlias())));
-        currentUser.setFollowees(new ArrayList<>(Arrays.asList(resultUser1.getAlias(), resultUser2.getAlias(), resultUser3.getAlias())));
+        List<User> users = new ArrayList<>();
+        users.add(resultUser1);
+        users.add(resultUser2);
+        users.add(resultUser3);
 
-        // Setup request objects to use in the tests
-        validFollowerRequest = new UserRequest(currentUser.getFollowers(), 2, null);
-        validFollowingRequest = new UserRequest(currentUser.getFollowees(), 2, null);
+        // Setup request objects to use in tests
+        validFollowerRequest = new FollowerRequest(currentUser.getAlias(), PAGE_SIZE, null, new AuthToken());
+        validFolloweeRequest = new FolloweeRequest(currentUser.getAlias(), PAGE_SIZE, null, new AuthToken());
+        validGetCountRequest = new GetCountRequest(currentUser.getAlias());
+        validUserRequest = new UserRequest(currentUser.getAlias(), PAGE_SIZE, null, new AuthToken());
 
-        invalidRequest = new UserRequest(null, 0, null);
+        invalidFollowerRequest = new FollowerRequest(null, 0, null, null);
+        invalidFolloweeRequest = new FolloweeRequest(null, 0, null, null);
+        invalidGetCountRequest = new GetCountRequest(null);
+        invalidUserRequest = new UserRequest(null, 0, null, null);
+
+        // Setup response objects to use in tests
+        successFollowerResponse = new UserResponse(currentUser, users, false, null);
+        successFolloweeResponse = new UserResponse(currentUser, users, false, null);
+        successGetCountResponse = new GetCountResponse(3);
+        successUserResponse = new UserResponse(currentUser, null, false, null);
+
+        failureFollowerResponse = new UserResponse("Failed to get followers", null);
+        failureFolloweeResponse = new UserResponse("Failed to get followees", null);
+        failureGetCountResponse = new GetCountResponse();
+        failureUserResponse = new UserResponse("Failed to retreive user", null);
+
 
         // Setup a mock ServerFacade that will return known responses
-        successFollowerResponse = new UserResponse(Arrays.asList(resultUser1, resultUser2), false);
-        successFollowingResponse = new UserResponse(Arrays.asList(resultUser2, resultUser3), false);
         ServerFacade mockServerFacade = Mockito.mock(ServerFacade.class);
-        Mockito.when(mockServerFacade.getUsers(validFollowerRequest, UserServiceProxy.URL_PATH)).thenReturn(successFollowerResponse);
-        Mockito.when(mockServerFacade.getUsers(validFollowingRequest, UserServiceProxy.URL_PATH)).thenReturn(successFollowingResponse);
+        Mockito.when(mockServerFacade.getUsers(validFollowerRequest, UserServiceProxy.FOLLOWER_URL_PATH)).thenReturn(successFollowerResponse);
+        Mockito.when(mockServerFacade.getUsers(validFolloweeRequest, UserServiceProxy.FOLLOWEE_URL_PATH)).thenReturn(successFolloweeResponse);
+        Mockito.when(mockServerFacade.getFollowCount(validGetCountRequest, UserServiceProxy.FOLLOWER_COUNT_URL_PATH)).thenReturn(successGetCountResponse);
+        Mockito.when(mockServerFacade.getFollowCount(validGetCountRequest, UserServiceProxy.FOLLOWEE_COUNT_URL_PATH)).thenReturn(successGetCountResponse);
+        Mockito.when(mockServerFacade.getUsers(validUserRequest, UserServiceProxy.GET_USER_URL_PATH)).thenReturn(successUserResponse);
 
-        failureResponse = new UserResponse("An exception occurred");
-        Mockito.when(mockServerFacade.getUsers(invalidRequest, UserServiceProxy.URL_PATH)).thenReturn(failureResponse);
+        Mockito.when(mockServerFacade.getUsers(invalidFollowerRequest, UserServiceProxy.FOLLOWER_URL_PATH)).thenReturn(failureFollowerResponse);
+        Mockito.when(mockServerFacade.getUsers(invalidFolloweeRequest, UserServiceProxy.FOLLOWEE_URL_PATH)).thenReturn(failureFolloweeResponse);
+        Mockito.when(mockServerFacade.getFollowCount(invalidGetCountRequest, UserServiceProxy.FOLLOWER_COUNT_URL_PATH)).thenReturn(failureGetCountResponse);
+        Mockito.when(mockServerFacade.getFollowCount(invalidGetCountRequest, UserServiceProxy.FOLLOWEE_COUNT_URL_PATH)).thenReturn(failureGetCountResponse);
+        Mockito.when(mockServerFacade.getUsers(invalidUserRequest, UserServiceProxy.GET_USER_URL_PATH)).thenReturn(failureUserResponse);
 
-        // Create a FollowingService instance and wrap it with a spy that will use the mock service
-        followerServiceSpy = Mockito.spy(new UserServiceProxy());
-        Mockito.when(followerServiceSpy.getServerFacade()).thenReturn(mockServerFacade);
+        // Create a UserServiceProxy instance and wrap it with a spy that will use the mock service
+        userServiceProxySpy = Mockito.spy(new UserServiceProxy());
+        Mockito.when(userServiceProxySpy.getServerFacade()).thenReturn(mockServerFacade);
     }
 
     /**
-     * Verify that for successful requests the {@link UserService#getUsers(UserRequest)}
+     * Verify that for successful requests the {@link UserServiceProxy#getFollowers(FollowerRequest)}
      * method returns the same result as the {@link ServerFacade}.
      * .
      *
@@ -76,27 +118,29 @@ public class UserServiceProxyTest {
      */
     @Test
     public void testGetFollowers_validRequest_correctResponse() throws IOException, TweeterRemoteException {
-        UserResponse response = followerServiceSpy.getUsers(validFollowerRequest);
+        UserResponse response = userServiceProxySpy.getFollowers(validFollowerRequest);
         Assertions.assertEquals(successFollowerResponse, response);
-    }
 
-    /**
-     * Verify that the {@link UserService#getUsers(UserRequest)} method loads the
-     * profile image of each user included in the result.
-     *
-     * @throws IOException if an IO error occurs.
-     */
-    @Test
-    public void testGetFollowers_validRequest_loadsProfileImages() throws IOException, TweeterRemoteException {
-        UserResponse response = followerServiceSpy.getUsers(validFollowerRequest);
-
+        // Ensure profile images loaded
         for(User user : response.getUsers()) {
             Assertions.assertNotNull(user.getImageBytes());
         }
     }
 
     /**
-     * Verify that for successful requests the {@link UserService#getUsers(UserRequest)}
+     * Verify that for failed requests the {@link UserServiceProxy#getFollowers(FollowerRequest)}
+     * method returns the same result as the {@link ServerFacade}.
+     *
+     * @throws IOException if an IO error occurs.
+     */
+    @Test
+    public void testGetFollowers_invalidRequest_returnsNoFollowers() throws IOException, TweeterRemoteException {
+        UserResponse response = userServiceProxySpy.getFollowers(invalidFollowerRequest);
+        Assertions.assertEquals(failureFollowerResponse, response);
+    }
+
+    /**
+     * Verify that for successful requests the {@link UserServiceProxy#getFollowees(FolloweeRequest)}
      * method returns the same result as the {@link ServerFacade}.
      * .
      *
@@ -104,34 +148,99 @@ public class UserServiceProxyTest {
      */
     @Test
     public void testGetFollowees_validRequest_correctResponse() throws IOException, TweeterRemoteException {
-        UserResponse response = followerServiceSpy.getUsers(validFollowingRequest);
-        Assertions.assertEquals(successFollowingResponse, response);
-    }
+        UserResponse response = userServiceProxySpy.getFollowees(validFolloweeRequest);
+        Assertions.assertEquals(successFolloweeResponse, response);
 
-    /**
-     * Verify that the {@link UserService#getUsers(UserRequest)} method loads the
-     * profile image of each user included in the result.
-     *
-     * @throws IOException if an IO error occurs.
-     */
-    @Test
-    public void testGetFollowees_validRequest_loadsProfileImages() throws IOException, TweeterRemoteException {
-        UserResponse response = followerServiceSpy.getUsers(validFollowingRequest);
-
-        for (User user : response.getUsers()) {
+        // Ensure profile images loaded
+        for(User user : response.getUsers()) {
             Assertions.assertNotNull(user.getImageBytes());
         }
     }
 
     /**
-     * Verify that for failed requests the {@link UserService#getUsers(UserRequest)}
+     * Verify that for failed requests the {@link UserServiceProxy#getFollowees(FolloweeRequest)}
      * method returns the same result as the {@link ServerFacade}.
      *
      * @throws IOException if an IO error occurs.
      */
     @Test
-    public void testGetFollowers_invalidRequest_returnsNoFollowers() throws IOException, TweeterRemoteException {
-        UserResponse response = followerServiceSpy.getUsers(invalidRequest);
-        Assertions.assertEquals(failureResponse, response);
+    public void testGetFollowees_invalidRequest_returnsNoFollowees() throws IOException, TweeterRemoteException {
+        UserResponse response = userServiceProxySpy.getFollowees(invalidFolloweeRequest);
+        Assertions.assertEquals(failureFolloweeResponse, response);
+    }
+
+    /**
+     * Verify that for successful requests the {@link UserServiceProxy#getFollowerCount(GetCountRequest)}
+     * method returns the same result as the {@link ServerFacade}.
+     * .
+     *
+     * @throws IOException if an IO error occurs.
+     */
+    @Test
+    public void testGetFollowerCount_validRequest_correctResponse() throws IOException, TweeterRemoteException {
+        GetCountResponse response = userServiceProxySpy.getFollowerCount(validGetCountRequest);
+        Assertions.assertEquals(successGetCountResponse, response);
+    }
+
+    /**
+     * Verify that for failed requests the {@link UserServiceProxy#getFollowerCount(GetCountRequest)}
+     * method returns the same result as the {@link ServerFacade}.
+     *
+     * @throws IOException if an IO error occurs.
+     */
+    @Test
+    public void testGetFollowerCount_invalidRequest_returnsFailure() throws IOException, TweeterRemoteException {
+        GetCountResponse response = userServiceProxySpy.getFollowerCount(invalidGetCountRequest);
+        Assertions.assertEquals(failureGetCountResponse, response);
+    }
+
+    /**
+     * Verify that for successful requests the {@link UserServiceProxy#getFolloweeCount(GetCountRequest)}
+     * method returns the same result as the {@link ServerFacade}.
+     * .
+     *
+     * @throws IOException if an IO error occurs.
+     */
+    @Test
+    public void testGetFolloweeCount_validRequest_correctResponse() throws IOException, TweeterRemoteException {
+        GetCountResponse response = userServiceProxySpy.getFolloweeCount(validGetCountRequest);
+        Assertions.assertEquals(successGetCountResponse, response);
+    }
+
+    /**
+     * Verify that for failed requests the {@link UserServiceProxy#getFolloweeCount(GetCountRequest)}
+     * method returns the same result as the {@link ServerFacade}.
+     *
+     * @throws IOException if an IO error occurs.
+     */
+    @Test
+    public void testGetFolloweeCount_invalidRequest_returnsFailure() throws IOException, TweeterRemoteException {
+        GetCountResponse response = userServiceProxySpy.getFolloweeCount(invalidGetCountRequest);
+        Assertions.assertEquals(failureGetCountResponse, response);
+    }
+
+    /**
+     * Verify that for successful requests the {@link UserServiceProxy#getUser(UserRequest)}
+     * method returns the same result as the {@link ServerFacade}.
+     * .
+     *
+     * @throws IOException if an IO error occurs.
+     */
+    @Test
+    public void testGetUser_validRequest_correctResponse() throws IOException, TweeterRemoteException {
+        UserResponse response = userServiceProxySpy.getUser(validUserRequest);
+        Assertions.assertEquals(successUserResponse, response);
+    }
+
+    /**
+     * Verify that for failed requests the {@link UserServiceProxy#getFolloweeCount(GetCountRequest)}
+     * method returns the same result as the {@link ServerFacade}.
+     *
+     * @throws IOException if an IO error occurs.
+     */
+    @Test
+    public void testGetUser_invalidRequest_returnsFailure() throws IOException, TweeterRemoteException {
+        UserResponse response = userServiceProxySpy.getUser(invalidUserRequest);
+        Assertions.assertEquals(failureUserResponse, response);
     }
 }

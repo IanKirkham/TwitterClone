@@ -38,10 +38,10 @@ public class FollowEventServiceProxyTest {
         User currentUser = new User("Dummy", "User", "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/donald_duck.png");
 
         // Setup request objects to use in the tests
-        validFollowUserRequest = new FollowUserRequest(primaryUser, new AuthToken(), currentUser);
-        invalidFollowUserRequest = new FollowUserRequest(null, null, null);
-        validUnfollowUserRequest = new UnfollowUserRequest(primaryUser, new AuthToken(), currentUser);
-        invalidUnfollowUserRequest = new UnfollowUserRequest(null, null, null);
+        validFollowUserRequest = new FollowUserRequest(primaryUser.getAlias(), new AuthToken(), currentUser.getAlias(), primaryUser.getName(), currentUser.getName());
+        invalidFollowUserRequest = new FollowUserRequest(null, null, null, null, null);
+        validUnfollowUserRequest = new UnfollowUserRequest(primaryUser.getAlias(), new AuthToken(), currentUser.getAlias(), primaryUser.getName(), currentUser.getName());
+        invalidUnfollowUserRequest = new UnfollowUserRequest(null, null, null, null, null);
 
         // Setup a mock ServerFacade that will return known responses
         successFollowUserResponse = new FollowUserResponse(true, "Successfully followed user");

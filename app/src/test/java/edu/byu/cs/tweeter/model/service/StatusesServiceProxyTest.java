@@ -12,27 +12,35 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import edu.byu.cs.tweeter.client.model.service.StatusesServiceProxy;
+import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.client.model.net.ServerFacade;
 import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
+import edu.byu.cs.tweeter.model.service.request.FeedRequest;
 import edu.byu.cs.tweeter.model.service.request.StatusesRequest;
+import edu.byu.cs.tweeter.model.service.request.StoryRequest;
 import edu.byu.cs.tweeter.model.service.request.UserRequest;
 import edu.byu.cs.tweeter.model.service.response.StatusesResponse;
 
 public class StatusesServiceProxyTest {
 
-    private StatusesRequest validFeedRequest;
-    private StatusesRequest validStoryRequest;
-    private StatusesRequest invalidRequest;
+    private FeedRequest validFeedRequest;
+    private StoryRequest validStoryRequest;
+
+    private FeedRequest invalidFeedRequest;
+    private StoryRequest invalidStoryRequest;
 
     private StatusesResponse successFeedResponse;
     private StatusesResponse successStoryResponse;
-    private StatusesResponse failureResponse;
 
-    private StatusesServiceProxy statusesServiceSpy;
+    private StatusesResponse failureFeedResponse;
+    private StatusesResponse failureStoryResponse;
+
+    private StatusesServiceProxy statusesServiceProxySpy;
 
     private static final LocalDateTime time1 = LocalDateTime.now();
+    private static final int PAGE_SIZE = 10;
 
     /**
      * Create a StatusesService spy that uses a mock ServerFacade to return known responses to
@@ -51,31 +59,35 @@ public class StatusesServiceProxyTest {
         Status status3 = new Status(content1, user1, time1);
         Status status4 = new Status(content2, user1, time1.plus(Duration.ofSeconds(1)));
 
-        currentUser.setFollowees(new ArrayList<String>(Arrays.asList(user1.getAlias())));
-
         // Setup request objects to use in the tests
-        validFeedRequest = new StatusesRequest(currentUser.getFollowees(), 2, null);
-        validStoryRequest = new StatusesRequest(new ArrayList<>(Arrays.asList(currentUser.getAlias())), 2, null);
+        validFeedRequest = new FeedRequest(currentUser.getAlias(), PAGE_SIZE, null, new AuthToken());
+        validStoryRequest = new StoryRequest(currentUser.getAlias(), PAGE_SIZE, null, new AuthToken());
 
-        invalidRequest = new StatusesRequest(null, 0, null);
+        invalidFeedRequest = new FeedRequest(null, 0, null, null);
+        invalidStoryRequest = new StoryRequest(null, 0, null, null);
+
+        // Setup response objects to use in the tests
+        successFeedResponse = new StatusesResponse(Arrays.asList(status3, status4), false, null);
+        successStoryResponse = new StatusesResponse(Arrays.asList(status1, status2), false, null);
+
+        failureFeedResponse = new StatusesResponse("Failed to retrieve feed", null);
+        failureStoryResponse = new StatusesResponse("Failed to retrieve story", null);
 
         // Setup a mock ServerFacade that will return known responses
-        successFeedResponse = new StatusesResponse(Arrays.asList(status1, status2), false);
-        successStoryResponse = new StatusesResponse(Arrays.asList(status3, status4), false);
         ServerFacade mockServerFacade = Mockito.mock(ServerFacade.class);
-        Mockito.when(mockServerFacade.getStatuses(validFeedRequest, StatusesServiceProxy.URL_PATH)).thenReturn(successFeedResponse);
-        Mockito.when(mockServerFacade.getStatuses(validStoryRequest, StatusesServiceProxy.URL_PATH)).thenReturn(successStoryResponse);
+        Mockito.when(mockServerFacade.getStatuses(validFeedRequest, StatusesServiceProxy.FEED_URL_PATH)).thenReturn(successFeedResponse);
+        Mockito.when(mockServerFacade.getStatuses(validStoryRequest, StatusesServiceProxy.STORY_URL_PATH)).thenReturn(successStoryResponse);
 
-        failureResponse = new StatusesResponse("An exception occurred");
-        Mockito.when(mockServerFacade.getStatuses(invalidRequest, StatusesServiceProxy.URL_PATH)).thenReturn(failureResponse);
+        Mockito.when(mockServerFacade.getStatuses(invalidFeedRequest, StatusesServiceProxy.FEED_URL_PATH)).thenReturn(failureFeedResponse);
+        Mockito.when(mockServerFacade.getStatuses(invalidStoryRequest, StatusesServiceProxy.STORY_URL_PATH)).thenReturn(failureStoryResponse);
 
         // Create a FollowingService instance and wrap it with a spy that will use the mock service
-        statusesServiceSpy = Mockito.spy(new StatusesServiceProxy());
-        Mockito.when(statusesServiceSpy.getServerFacade()).thenReturn(mockServerFacade);
+        statusesServiceProxySpy = Mockito.spy(new StatusesServiceProxy());
+        Mockito.when(statusesServiceProxySpy.getServerFacade()).thenReturn(mockServerFacade);
     }
 
     /**
-     * Verify that for successful requests the {@link StatusesService#getStatuses(StatusesRequest)}
+     * Verify that for successful requests the {@link StatusesServiceProxy#getFeed(FeedRequest)}
      * method returns the same result as the {@link ServerFacade}.
      * .
      *
@@ -83,19 +95,8 @@ public class StatusesServiceProxyTest {
      */
     @Test
     public void testGetFeed_validRequest_correctResponse() throws IOException, TweeterRemoteException {
-        StatusesResponse response = statusesServiceSpy.getStatuses(validFeedRequest);
+        StatusesResponse response = statusesServiceProxySpy.getFeed(validFeedRequest);
         Assertions.assertEquals(successFeedResponse, response);
-    }
-
-    /**
-     * Verify that the {@link StatusesService#getStatuses(StatusesRequest)} method loads the
-     * profile image of each user included in the result.
-     *
-     * @throws IOException if an IO error occurs.
-     */
-    @Test
-    public void testGetFeed_validRequest_loadsProfileImages() throws IOException, TweeterRemoteException {
-        StatusesResponse response = statusesServiceSpy.getStatuses(validFeedRequest);
 
         for (Status status : response.getStatuses()) {
             Assertions.assertNotNull(status.getAuthor().getImageBytes());
@@ -103,7 +104,20 @@ public class StatusesServiceProxyTest {
     }
 
     /**
-     * Verify that for successful requests the {@link StatusesService#getStatuses(StatusesRequest)}
+     * Verify that for invalid requests the {@link StatusesServiceProxy#getFeed(FeedRequest)}
+     * method returns the same result as the {@link ServerFacade}.
+     * .
+     *
+     * @throws IOException if an IO error occurs.
+     */
+    @Test
+    public void testGetFeed_invalidRequest_failureResponse() throws IOException, TweeterRemoteException {
+        StatusesResponse response = statusesServiceProxySpy.getFeed(invalidFeedRequest);
+        Assertions.assertEquals(failureFeedResponse, response);
+    }
+
+    /**
+     * Verify that for successful requests the {@link StatusesServiceProxy#getStory(StoryRequest)}
      * method returns the same result as the {@link ServerFacade}.
      * .
      *
@@ -111,19 +125,8 @@ public class StatusesServiceProxyTest {
      */
     @Test
     public void testGetStory_validRequest_correctResponse() throws IOException, TweeterRemoteException {
-        StatusesResponse response = statusesServiceSpy.getStatuses(validStoryRequest);
+        StatusesResponse response = statusesServiceProxySpy.getStory(validStoryRequest);
         Assertions.assertEquals(successStoryResponse, response);
-    }
-
-    /**
-     * Verify that the {@link StatusesService#getStatuses(StatusesRequest)} method loads the
-     * profile image of each user included in the result.
-     *
-     * @throws IOException if an IO error occurs.
-     */
-    @Test
-    public void testGetStory_validRequest_loadsProfileImages() throws IOException, TweeterRemoteException {
-        StatusesResponse response = statusesServiceSpy.getStatuses(validStoryRequest);
 
         for (Status status : response.getStatuses()) {
             Assertions.assertNotNull(status.getAuthor().getImageBytes());
@@ -131,14 +134,15 @@ public class StatusesServiceProxyTest {
     }
 
     /**
-     * Verify that for failed requests the {@link UserService#getUsers(UserRequest)}
+     * Verify that for invalid requests the {@link StatusesServiceProxy#getStory(StoryRequest)}
      * method returns the same result as the {@link ServerFacade}.
+     * .
      *
      * @throws IOException if an IO error occurs.
      */
     @Test
-    public void testGetFollowers_invalidRequest_returnsNoFollowers() throws IOException, TweeterRemoteException {
-        StatusesResponse response = statusesServiceSpy.getStatuses(invalidRequest);
-        Assertions.assertEquals(failureResponse, response);
+    public void testGetStory_invalidRequest_failureResponse() throws IOException, TweeterRemoteException {
+        StatusesResponse response = statusesServiceProxySpy.getStory(invalidStoryRequest);
+        Assertions.assertEquals(failureStoryResponse, response);
     }
 }

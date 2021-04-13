@@ -31,7 +31,7 @@ public class LogoutServiceProxyTest {
                 "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/donald_duck.png");
 
         // Setup request objects to use in the tests
-        validRequest = new LogoutRequest(testUser, new AuthToken());
+        validRequest = new LogoutRequest(testUser.getAlias(), new AuthToken());
         invalidRequest = new LogoutRequest(null, null);
 
         // Setup a mock ServerFacade that will return known responses
