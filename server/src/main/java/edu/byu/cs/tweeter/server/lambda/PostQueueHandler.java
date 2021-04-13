@@ -19,6 +19,7 @@ public class PostQueueHandler implements RequestHandler<SQSEvent, Void> {
     public static final String qURL = "https://sqs.us-west-2.amazonaws.com/036224226136/jobsQ";
     public static final Gson gson = GsonFactory.gson;
     public static final FollowsDAO followsDAO = new FollowsDAO();
+    public static final AmazonSQS sqs = AmazonSQSClientBuilder.defaultClient();
 
 
     @Override
@@ -42,7 +43,6 @@ public class PostQueueHandler implements RequestHandler<SQSEvent, Void> {
                         .withQueueUrl(qURL)
                         .withMessageBody(jobJSON);
 
-                AmazonSQS sqs = AmazonSQSClientBuilder.defaultClient();
                 sqs.sendMessage(send_msg_request);
             }
         }

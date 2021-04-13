@@ -56,7 +56,11 @@ public class StoryFragment extends StatusesFragment implements PostPresenter.Vie
 
     @Override
     public void postSaved(PostResponse postResponse) {
-        // refresh the story
+        if (postResponse.getStatus().getAuthor().getAlias().equals(this.rootUser.getAlias())) {
+            postResponse.getStatus().setAuthor(this.rootUser);
+        } else if (postResponse.getStatus().getAuthor().getAlias().equals(this.user.getAlias())) {
+            postResponse.getStatus().setAuthor(this.user);
+        }
         statusRecyclerViewAdapter.statuses.add(0, postResponse.getStatus());
         statusRecyclerViewAdapter.notifyItemInserted(0);
         recyclerLayoutManager.smoothScrollToPosition(statusRecyclerView,null,0);
