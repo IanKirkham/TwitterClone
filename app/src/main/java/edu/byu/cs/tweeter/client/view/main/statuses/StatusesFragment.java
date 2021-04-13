@@ -33,6 +33,7 @@ import java.util.regex.Pattern;
 
 import edu.byu.cs.tweeter.R;
 import edu.byu.cs.tweeter.client.view.asyncTasks.GetFollowersTask;
+import edu.byu.cs.tweeter.client.view.asyncTasks.GetUserTask;
 import edu.byu.cs.tweeter.client.view.login.LoginActivity;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
@@ -93,6 +94,12 @@ public abstract class StatusesFragment extends Fragment implements UserPresenter
     }
 
     protected abstract StatusRecyclerViewAdapter getRecyclerViewAdapter();
+
+    @Override
+    public void updateFollowerCount(int count) {}
+
+    @Override
+    public void updateFolloweeCount(int count) {}
 
     /**
      * The ViewHolder for the RecyclerView that displays the Story data.
@@ -204,9 +211,9 @@ public abstract class StatusesFragment extends Fragment implements UserPresenter
                     public void onClick(@NonNull View widget) {
                         Toast.makeText(getContext(), "Clicked a Mention!", Toast.LENGTH_LONG).show();
 
-                        GetFollowersTask getFollowersTask = new GetFollowersTask(StatusesFragment.this.userPresenter, StatusesFragment.this.userPresenter);
+                        GetUserTask getUserTask = new GetUserTask(StatusesFragment.this.userPresenter, StatusesFragment.this.userPresenter);
                         FollowerRequest request = new FollowerRequest(string.subSequence(start, end).toString(), PAGE_SIZE, null, authToken);
-                        getFollowersTask.execute(request);
+                        getUserTask.execute(request);
                     }
                 }, start, end, Spanned.SPAN_COMPOSING);
             }

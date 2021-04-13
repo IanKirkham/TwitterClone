@@ -29,6 +29,7 @@ public class UserResponse extends PagedResponse {
      */
     public UserResponse(User queriedUser, List<User> users, boolean hasMorePages, String lastKey) {
         super(true, hasMorePages, lastKey);
+        this.queriedUser = queriedUser;
         this.users = users;
     }
 
@@ -43,6 +44,10 @@ public class UserResponse extends PagedResponse {
 
     public User getQueriedUser() {
         return queriedUser;
+    }
+
+    public void setQueriedUser(User queriedUser) {
+        this.queriedUser = queriedUser;
     }
 
     @Override

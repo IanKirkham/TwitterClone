@@ -42,7 +42,7 @@ public class StoryDAO {
 
     public StatusesResponse getStory(StoryRequest request) {
         // Authenticate
-        if (!AuthDAO.isValidTokenForUser(request.getUserAlias(), request.getAuthToken())) {
+        if (!AuthDAO.isValidTokenForUser(request.getAuthToken().getAlias(), request.getAuthToken())) {
             throw new RuntimeException("[Bad Request] Authentication Failed");
         }
 

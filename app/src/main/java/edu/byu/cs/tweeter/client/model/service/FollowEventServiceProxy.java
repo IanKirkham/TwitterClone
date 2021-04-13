@@ -16,7 +16,7 @@ public class FollowEventServiceProxy implements FollowEventService {
 
     public static final String FOLLOW_URL_PATH = "/follow";
     public static final String UNFOLLOW_URL_PATH = "/unfollow";
-    public static final String DOES_FOLLOW_URL_PATH = "/doesFollow";
+    public static final String DOES_FOLLOW_URL_PATH = "/users/doesfollow";
 
     public FollowUserResponse followUser(FollowUserRequest request) throws IOException, TweeterRemoteException {
         ServerFacade serverFacade = getServerFacade();

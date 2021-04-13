@@ -5,6 +5,7 @@ import java.io.IOException;
 import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
 import edu.byu.cs.tweeter.model.service.request.DoesFollowRequest;
 import edu.byu.cs.tweeter.model.service.request.FollowUserRequest;
+import edu.byu.cs.tweeter.model.service.request.GetCountRequest;
 import edu.byu.cs.tweeter.model.service.request.LoginRequest;
 import edu.byu.cs.tweeter.model.service.request.LogoutRequest;
 import edu.byu.cs.tweeter.model.service.request.PostRequest;
@@ -14,6 +15,7 @@ import edu.byu.cs.tweeter.model.service.request.UnfollowUserRequest;
 import edu.byu.cs.tweeter.model.service.request.UserRequest;
 import edu.byu.cs.tweeter.model.service.response.DoesFollowResponse;
 import edu.byu.cs.tweeter.model.service.response.FollowUserResponse;
+import edu.byu.cs.tweeter.model.service.response.GetCountResponse;
 import edu.byu.cs.tweeter.model.service.response.LoginResponse;
 import edu.byu.cs.tweeter.model.service.response.LogoutResponse;
 import edu.byu.cs.tweeter.model.service.response.PostResponse;
@@ -68,6 +70,10 @@ public class ServerFacade {
         } else {
             throw new RuntimeException(response.getMessage());
         }
+    }
+
+    public GetCountResponse getFollowCount(GetCountRequest request, String urlPath) throws IOException, TweeterRemoteException {
+        return clientCommunicator.doPost(urlPath, request, null, GetCountResponse.class);
     }
 
     public StatusesResponse getStatuses(StatusesRequest request, String urlPath) throws IOException, TweeterRemoteException {

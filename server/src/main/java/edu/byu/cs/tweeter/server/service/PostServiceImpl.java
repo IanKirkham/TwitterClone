@@ -8,7 +8,6 @@ import edu.byu.cs.tweeter.server.dao.StoryDAO;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 import com.amazonaws.services.sqs.model.SendMessageRequest;
-import com.amazonaws.services.sqs.model.SendMessageResult;
 import com.google.gson.Gson;
 
 public class PostServiceImpl implements PostService {
@@ -23,7 +22,7 @@ public class PostServiceImpl implements PostService {
                 .withMessageBody(postJSON);
 
         AmazonSQS sqs = AmazonSQSClientBuilder.defaultClient();
-        SendMessageResult send_msg_result = sqs.sendMessage(send_msg_request);
+        sqs.sendMessage(send_msg_request);
 
         return getStoryDAO().savePost(request);
     }

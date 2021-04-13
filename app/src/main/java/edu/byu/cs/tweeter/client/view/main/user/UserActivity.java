@@ -16,12 +16,16 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import edu.byu.cs.tweeter.R;
+import edu.byu.cs.tweeter.client.presenter.UserPresenter;
 import edu.byu.cs.tweeter.client.view.asyncTasks.DoesFollowUserTask;
+import edu.byu.cs.tweeter.client.view.asyncTasks.GetFolloweesCountTask;
+import edu.byu.cs.tweeter.client.view.asyncTasks.GetFollowersCountTask;
 import edu.byu.cs.tweeter.client.view.login.LoginActivity;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.service.request.DoesFollowRequest;
 import edu.byu.cs.tweeter.model.service.request.FollowUserRequest;
+import edu.byu.cs.tweeter.model.service.request.GetCountRequest;
 import edu.byu.cs.tweeter.model.service.request.UnfollowUserRequest;
 import edu.byu.cs.tweeter.model.service.response.DoesFollowResponse;
 import edu.byu.cs.tweeter.model.service.response.FollowEventResponse;
@@ -29,8 +33,10 @@ import edu.byu.cs.tweeter.client.presenter.FollowEventPresenter;
 import edu.byu.cs.tweeter.client.view.asyncTasks.FollowUserTask;
 import edu.byu.cs.tweeter.client.view.asyncTasks.UnfollowUserTask;
 import edu.byu.cs.tweeter.client.view.util.ImageUtils;
+import edu.byu.cs.tweeter.model.service.response.FollowUserResponse;
+import edu.byu.cs.tweeter.model.service.response.UnfollowUserResponse;
 
-public class UserActivity extends AppCompatActivity implements FollowEventPresenter.View {
+public class UserActivity extends AppCompatActivity implements FollowEventPresenter.View, UserPresenter.View {
 
     private static final String LOG_TAG = "UserActivity";
 
@@ -38,9 +44,14 @@ public class UserActivity extends AppCompatActivity implements FollowEventPresen
     public static final String CURRENT_USER_KEY = "CurrentUser";
     public static final String AUTH_TOKEN_KEY = "AuthTokenKey";
 
-    private FollowEventPresenter presenter;
+    private FollowEventPresenter followEventPresenter;
+    private UserPresenter userPresenter;
 
     private ToggleButton followButton;
+    private TextView followeeCountText;
+    private TextView followerCountText;
+    private int followeeCount = 0;
+    private int followerCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,9 +70,16 @@ public class UserActivity extends AppCompatActivity implements FollowEventPresen
 
         AuthToken authToken = (AuthToken) getIntent().getSerializableExtra(AUTH_TOKEN_KEY);
 
-        presenter = new FollowEventPresenter(this);
+        followEventPresenter = new FollowEventPresenter(this);
+        userPresenter = new UserPresenter(this);
 
-        DoesFollowUserTask doesFollowUserTask = new DoesFollowUserTask(presenter, presenter);
+        GetCountRequest getCountRequest = new GetCountRequest(rootUser.getAlias());
+        GetFollowersCountTask getFollowersCount = new GetFollowersCountTask(userPresenter, userPresenter);
+        GetFolloweesCountTask getFolloweesCount = new GetFolloweesCountTask(userPresenter, userPresenter);
+        getFollowersCount.execute(getCountRequest);
+        getFolloweesCount.execute(getCountRequest);
+
+        DoesFollowUserTask doesFollowUserTask = new DoesFollowUserTask(followEventPresenter, followEventPresenter);
         DoesFollowRequest doesFollowRequest = new DoesFollowRequest(rootUser.getAlias(), authToken , currentUser.getAlias(), rootUser.getName(), currentUser.getName());
         doesFollowUserTask.execute(doesFollowRequest);
 
@@ -80,11 +98,11 @@ public class UserActivity extends AppCompatActivity implements FollowEventPresen
         ImageView userImageView = findViewById(R.id.userImage);
         userImageView.setImageDrawable(ImageUtils.drawableFromByteArray(currentUser.getImageBytes()));
 
-        TextView followeeCount = findViewById(R.id.followeeCount);
-        followeeCount.setText(getString(R.string.followeeCount, 42));
+        followeeCountText = findViewById(R.id.followeeCount);
+        followeeCountText.setText(getString(R.string.followeeCount, followeeCount));
 
-        TextView followerCount = findViewById(R.id.followerCount);
-        followerCount.setText(getString(R.string.followerCount, 27));
+        followerCountText = findViewById(R.id.followerCount);
+        followerCountText.setText(getString(R.string.followerCount, followerCount));
 
         followButton = findViewById(R.id.followButton);
         followButton.setChecked(false); //Assume they don't follow until proven otherwise with the DoesFollowUserTask
@@ -92,12 +110,14 @@ public class UserActivity extends AppCompatActivity implements FollowEventPresen
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
+                    updateFollowerCount(followerCount + 1);
                     FollowUserRequest followUserRequest = new FollowUserRequest(rootUser.getAlias(), authToken , currentUser.getAlias(), rootUser.getName(), currentUser.getName());
-                    FollowUserTask followUserTask = new FollowUserTask(presenter, presenter);
+                    FollowUserTask followUserTask = new FollowUserTask(followEventPresenter, followEventPresenter);
                     followUserTask.execute(followUserRequest);
                 } else {
+                    updateFollowerCount(followerCount - 1);
                     UnfollowUserRequest unfollowUserRequest = new UnfollowUserRequest(rootUser.getAlias(), authToken , currentUser.getAlias(), rootUser.getName(), currentUser.getName());
-                    UnfollowUserTask unfollowUserTask = new UnfollowUserTask(presenter, presenter);
+                    UnfollowUserTask unfollowUserTask = new UnfollowUserTask(followEventPresenter, followEventPresenter);
                     unfollowUserTask.execute(unfollowUserRequest);
                 }
             }
@@ -116,7 +136,12 @@ public class UserActivity extends AppCompatActivity implements FollowEventPresen
         if (response instanceof DoesFollowResponse) {
             followButton.setChecked(response.isSuccess());
             return;
+        } else if (response instanceof FollowUserResponse) {
+            updateFollowerCount(followerCount - 1);
+        } else if (response instanceof UnfollowUserResponse) {
+            updateFollowerCount(followerCount + 1);
         }
+
         followButton.setChecked(!followButton.isChecked());
     }
 
@@ -130,5 +155,20 @@ public class UserActivity extends AppCompatActivity implements FollowEventPresen
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
         }
+    }
+
+    @Override
+    public void presentNewUserView(User user) {}
+
+    @Override
+    public void updateFollowerCount(int count) {
+        followerCount = count;
+        followerCountText.setText(getString(R.string.followerCount, followerCount));
+    }
+
+    @Override
+    public void updateFolloweeCount(int count) {
+        followeeCount = count;
+        followeeCountText.setText(getString(R.string.followeeCount, followeeCount));
     }
 }

@@ -20,8 +20,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import edu.byu.cs.tweeter.R;
+import edu.byu.cs.tweeter.client.presenter.UserPresenter;
+import edu.byu.cs.tweeter.client.view.asyncTasks.GetFolloweesCountTask;
+import edu.byu.cs.tweeter.client.view.asyncTasks.GetFollowersCountTask;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
+import edu.byu.cs.tweeter.model.service.request.GetCountRequest;
 import edu.byu.cs.tweeter.model.service.request.LogoutRequest;
 import edu.byu.cs.tweeter.model.service.response.LogoutResponse;
 import edu.byu.cs.tweeter.client.presenter.LogoutPresenter;
@@ -34,7 +38,7 @@ import edu.byu.cs.tweeter.client.view.util.ImageUtils;
 /**
  * The main activity for the application. Contains tabs for feed, story, following, and followers.
  */
-public class MainActivity extends AppCompatActivity implements LogoutPresenter.View {
+public class MainActivity extends AppCompatActivity implements LogoutPresenter.View, UserPresenter.View {
 
     private static final String LOG_TAG = "MainActivity";
 
@@ -45,6 +49,12 @@ public class MainActivity extends AppCompatActivity implements LogoutPresenter.V
     private AuthToken authToken;
 
     private LogoutPresenter presenter;
+    private UserPresenter userPresenter;
+
+    private TextView followeeCountText;
+    private TextView followerCountText;
+    private int followeeCount = 0;
+    private int followerCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +69,13 @@ public class MainActivity extends AppCompatActivity implements LogoutPresenter.V
         authToken = (AuthToken) getIntent().getSerializableExtra(AUTH_TOKEN_KEY);
 
         presenter = new LogoutPresenter(this);
+        userPresenter = new UserPresenter(this);
+
+        GetCountRequest getCountRequest = new GetCountRequest(user.getAlias());
+        GetFollowersCountTask getFollowersCount = new GetFollowersCountTask(userPresenter, userPresenter);
+        GetFolloweesCountTask getFolloweesCount = new GetFolloweesCountTask(userPresenter, userPresenter);
+        getFollowersCount.execute(getCountRequest);
+        getFolloweesCount.execute(getCountRequest);
 
         SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager(), user, authToken);
         ViewPager viewPager = findViewById(R.id.view_pager);
@@ -87,11 +104,11 @@ public class MainActivity extends AppCompatActivity implements LogoutPresenter.V
         ImageView userImageView = findViewById(R.id.userImage);
         userImageView.setImageDrawable(ImageUtils.drawableFromByteArray(user.getImageBytes()));
 
-        TextView followeeCount = findViewById(R.id.followeeCount);
-        followeeCount.setText(getString(R.string.followeeCount, 42));
+        followeeCountText = findViewById(R.id.followeeCount);
+        followeeCountText.setText(getString(R.string.followeeCount, followeeCount));
 
-        TextView followerCount = findViewById(R.id.followerCount);
-        followerCount.setText(getString(R.string.followerCount, 27));
+        followerCountText = findViewById(R.id.followerCount);
+        followerCountText.setText(getString(R.string.followerCount, followerCount));
     }
 
     @Override
@@ -133,5 +150,20 @@ public class MainActivity extends AppCompatActivity implements LogoutPresenter.V
     public void handleException(Exception exception) {
         Log.e(LOG_TAG, exception.getMessage(), exception);
         Toast.makeText(this, "Error: " + exception.getMessage(), Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void presentNewUserView(User user) {}
+
+    @Override
+    public void updateFollowerCount(int count) {
+        followerCount = count;
+        followerCountText.setText(getString(R.string.followerCount, followerCount));
+    }
+
+    @Override
+    public void updateFolloweeCount(int count) {
+        followeeCount = count;
+        followeeCountText.setText(getString(R.string.followeeCount, followeeCount));
     }
 }

@@ -14,6 +14,11 @@ import com.amazonaws.services.dynamodbv2.document.spec.GetItemSpec;
 import com.amazonaws.services.dynamodbv2.document.spec.QuerySpec;
 import com.amazonaws.services.dynamodbv2.document.utils.ValueMap;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
+import com.amazonaws.services.dynamodbv2.model.Condition;
+import com.amazonaws.services.dynamodbv2.model.QueryRequest;
+import com.amazonaws.services.dynamodbv2.model.QueryResult;
+import com.amazonaws.services.dynamodbv2.model.Select;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,9 +32,11 @@ import edu.byu.cs.tweeter.model.service.request.DoesFollowRequest;
 import edu.byu.cs.tweeter.model.service.request.FollowUserRequest;
 import edu.byu.cs.tweeter.model.service.request.FolloweeRequest;
 import edu.byu.cs.tweeter.model.service.request.FollowerRequest;
+import edu.byu.cs.tweeter.model.service.request.GetCountRequest;
 import edu.byu.cs.tweeter.model.service.request.UnfollowUserRequest;
 import edu.byu.cs.tweeter.model.service.response.DoesFollowResponse;
 import edu.byu.cs.tweeter.model.service.response.FollowUserResponse;
+import edu.byu.cs.tweeter.model.service.response.GetCountResponse;
 import edu.byu.cs.tweeter.model.service.response.UnfollowUserResponse;
 import edu.byu.cs.tweeter.model.service.response.UserResponse;
 
@@ -55,7 +62,7 @@ public class FollowsDAO {
 
     public UserResponse getFollowers(FollowerRequest request) {
         // Authenticate
-        if (!AuthDAO.isValidTokenForUser(request.getUserAlias(), request.getAuthToken())) {
+        if (!AuthDAO.isValidTokenForUser(request.getAuthToken().getAlias(), request.getAuthToken())) {
             throw new RuntimeException("[Bad Request] Authentication Failed");
         }
 
@@ -115,7 +122,7 @@ public class FollowsDAO {
 
     public UserResponse getFollowees(FolloweeRequest request) {
         // Authenticate
-        if (!AuthDAO.isValidTokenForUser(request.getUserAlias(), request.getAuthToken())) {
+        if (!AuthDAO.isValidTokenForUser(request.getAuthToken().getAlias(), request.getAuthToken())) {
             throw new RuntimeException("[Bad Request] Authentication Failed");
         }
 
@@ -174,27 +181,48 @@ public class FollowsDAO {
         }
     }
 
-    // TODO: refactor / implement
-    public Integer getFolloweeCount(String alias) {
-        if (alias == null) {
-            throw new RuntimeException("[Bad Request] Invalid user");
-        }
-        QuerySpec querySpec = new QuerySpec()
-                .withKeyConditionExpression("follower_handle = :v_name")
-                .withValueMap(new ValueMap()
-                        .withString(":v_name", alias));
+    // If this is really costly, we should just store the follower/followee count on the user object.
+    // B/c currently, I think this query has to scan the whole table. I don't think would scale well.
+    public GetCountResponse getFolloweeCount(GetCountRequest request) {
+        Condition followerCondition = new Condition()
+                .withComparisonOperator(ComparisonOperator.EQ)
+                .withAttributeValueList(new AttributeValue().withS(request.getAlias()));
+        Map<String, Condition> keyConditions = new HashMap<>();
+        keyConditions.put(R_HANDLE, followerCondition);
 
-        return table.query(querySpec).getAccumulatedItemCount();
+        QueryRequest queryRequest = new QueryRequest(TableName);
+        queryRequest.setSelect(Select.COUNT);
+        queryRequest.setKeyConditions(keyConditions);
+
+        QueryResult result = client.query(queryRequest);
+        Integer count = result.getCount();
+
+        return new GetCountResponse(count);
     }
 
-    // TODO: refactor / implement
-    public Integer getFollowerCount(String alias) {
-        return null;
+    // If this is really costly, we should just store the follower/followee count on the user object.
+    // B/c currently, I think this query has to scan the whole table. I don't think would scale well.
+    public GetCountResponse getFollowerCount(GetCountRequest request) {
+        Condition followerCondition = new Condition()
+                .withComparisonOperator(ComparisonOperator.EQ)
+                .withAttributeValueList(new AttributeValue().withS(request.getAlias()));
+        Map<String, Condition> keyConditions = new HashMap<>();
+        keyConditions.put(E_HANDLE, followerCondition);
+
+        QueryRequest queryRequest = new QueryRequest(TableName);
+        queryRequest.setIndexName(IndexName);
+        queryRequest.setSelect(Select.COUNT);
+        queryRequest.setKeyConditions(keyConditions);
+
+        QueryResult result = client.query(queryRequest);
+        Integer count = result.getCount();
+
+        return new GetCountResponse(count);
     }
 
     public DoesFollowResponse doesFollowUser(DoesFollowRequest request) {
         // Authenticate
-        if (!AuthDAO.isValidTokenForUser(request.getPrimaryUserAlias(), request.getAuthToken())) {
+        if (!AuthDAO.isValidTokenForUser(request.getAuthToken().getAlias(), request.getAuthToken())) {
             throw new RuntimeException("[Bad Request] Authentication Failed");
         }
 
@@ -240,7 +268,7 @@ public class FollowsDAO {
     }
 
     public List<String> getFollowers(String userAlias) {
-        // TODO: Authenticate -- do we need to authenticate here? It only takes a userAlias, no authToken to check
+        // This method is only accessible on the server side and is only used by the SQS handler
 
         HashMap<String, String> nameMap = new HashMap<>();
         nameMap.put("#handle", E_HANDLE);

@@ -25,8 +25,10 @@ import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.service.request.LoginRequest;
 import edu.byu.cs.tweeter.model.service.request.RegisterRequest;
+import edu.byu.cs.tweeter.model.service.request.UserRequest;
 import edu.byu.cs.tweeter.model.service.response.LoginResponse;
 import edu.byu.cs.tweeter.model.service.response.RegisterResponse;
+import edu.byu.cs.tweeter.model.service.response.UserResponse;
 
 /**
  * A DAO for accessing 'user' data from the database.
@@ -127,6 +129,14 @@ public class UserDAO {
 
         s3.putObject(new PutObjectRequest(bucketName, key, bis, new ObjectMetadata()).withCannedAcl(CannedAccessControlList.PublicRead));
         return s3.getUrl(bucketName, key).toString();
+    }
+
+    public UserResponse getUser_Authenticated(UserRequest request) {
+        if (!AuthDAO.isValidTokenForUser(request.getAuthToken().getAlias(), request.getAuthToken())) {
+            throw new RuntimeException("[Bad Request] Authentication Failed");
+        }
+        User user = getUser(request.getUserAlias());
+        return new UserResponse(user, null, false, null);
     }
 
     public User getUser(String alias) {

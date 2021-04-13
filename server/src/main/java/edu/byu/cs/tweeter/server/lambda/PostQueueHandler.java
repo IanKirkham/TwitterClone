@@ -8,50 +8,17 @@ import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 import com.amazonaws.services.sqs.model.SendMessageRequest;
 import com.amazonaws.services.sqs.model.SendMessageResult;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
 
-import java.lang.reflect.Type;
-import java.time.LocalDateTime;
 import java.util.List;
 
+import edu.byu.cs.tweeter.model.net.GsonFactory;
 import edu.byu.cs.tweeter.model.service.request.PostRequest;
 import edu.byu.cs.tweeter.server.dao.FollowsDAO;
 
 public class PostQueueHandler implements RequestHandler<SQSEvent, Void> {
-    public static String qURL = "https://sqs.us-west-2.amazonaws.com/036224226136/jobsQ";
-    public static Gson gson = new GsonBuilder()
-            .registerTypeAdapter(LocalDateTime.class, new JsonDeserializer<LocalDateTime>() {
-                @Override
-                public LocalDateTime deserialize(JsonElement json, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-                    JsonObject jo = json.getAsJsonObject();
-                    if (jo.get("year") != null) {
-                        return LocalDateTime.of(jo.get("year").getAsInt(),
-                                jo.get("monthValue").getAsInt(),
-                                jo.get("dayOfMonth").getAsInt(),
-                                jo.get("hour").getAsInt(),
-                                jo.get("minute").getAsInt(),
-                                jo.get("second").getAsInt(),
-                                jo.get("nano").getAsInt());
-                    } else {
-                        JsonObject d = jo.getAsJsonObject("date");
-                        JsonObject t = jo.getAsJsonObject("time");
-                        return LocalDateTime.of(d.get("year").getAsInt(),
-                                d.get("month").getAsInt(),
-                                d.get("day").getAsInt(),
-                                t.get("hour").getAsInt(),
-                                t.get("minute").getAsInt(),
-                                t.get("second").getAsInt(),
-                                t.get("nano").getAsInt());
-                    }
-                }
-            }).create();
-
-    public static FollowsDAO followsDAO = new FollowsDAO();
+    public static final String qURL = "https://sqs.us-west-2.amazonaws.com/036224226136/jobsQ";
+    public static final Gson gson = GsonFactory.gson;
+    public static final FollowsDAO followsDAO = new FollowsDAO();
 
 
     @Override
@@ -61,7 +28,6 @@ public class PostQueueHandler implements RequestHandler<SQSEvent, Void> {
             PostRequest request = gson.fromJson(postJSON, PostRequest.class);
 
             List<String> userAliases = followsDAO.getFollowers(request.getAuthor());
-            System.out.println(userAliases); // TODO: Delete me
 
             for (int i = 0; i < userAliases.size(); i += 25) {
                 List<String> subList;
@@ -77,7 +43,7 @@ public class PostQueueHandler implements RequestHandler<SQSEvent, Void> {
                         .withMessageBody(jobJSON);
 
                 AmazonSQS sqs = AmazonSQSClientBuilder.defaultClient();
-                SendMessageResult send_msg_result = sqs.sendMessage(send_msg_request);
+                sqs.sendMessage(send_msg_request);
             }
         }
         return null;

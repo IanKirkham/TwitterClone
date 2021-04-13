@@ -79,6 +79,12 @@ public abstract class UserDisplayFragment extends Fragment implements UserPresen
     @Override
     public void presentNewUserView(User user) {}
 
+    @Override
+    public void updateFollowerCount(int count) {}
+
+    @Override
+    public void updateFolloweeCount(int count) {}
+
     /**
      * The ViewHolder for the RecyclerView that displays the Follower data.
      */
