@@ -108,9 +108,8 @@ public class FeedDAO {
                     .withString(TimePublishedAttr, timePublished)
                     .withString(ContentAttr, content);
             items.addItemToPut(item);
-
-            loopBatchWrite(items);
         }
+        loopBatchWrite(items);
     }
 
     private void loopBatchWrite(TableWriteItems items) {

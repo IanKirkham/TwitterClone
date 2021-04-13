@@ -79,9 +79,11 @@ public class UserActivity extends AppCompatActivity implements FollowEventPresen
         getFollowersCount.execute(getCountRequest);
         getFolloweesCount.execute(getCountRequest);
 
-        DoesFollowUserTask doesFollowUserTask = new DoesFollowUserTask(followEventPresenter, followEventPresenter);
-        DoesFollowRequest doesFollowRequest = new DoesFollowRequest(rootUser.getAlias(), authToken , currentUser.getAlias(), rootUser.getName(), currentUser.getName());
-        doesFollowUserTask.execute(doesFollowRequest);
+        if (!rootUser.equals(currentUser)) {
+            DoesFollowUserTask doesFollowUserTask = new DoesFollowUserTask(followEventPresenter, followEventPresenter);
+            DoesFollowRequest doesFollowRequest = new DoesFollowRequest(rootUser.getAlias(), authToken , currentUser.getAlias(), rootUser.getName(), currentUser.getName());
+            doesFollowUserTask.execute(doesFollowRequest);
+        }
 
         SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager(), rootUser, currentUser, authToken);
         ViewPager viewPager = findViewById(R.id.view_pager);
@@ -122,6 +124,11 @@ public class UserActivity extends AppCompatActivity implements FollowEventPresen
                 }
             }
         });
+
+        if (rootUser.equals(currentUser)) {
+            followButton.setEnabled(false);
+            followButton.setText("Same User");
+        }
     }
 
     @Override
@@ -132,7 +139,7 @@ public class UserActivity extends AppCompatActivity implements FollowEventPresen
     }
 
     @Override
-    public void requestUnsuccessful(FollowEventResponse response) { // FIXME: This introduces a network race condition.
+    public void requestUnsuccessful(FollowEventResponse response) {
         if (response instanceof DoesFollowResponse) {
             followButton.setChecked(response.isSuccess());
             return;

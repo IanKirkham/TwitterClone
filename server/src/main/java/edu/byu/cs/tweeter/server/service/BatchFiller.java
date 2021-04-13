@@ -15,7 +15,7 @@ public class BatchFiller {
 
     // How many follower users to add
     // We recommend you test this with a smaller number first, to make sure it works for you
-    private final static int NUM_USERS = 10;
+    private final static int NUM_USERS = 10000;
 
     public static void fillDatabase() {
 
