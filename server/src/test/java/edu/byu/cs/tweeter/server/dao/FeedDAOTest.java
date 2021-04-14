@@ -53,6 +53,6 @@ public class FeedDAOTest {
         response = dao.getFeed(request);
 
         Assertions.assertEquals(2, response.getStatuses().size());
-        Assertions.assertFalse(response.getHasMorePages());
+        Assertions.assertTrue(response.getHasMorePages());
     }
 }
