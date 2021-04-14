@@ -14,6 +14,7 @@ import edu.byu.cs.tweeter.model.service.request.FollowUserRequest;
 import edu.byu.cs.tweeter.model.service.request.UnfollowUserRequest;
 import edu.byu.cs.tweeter.model.service.response.FollowUserResponse;
 import edu.byu.cs.tweeter.model.service.response.UnfollowUserResponse;
+import edu.byu.cs.tweeter.server.dao.FollowsDAO;
 import edu.byu.cs.tweeter.server.dao.UserDAO;
 
 public class FollowEventServiceImplTest {
@@ -22,7 +23,7 @@ public class FollowEventServiceImplTest {
     private FollowUserResponse expectedFollowResponse;
     private UnfollowUserRequest unfollowRequest;
     private UnfollowUserResponse expectedUnfollowUserResponse;
-    private UserDAO mockUserDAO;
+    private FollowsDAO mockFollowsDAO;
     private FollowEventServiceImpl followEventServiceImplSpy;
 
     @BeforeEach
@@ -33,18 +34,18 @@ public class FollowEventServiceImplTest {
         User currentUser = new User("Dummy", "User", "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/donald_duck.png");
 
         // Setup request objects to use in the tests
-        followRequest = new FollowUserRequest(primaryUser, new AuthToken(), currentUser);
-        unfollowRequest = new UnfollowUserRequest(primaryUser, new AuthToken(), currentUser);
+        followRequest = new FollowUserRequest(primaryUser.getAlias(), new AuthToken(), currentUser.getAlias(), primaryUser.getName(), currentUser.getName());
+        unfollowRequest = new UnfollowUserRequest(primaryUser.getAlias(), new AuthToken(), currentUser.getAlias(), primaryUser.getName(), currentUser.getName());
 
         // Setup a mock UserDAO that will return known responses
         expectedFollowResponse = new FollowUserResponse(true, "Successfully followed user");
         expectedUnfollowUserResponse = new UnfollowUserResponse(true, "Successfully unfollowed user");
-        mockUserDAO = Mockito.mock(UserDAO.class);
-        Mockito.when(mockUserDAO.followUser(followRequest)).thenReturn(expectedFollowResponse);
-        Mockito.when(mockUserDAO.unfollowUser(unfollowRequest)).thenReturn(expectedUnfollowUserResponse);
+        mockFollowsDAO = Mockito.mock(FollowsDAO.class);
+        Mockito.when(mockFollowsDAO.followUser(followRequest)).thenReturn(expectedFollowResponse);
+        Mockito.when(mockFollowsDAO.unfollowUser(unfollowRequest)).thenReturn(expectedUnfollowUserResponse);
 
         followEventServiceImplSpy = Mockito.spy(FollowEventServiceImpl.class);
-        Mockito.when(followEventServiceImplSpy.getUserDAO()).thenReturn(mockUserDAO);
+        Mockito.when(followEventServiceImplSpy.getFollowsDAO()).thenReturn(mockFollowsDAO);
     }
 
     /**

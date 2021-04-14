@@ -8,18 +8,21 @@ import org.mockito.Mockito;
 import java.io.IOException;
 import java.time.LocalDateTime;
 
+import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
 import edu.byu.cs.tweeter.model.service.request.PostRequest;
 import edu.byu.cs.tweeter.model.service.response.PostResponse;
-import edu.byu.cs.tweeter.server.dao.StatusesDAO;
+import edu.byu.cs.tweeter.server.dao.StoryDAO;
+
+import static org.mockito.Mockito.doNothing;
 
 public class PostServiceImplTest {
 
     private PostRequest request;
     private PostResponse expectedResponse;
-    private StatusesDAO mockStatusesDAO;
+    private StoryDAO mockStoryDAO;
     private PostServiceImpl postServiceImplSpy;
 
     private static final LocalDateTime time1 = LocalDateTime.now();
@@ -31,20 +34,21 @@ public class PostServiceImplTest {
         Status status1 = new Status(content1, currentUser, time1);
 
         // Setup request objects to use in the tests
-        request = new PostRequest(currentUser, content1, time1);
+        request = new PostRequest(currentUser.getAlias(), content1, time1, new AuthToken());
 
         // Setup a mock UserDAO that will return known responses
         expectedResponse = new PostResponse(status1);
-        mockStatusesDAO = Mockito.mock(StatusesDAO.class);
-        Mockito.when(mockStatusesDAO.savePost(request)).thenReturn(expectedResponse);
+        mockStoryDAO = Mockito.mock(StoryDAO.class);
+        Mockito.when(mockStoryDAO.savePost(request)).thenReturn(expectedResponse);
 
         postServiceImplSpy = Mockito.spy(PostServiceImpl.class);
-        Mockito.when(postServiceImplSpy.getStatusesDAO()).thenReturn(mockStatusesDAO);
+        Mockito.when(postServiceImplSpy.getStoryDAO()).thenReturn(mockStoryDAO);
+        doNothing().when(postServiceImplSpy).sendToSQS(request);
     }
 
     /**
      * Verify that the {@link PostServiceImpl#savePost(PostRequest)}
-     * method returns the same result as the {@link StatusesDAO} class.
+     * method returns the same result as the {@link StoryDAO} class.
      */
     @Test
     public void testSavePost_validRequest_correctResponse() throws IOException, TweeterRemoteException {
