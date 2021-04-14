@@ -8,25 +8,36 @@ import org.mockito.Mockito;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import edu.byu.cs.tweeter.client.model.service.UserServiceProxy;
 import edu.byu.cs.tweeter.client.presenter.UserPresenter;
+import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
+import edu.byu.cs.tweeter.model.service.request.FolloweeRequest;
+import edu.byu.cs.tweeter.model.service.request.FollowerRequest;
+import edu.byu.cs.tweeter.model.service.request.GetCountRequest;
 import edu.byu.cs.tweeter.model.service.request.UserRequest;
+import edu.byu.cs.tweeter.model.service.response.GetCountResponse;
 import edu.byu.cs.tweeter.model.service.response.UserResponse;
 
 public class UserPresenterTest {
 
-    private UserRequest followingRequest;
-    private UserRequest followersRequest;
-    private UserResponse followingResponse;
-    private UserResponse followersResponse;
-    private UserResponse singleUserResponse;
+    private FollowerRequest followerRequest;
+    private FolloweeRequest followeeRequest;
+    private GetCountRequest getCountRequest;
+    private UserRequest userRequest;
+
+    private UserResponse followerResponse;
+    private UserResponse followeeResponse;
+    private GetCountResponse getCountResponse;
+    private UserResponse userResponse;
     private UserServiceProxy mockUserService;
     private UserPresenter presenter;
 
     private boolean viewWasCalled = false;
+    private static int PAGE_SIZE = 5;
 
     @BeforeEach
     public void setup() throws IOException, TweeterRemoteException {
@@ -39,26 +50,43 @@ public class UserPresenterTest {
         User resultUser3 = new User("FirstName3", "LastName3",
                 "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/daisy_duck.png");
 
-        currentUser.setFollowees(new ArrayList<>(Arrays.asList(resultUser1.getAlias(), resultUser2.getAlias())));
-        currentUser.setFollowers(new ArrayList<>(Arrays.asList(resultUser2.getAlias(), resultUser3.getAlias())));
+        List<User> users = new ArrayList<>();
+        users.add(resultUser1);
+        users.add(resultUser2);
+        users.add(resultUser3);
 
-        followingRequest = new UserRequest(currentUser.getFollowees(), 2, null);
-        followingResponse = new UserResponse(Arrays.asList(resultUser1, resultUser2), false);
+        followerRequest = new FollowerRequest(currentUser.getAlias(), PAGE_SIZE, null, new AuthToken());
+        followeeRequest = new FolloweeRequest(currentUser.getAlias(), PAGE_SIZE, null, new AuthToken());
+        getCountRequest = new GetCountRequest(currentUser.getAlias());
+        userRequest = new UserRequest(currentUser.getAlias(), PAGE_SIZE, null, new AuthToken());
 
-        followersRequest = new UserRequest(currentUser.getFollowers(), 2, null);
-        followersResponse = new UserResponse(Arrays.asList(resultUser2, resultUser3), false);
-
-        singleUserResponse = new UserResponse(Arrays.asList(resultUser1), false);
+        followerResponse = new UserResponse(currentUser, users, false, null);
+        followeeResponse = new UserResponse(currentUser, users, false, null);
+        getCountResponse = new GetCountResponse(3);
+        userResponse = new UserResponse(currentUser, null, false, null);
 
         // Create a mock UserService
         mockUserService = Mockito.mock(UserServiceProxy.class);
-        Mockito.when(mockUserService.getUsers(followingRequest)).thenReturn(followingResponse);
-        Mockito.when(mockUserService.getUsers(followersRequest)).thenReturn(followersResponse);
+        Mockito.when(mockUserService.getFollowers(followerRequest)).thenReturn(followerResponse);
+        Mockito.when(mockUserService.getFollowees(followeeRequest)).thenReturn(followeeResponse);
+        Mockito.when(mockUserService.getFollowerCount(getCountRequest)).thenReturn(getCountResponse);
+        Mockito.when(mockUserService.getFolloweeCount(getCountRequest)).thenReturn(getCountResponse);
+        Mockito.when(mockUserService.getUser(userRequest)).thenReturn(userResponse);
 
         // Wrap a UserPresenter in a spy that will use the mock service.
         presenter = Mockito.spy(new UserPresenter(new UserPresenter.View() {
             @Override
             public void presentNewUserView(User user) {
+                viewWasCalled = true;
+            }
+
+            @Override
+            public void updateFollowerCount(int count) {
+                viewWasCalled = true;
+            }
+
+            @Override
+            public void updateFolloweeCount(int count) {
                 viewWasCalled = true;
             }
         }));
@@ -68,35 +96,62 @@ public class UserPresenterTest {
     }
 
     @Test
-    public void testGetFollowing_returnsServiceResult() throws IOException, TweeterRemoteException {
-        Mockito.when(mockUserService.getUsers(followingRequest)).thenReturn(followingResponse);
-
-        // Assert that the presenter returns the same response as the service (it doesn't do
-        // anything else, so there's nothing else to test).
-        Assertions.assertEquals(followingResponse, presenter.getUsers(followingRequest));
-    }
-
-    @Test
-    public void testViewMethod_wasCalled() throws IOException {
-        presenter.usersRetrieved(singleUserResponse);
-        Assertions.assertTrue(viewWasCalled);
-    }
-
-    @Test
     public void testGetFollowers_returnsServiceResult() throws IOException, TweeterRemoteException {
-        Mockito.when(mockUserService.getUsers(followersRequest)).thenReturn(followersResponse);
+        Mockito.when(mockUserService.getFollowers(followerRequest)).thenReturn(followerResponse);
 
         // Assert that the presenter returns the same response as the service (it doesn't do
         // anything else, so there's nothing else to test).
-        Assertions.assertEquals(followersResponse, presenter.getUsers(followersRequest));
+        Assertions.assertEquals(followerResponse, presenter.getFollowers(followerRequest));
+    }
+
+    @Test
+    public void testGetFollowees_returnsServiceResult() throws IOException, TweeterRemoteException {
+        Mockito.when(mockUserService.getFollowees(followeeRequest)).thenReturn(followeeResponse);
+
+        // Assert that the presenter returns the same response as the service (it doesn't do
+        // anything else, so there's nothing else to test).
+        Assertions.assertEquals(followeeResponse, presenter.getFollowees(followeeRequest));
+    }
+
+    @Test
+    public void testGetFollowerCount_returnsServiceResult() throws IOException, TweeterRemoteException {
+        Mockito.when(mockUserService.getFollowerCount(getCountRequest)).thenReturn(getCountResponse);
+
+        // Assert that the presenter returns the same response as the service (it doesn't do
+        // anything else, so there's nothing else to test).
+        Assertions.assertEquals(getCountResponse, presenter.getFollowerCount(getCountRequest));
+    }
+
+    @Test
+    public void testGetFolloweeCount_returnsServiceResult() throws IOException, TweeterRemoteException {
+        Mockito.when(mockUserService.getFolloweeCount(getCountRequest)).thenReturn(getCountResponse);
+
+        // Assert that the presenter returns the same response as the service (it doesn't do
+        // anything else, so there's nothing else to test).
+        Assertions.assertEquals(getCountResponse, presenter.getFolloweeCount(getCountRequest));
+    }
+
+    @Test
+    public void testGetUser_returnsServiceResult() throws IOException, TweeterRemoteException {
+        Mockito.when(mockUserService.getUser(userRequest)).thenReturn(userResponse);
+
+        // Assert that the presenter returns the same response as the service (it doesn't do
+        // anything else, so there's nothing else to test).
+        Assertions.assertEquals(userResponse, presenter.getUser(userRequest));
     }
 
     @Test
     public void testGetFollowing_serviceThrowsIOException_presenterThrowsIOException() throws IOException, TweeterRemoteException {
-        Mockito.when(mockUserService.getUsers(followersRequest)).thenThrow(new IOException());
+        Mockito.when(mockUserService.getFollowers(followerRequest)).thenThrow(new IOException());
 
         Assertions.assertThrows(IOException.class, () -> {
-            presenter.getUsers(followersRequest);
+            presenter.getFollowers(followerRequest);
         });
+    }
+
+    @Test
+    public void testViewMethod_wasCalled() throws IOException {
+        presenter.usersRetrieved(userResponse);
+        Assertions.assertTrue(viewWasCalled);
     }
 }

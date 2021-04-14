@@ -13,16 +13,19 @@ import java.util.Arrays;
 
 import edu.byu.cs.tweeter.client.model.service.StatusesServiceProxy;
 import edu.byu.cs.tweeter.client.presenter.StatusesPresenter;
+import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
+import edu.byu.cs.tweeter.model.service.request.FeedRequest;
 import edu.byu.cs.tweeter.model.service.request.StatusesRequest;
+import edu.byu.cs.tweeter.model.service.request.StoryRequest;
 import edu.byu.cs.tweeter.model.service.response.StatusesResponse;
 
 public class StatusesPresenterTest {
 
-    private StatusesRequest feedRequest;
-    private StatusesRequest storyRequest;
+    private FeedRequest feedRequest;
+    private StoryRequest storyRequest;
     private StatusesResponse feedResponse;
     private StatusesResponse storyResponse;
     private StatusesServiceProxy mockStatusesService;
@@ -31,6 +34,7 @@ public class StatusesPresenterTest {
     private boolean viewWasCalled = false;
 
     private static final LocalDateTime time1 = LocalDateTime.now();
+    private static int PAGE_SIZE = 5;
 
     @BeforeEach
     public void setup() throws IOException, TweeterRemoteException {
@@ -45,18 +49,17 @@ public class StatusesPresenterTest {
         Status status3 = new Status(content1, user1, time1);
         Status status4 = new Status(content2, user1, time1.plus(Duration.ofSeconds(1)));
 
-        currentUser.setFollowees(new ArrayList<>(Arrays.asList(user1.getAlias())));
 
-        feedRequest = new StatusesRequest(currentUser.getFollowees(), 2, null);
-        storyRequest = new StatusesRequest(new ArrayList<>(Arrays.asList(currentUser.getAlias())), 2, null);
+        feedRequest = new FeedRequest(currentUser.getAlias(), PAGE_SIZE, null, new AuthToken());
+        storyRequest = new StoryRequest(currentUser.getAlias(), PAGE_SIZE, null, new AuthToken());
 
-        feedResponse = new StatusesResponse(Arrays.asList(status1, status2), false);
-        storyResponse = new StatusesResponse(Arrays.asList(status3, status4), false);
+        feedResponse = new StatusesResponse(Arrays.asList(status3, status4), false, null);
+        storyResponse = new StatusesResponse(Arrays.asList(status1, status2), false, null);
 
         // Create a mock UserService
         mockStatusesService = Mockito.mock(StatusesServiceProxy.class);
-        Mockito.when(mockStatusesService.getStatuses(feedRequest)).thenReturn(feedResponse);
-        Mockito.when(mockStatusesService.getStatuses(storyRequest)).thenReturn(storyResponse);
+        Mockito.when(mockStatusesService.getFeed(feedRequest)).thenReturn(feedResponse);
+        Mockito.when(mockStatusesService.getStory(storyRequest)).thenReturn(storyResponse);
 
         // Wrap a UserPresenter in a spy that will use the mock service.
         presenter = Mockito.spy(new StatusesPresenter(new StatusesPresenter.View() {
@@ -72,11 +75,11 @@ public class StatusesPresenterTest {
 
     @Test
     public void testGetFeed_returnsServiceResult() throws IOException, TweeterRemoteException {
-        Mockito.when(mockStatusesService.getStatuses(feedRequest)).thenReturn(feedResponse);
+        Mockito.when(mockStatusesService.getFeed(feedRequest)).thenReturn(feedResponse);
 
         // Assert that the presenter returns the same response as the service (it doesn't do
         // anything else, so there's nothing else to test).
-        Assertions.assertEquals(feedResponse, presenter.getStatuses(feedRequest));
+        Assertions.assertEquals(feedResponse, presenter.getFeed(feedRequest));
     }
 
     @Test
@@ -87,19 +90,19 @@ public class StatusesPresenterTest {
 
     @Test
     public void testGetStory_returnsServiceResult() throws IOException, TweeterRemoteException {
-        Mockito.when(mockStatusesService.getStatuses(storyRequest)).thenReturn(storyResponse);
+        Mockito.when(mockStatusesService.getStory(storyRequest)).thenReturn(storyResponse);
 
         // Assert that the presenter returns the same response as the service (it doesn't do
         // anything else, so there's nothing else to test).
-        Assertions.assertEquals(storyResponse, presenter.getStatuses(storyRequest));
+        Assertions.assertEquals(storyResponse, presenter.getStory(storyRequest));
     }
 
     @Test
     public void testGetFollowing_serviceThrowsIOException_presenterThrowsIOException() throws IOException, TweeterRemoteException {
-        Mockito.when(mockStatusesService.getStatuses(feedRequest)).thenThrow(new IOException());
+        Mockito.when(mockStatusesService.getFeed(feedRequest)).thenThrow(new IOException());
 
         Assertions.assertThrows(IOException.class, () -> {
-            presenter.getStatuses(feedRequest);
+            presenter.getFeed(feedRequest);
         });
     }
 }

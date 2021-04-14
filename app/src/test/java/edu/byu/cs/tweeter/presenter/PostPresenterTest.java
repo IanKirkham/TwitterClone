@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 
 import edu.byu.cs.tweeter.client.model.service.PostServiceProxy;
 import edu.byu.cs.tweeter.client.presenter.PostPresenter;
+import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.service.request.PostRequest;
@@ -34,7 +35,7 @@ public class PostPresenterTest {
 
         Status status1 = new Status(content1, currentUser, time1);
 
-        postRequest = new PostRequest(currentUser, content1, time1);
+        postRequest = new PostRequest(currentUser.getAlias(), content1, time1, new AuthToken());
 
         postResponse = new PostResponse(status1);
 

@@ -37,8 +37,8 @@ public class FollowEventPresenterTest {
                 "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/donald_duck.png");
         User currentUser = new User("Dummy", "User", "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/donald_duck.png");
 
-        followUserRequest = new FollowUserRequest(primaryUser, new AuthToken(), currentUser);
-        unfollowUserRequest = new UnfollowUserRequest(primaryUser, new AuthToken(), currentUser);
+        followUserRequest = new FollowUserRequest(primaryUser.getAlias(), new AuthToken(), currentUser.getAlias(), primaryUser.getName(), currentUser.getName());
+        unfollowUserRequest = new UnfollowUserRequest(primaryUser.getAlias(), new AuthToken(), currentUser.getAlias(), primaryUser.getName(), currentUser.getName());
 
         followUserResponse = new FollowUserResponse(true, "Successfully followed user");
         unfollowUserResponse = new UnfollowUserResponse(true, "Successfully unfollowed user");

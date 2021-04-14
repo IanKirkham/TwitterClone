@@ -28,7 +28,7 @@ public class LogoutPresenterTest {
         User testUser = new User("Test", "User",
                 "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/donald_duck.png");
 
-        logoutRequest = new LogoutRequest(testUser, new AuthToken());
+        logoutRequest = new LogoutRequest(testUser.getAlias(), new AuthToken());
         logoutResponse = new LogoutResponse(true, "Successfully logged out");
 
         // Create a mock LogoutService
