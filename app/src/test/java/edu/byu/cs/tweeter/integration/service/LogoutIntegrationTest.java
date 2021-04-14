@@ -26,9 +26,9 @@ public class LogoutIntegrationTest {
     static void setup() {
         proxy = new LogoutServiceProxy();
         user1 = new User("Test", "User",  "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/donald_duck.png");
-        authToken = new AuthToken("8af4d1be-f1fa-40a6-b56d-f741a31f8421");
+        authToken = new AuthToken("@TestUser", "p_S7ylnLZ6bV9-feB55GUPKt99Xu94Ia");
 
-        request = new LogoutRequest(user1, authToken);
+        request = new LogoutRequest("@TestUser", authToken);
         response = new LogoutResponse(true, "Logout successful");
     }
 
