@@ -27,7 +27,7 @@ public class LogoutServiceImplTest {
                 "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/donald_duck.png");
 
         // Setup request objects to use in the tests
-        request = new LogoutRequest(testUser, new AuthToken());
+        request = new LogoutRequest(testUser.getAlias(), new AuthToken());
 
         // Setup a mock AuthDAO that will return known responses
         expectedResponse = new LogoutResponse(true, "Successfully logged out");

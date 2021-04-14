@@ -15,6 +15,11 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostResponse savePost(PostRequest request) {
+        sendToSQS(request);
+        return getStoryDAO().savePost(request);
+    }
+
+    public void sendToSQS(PostRequest request) {
         String postJSON = (new Gson().toJson(request));
 
         SendMessageRequest send_msg_request = new SendMessageRequest()
@@ -23,8 +28,6 @@ public class PostServiceImpl implements PostService {
 
         AmazonSQS sqs = AmazonSQSClientBuilder.defaultClient();
         sqs.sendMessage(send_msg_request);
-
-        return getStoryDAO().savePost(request);
     }
 
     public StoryDAO getStoryDAO() {
