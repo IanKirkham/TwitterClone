@@ -168,7 +168,7 @@ public class UserDAO {
      * @throws NoSuchAlgorithmException exception
      * @throws InvalidKeySpecException exception
      */
-    private static String generateStrongPasswordHash(String password) throws NoSuchAlgorithmException, InvalidKeySpecException {
+    public static String generateStrongPasswordHash(String password) throws NoSuchAlgorithmException, InvalidKeySpecException {
         int iterations = 1000;
         char[] chars = password.toCharArray();
         byte[] salt = getSalt();
