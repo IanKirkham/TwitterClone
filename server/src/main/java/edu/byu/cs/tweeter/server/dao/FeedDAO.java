@@ -73,7 +73,6 @@ public class FeedDAO {
             Map<String, AttributeValue> startKey = new HashMap<>();
             startKey.put(AliasAttr, new AttributeValue().withS(request.getUserAlias()));
             startKey.put(TimePublishedAttr, new AttributeValue().withS(request.getLastStatusKey()));
-
             queryRequest.withExclusiveStartKey(startKey);
         }
 

@@ -3,7 +3,6 @@ package edu.byu.cs.tweeter.model.service.request;
 import java.time.LocalDateTime;
 
 import edu.byu.cs.tweeter.model.domain.AuthToken;
-import edu.byu.cs.tweeter.model.domain.User;
 
 public class PostRequest extends AuthenticatedRequest {
     private String author;

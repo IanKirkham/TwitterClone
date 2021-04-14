@@ -73,7 +73,7 @@ public class UserActivity extends AppCompatActivity implements FollowEventPresen
         followEventPresenter = new FollowEventPresenter(this);
         userPresenter = new UserPresenter(this);
 
-        GetCountRequest getCountRequest = new GetCountRequest(rootUser.getAlias());
+        GetCountRequest getCountRequest = new GetCountRequest(currentUser.getAlias());
         GetFollowersCountTask getFollowersCount = new GetFollowersCountTask(userPresenter, userPresenter);
         GetFolloweesCountTask getFolloweesCount = new GetFolloweesCountTask(userPresenter, userPresenter);
         getFollowersCount.execute(getCountRequest);

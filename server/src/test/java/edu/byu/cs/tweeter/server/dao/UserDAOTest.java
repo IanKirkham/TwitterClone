@@ -11,6 +11,7 @@ import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Base64;
+import java.util.UUID;
 
 import javax.imageio.ImageIO;
 
@@ -19,6 +20,7 @@ import edu.byu.cs.tweeter.model.service.request.LoginRequest;
 import edu.byu.cs.tweeter.model.service.request.RegisterRequest;
 import edu.byu.cs.tweeter.model.service.response.LoginResponse;
 import edu.byu.cs.tweeter.model.service.response.RegisterResponse;
+import edu.byu.cs.tweeter.util.ByteArrayUtils;
 
 public class UserDAOTest {
 
@@ -49,14 +51,12 @@ public class UserDAOTest {
 
     @Test
     void testRegister_successResponse() throws IOException {
+        String imageURL = "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/daisy_duck.png";
+        byte[] data = ByteArrayUtils.bytesFromUrl(imageURL);
 
-        URL imageURL = new URL("https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/daisy_duck.png");
-        BufferedImage image = ImageIO.read(imageURL);
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ImageIO.write(image, "jpg", bos);
-        byte[] data = bos.toByteArray();
+        String userName = UUID.randomUUID().toString().substring(0, 8);
 
-        RegisterRequest registerRequest = new RegisterRequest("New", "User", "@NewUser", "123", Base64.getEncoder().encode(data));
+        RegisterRequest registerRequest = new RegisterRequest("Delete", "Me", userName, "123", Base64.getEncoder().encode(data));
         RegisterResponse registerResponse = userDAO.register(registerRequest);
 
         Assertions.assertTrue(registerResponse.isSuccess());
