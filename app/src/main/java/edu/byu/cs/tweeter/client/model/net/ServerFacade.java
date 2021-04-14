@@ -122,11 +122,6 @@ public class ServerFacade {
 
     public DoesFollowResponse doesFollowUser(DoesFollowRequest request, String urlPath) throws IOException, TweeterRemoteException {
         DoesFollowResponse response = clientCommunicator.doPost(urlPath, request, null, DoesFollowResponse.class);
-
-        if (response.isSuccess()) {
-            return response;
-        } else {
-            throw new RuntimeException(response.getMessage());
-        }
+        return response;
     }
 }

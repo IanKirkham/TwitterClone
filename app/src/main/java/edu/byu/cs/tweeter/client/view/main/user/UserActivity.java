@@ -149,7 +149,9 @@ public class UserActivity extends AppCompatActivity implements FollowEventPresen
     @Override
     public void requestUnsuccessful(FollowEventResponse response) {
         if (response instanceof DoesFollowResponse) {
+            followButton.setEnabled(true);
             followButton.setChecked(response.isSuccess());
+            hasFinishedDoesFollow = true;
             return;
         } else if (response instanceof FollowUserResponse) {
             updateFollowerCount(followerCount - 1);
