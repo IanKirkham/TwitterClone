@@ -53,6 +53,8 @@ public class UserActivity extends AppCompatActivity implements FollowEventPresen
     private int followeeCount = 0;
     private int followerCount = 0;
 
+    private boolean hasFinishedDoesFollow = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -107,10 +109,14 @@ public class UserActivity extends AppCompatActivity implements FollowEventPresen
         followerCountText.setText(getString(R.string.followerCount, followerCount));
 
         followButton = findViewById(R.id.followButton);
+        followButton.setEnabled(false);
         followButton.setChecked(false); //Assume they don't follow until proven otherwise with the DoesFollowUserTask
         followButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (!hasFinishedDoesFollow) {
+                    return;
+                }
                 if (isChecked) {
                     updateFollowerCount(followerCount + 1);
                     FollowUserRequest followUserRequest = new FollowUserRequest(rootUser.getAlias(), authToken , currentUser.getAlias(), rootUser.getName(), currentUser.getName());
@@ -134,7 +140,9 @@ public class UserActivity extends AppCompatActivity implements FollowEventPresen
     @Override
     public void requestSuccessful(FollowEventResponse response) {
         if (response instanceof DoesFollowResponse) {
+            followButton.setEnabled(true);
             followButton.setChecked(response.isSuccess());
+            hasFinishedDoesFollow = true;
         }
     }
 
