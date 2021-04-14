@@ -53,7 +53,7 @@ public class UserServiceProxyTest {
      */
     @BeforeEach
     public void setup() throws IOException, TweeterRemoteException {
-        User currentUser = new User("FirstName", "LastName", null);
+        User currentUser = new User("Test", "User", "@TestUser", "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/donald_duck.png");
 
         User resultUser1 = new User("FirstName1", "LastName1",
                 "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/donald_duck.png");
